@@ -607,10 +607,26 @@ body { padding-top:var(--dock-height); }
 .lens { position:relative; width:16px; height:16px; border:2px solid currentColor; border-radius:50%; margin:-4px 4px 0 0; }
 .lens::after { content:""; position:absolute; top:11px; left:11px; width:9px; height:2px; background:currentColor; transform:rotate(45deg); transform-origin:left; }
 #topicPanel { position:absolute; top:100%; width:100%; max-width:560px; max-height:calc(100vh - var(--dock-height)); max-height:calc(100dvh - var(--dock-height)); overflow:auto; padding:12px; background:var(--panel); border-bottom:1px solid var(--accent); overscroll-behavior:contain; }
+#topicPanel { position:fixed; inset:0; z-index:101; width:100vw; height:100vh; height:100dvh; max-width:none; max-height:none; overflow:hidden; padding:5px; border:0; }
 #topicPanel .topic-words, #topicPanel .keyword-list { max-height:none; overflow:visible; }
 #topicPanel h2 { font-size:1rem; }
+#panelClose { position:absolute; top:5px; right:5px; width:30px; height:30px; min-width:30px; min-height:30px; padding:0; border-radius:50%; }
 #courseSearch { display:flex; gap:4px; margin-bottom:10px; }
-#courseQuery { min-width:0; width:100%; padding:8px; font-size:16px; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:8px; }
+#courseSearch { height:32px; margin:0 36px 3px 0; }
+#courseQuery { min-width:0; width:100%; padding:8px; font-size:16px; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:8px; pointer-events:none; }
+#courseSearch > button { min-height:30px; padding:3px 7px; }
+#watchSuggestions { display:flex; gap:5px; overflow-x:auto; padding:4px 0; }
+#watchSuggestions { height:32px; padding:1px 0; }
+#watchSuggestions button { flex:0 0 auto; min-height:38px; padding:5px 9px; }
+#watchSuggestions button { min-height:28px; padding:3px 7px; }
+#watchKeypad { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+#watchKeypad { height:calc(100dvh - 75px); grid-template-rows:repeat(4,minmax(30px,1fr)); gap:3px; }
+#watchKeypad button { min-width:0; min-height:40px; padding:3px 2px; touch-action:manipulation; line-height:1.15; }
+#watchKeypad button { min-height:0; }
+#watchKeypad button small { display:block; opacity:.72; font-size:.62rem; }
+#topicPanel.has-query #topicSuggestions, #topicPanel.has-query #examQuestions, #topicPanel.has-query > h2 { display:none; }
+#topicSuggestions { margin-top:4px; max-height:calc(100dvh - 250px); overflow:auto; }
+#topicSuggestions button { display:block; width:100%; text-align:left; margin:4px 0; }
 @media print { .search-dock {display:none} body {padding-top:0} }
 #leaveTopic { position:fixed; bottom:8px; left:50%; transform:translateX(-50%); z-index:90; width:44px; height:44px; border-radius:50%; border:1px solid var(--accent); background:var(--panel); color:var(--text); font-size:26px; cursor:pointer; }
 #topicView { padding-bottom:64px; }
@@ -624,10 +640,14 @@ body { padding-top:var(--dock-height); }
   <button type="button" id="findButton" aria-label="Search course topics" aria-expanded="false" aria-controls="topicPanel"><span class="lens" aria-hidden="true"></span></button>
   <div id="topicPanel" hidden>
     <form id="courseSearch" role="search">
-      <input id="courseQuery" type="text" aria-label="Search the course" placeholder="Type a word…" enterkeyhint="search" autocomplete="off">
+      <input id="courseQuery" type="text" aria-label="Search the course" placeholder="Use keypad, choose a word" autocomplete="off" readonly tabindex="-1">
       <button class="watch-control-btn" type="submit">Find</button>
+      <button class="watch-control-btn" id="panelClose" type="button" aria-label="Close search">×</button>
     </form>
+    <div id="watchSuggestions" aria-label="Word suggestions"></div>
+    <div id="watchKeypad" aria-label="Built-in watch keyboard"></div>
     <div id="courseMatches" aria-live="polite"></div>
+    <div id="topicSuggestions" aria-label="Matching course topics"></div>
     <h2>Topics</h2>
     <nav class="topic-words" aria-label="Exam topics">
         <a href="#exam-exam-intel-1">Microcontrollers</a>
@@ -2609,6 +2629,8 @@ BEQ EQUAL</pre>
   const findButton = document.getElementById("findButton");
   const queryInput = document.getElementById("courseQuery");
   const matchesBox = document.getElementById("courseMatches");
+  const suggestionsBox = document.getElementById("watchSuggestions");
+  const keypad = document.getElementById("watchKeypad");
 
   function normalize(text) {
     return (text.toLowerCase().match(/[a-z0-9\u0600-\u06ff]+/g) || []).join(" ");
@@ -2659,6 +2681,63 @@ BEQ EQUAL</pre>
     g.text = normalize(text + " " + g.extras.map(parts => parts.join(" ")).join(" "));
   });
   addPersianHoverHints();
+
+  // Use a local T9 keypad so opening search never launches the watch IME.
+  const t9 = {a:"2",b:"2",c:"2",d:"3",e:"3",f:"3",g:"4",h:"4",i:"4",j:"5",k:"5",l:"5",m:"6",n:"6",o:"6",p:"7",q:"7",r:"7",s:"7",t:"8",u:"8",v:"8",w:"9",x:"9",y:"9",z:"9"};
+  const candidates = [...new Set(groups.flatMap(g => g.aliases).filter(Boolean))];
+  let keySequence = "";
+  function drawSuggestions() {
+    suggestionsBox.textContent = "";
+    const encode = word => [...word.toLowerCase()].filter(char => t9[char]).map(char => t9[char]).join("");
+    const matches = candidates.filter(word => encode(word).startsWith(keySequence) && keySequence.length > 0);
+    const exact = matches.filter(word => encode(word) === keySequence);
+    const choices = [...new Set([...(exact.length ? exact : []), ...matches].slice(0, 8))];
+    choices.forEach(word => {
+      const choice = document.createElement("button");
+      choice.type = "button";
+      choice.className = "watch-control-btn";
+      choice.textContent = word;
+      choice.addEventListener("click", () => {
+        queryInput.value = (queryInput.value.trim() ? queryInput.value.trim() + " " : "") + word + " ";
+        keySequence = "";
+        drawSuggestions();
+        queryInput.placeholder = "Tap keypad, then choose a word";
+      });
+      suggestionsBox.appendChild(choice);
+    });
+  }
+  const keyLabels = [["1","Find"],["2","ABC"],["3","DEF"],["4","GHI"],["5","JKL"],["6","MNO"],["7","PQRS"],["8","TUV"],["9","WXYZ"],["⌫","Delete"],["0","Space"],["↵","Go"]];
+  keyLabels.forEach(([key, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "watch-control-btn";
+    button.textContent = key;
+    const caption = document.createElement("small");
+    caption.textContent = label;
+    button.appendChild(caption);
+    button.addEventListener("click", () => {
+      if (key === "⌫") {
+        if (keySequence) keySequence = keySequence.slice(0, -1);
+        else queryInput.value = queryInput.value.trimEnd().replace(/\S+$/, "");
+      } else if (key === "0") {
+        if (keySequence) {
+          const encode = word => [...word.toLowerCase()].filter(char => t9[char]).map(char => t9[char]).join("");
+          const word = candidates.find(candidate => encode(candidate) === keySequence) ||
+            candidates.find(candidate => encode(candidate).startsWith(keySequence));
+          if (word) queryInput.value = (queryInput.value.trim() ? queryInput.value.trim() + " " : "") + word;
+          keySequence = "";
+        }
+        queryInput.value = queryInput.value.trimEnd() + " ";
+      } else if (key === "↵" || key === "1") {
+        document.getElementById("courseSearch").requestSubmit();
+        return;
+      } else {
+        keySequence += key;
+      }
+      drawSuggestions();
+    });
+    keypad.appendChild(button);
+  });
 
   const originalPositions = [];
   let readingPosition = 0;
@@ -2716,6 +2795,7 @@ BEQ EQUAL</pre>
   }
   exitTopic.addEventListener("click", clearTopic);
   findButton.addEventListener("click", () => showTopics(panel.hidden));
+  document.getElementById("panelClose").addEventListener("click", () => showTopics(false));
   panel.querySelectorAll("a[href^='#']").forEach(link => {
     const target = document.getElementById(link.hash.slice(1));
     const label = normalize(link.textContent);
