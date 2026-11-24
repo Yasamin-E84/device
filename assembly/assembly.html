@@ -484,18 +484,23 @@ STR R1, [R0]       @ Write R1 to that memory address</code></pre>
     <code>LDR R0, =NUMBERS</code> means put the address of the label in R0.<br>
     <code>LDR R0, [R1]</code> means read a value from the memory address stored in R1.
   </div>
-  <h3>Data size and the matching instruction</h3>
+  <h3>Load/store mnemonics: full names and meaning</h3>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Instruction</th><th>Size</th><th>Operation</th></tr></thead>
+      <thead><tr><th>Mnemonic</th><th>Expanded name</th><th>Data / operation</th></tr></thead>
       <tbody>
-        <tr><td><code>LDR / STR</code></td><td>Word = 32 bits = 4 bytes</td><td>Load / store a word.</td></tr>
-        <tr><td><code>LDRB / STRB</code></td><td>Byte = 8 bits = 1 byte</td><td>Load / store a byte.</td></tr>
-        <tr><td><code>LDRH / STRH</code></td><td>Halfword = 16 bits = 2 bytes</td><td>Load / store a halfword.</td></tr>
-        <tr><td><code>LDRSH</code></td><td>Signed halfword</td><td>Load a halfword and sign-extend it.</td></tr>
+        <tr><td><code>LDR</code></td><td>Load Register</td><td>Read one 32-bit word from memory into a register.</td></tr>
+        <tr><td><code>LDRB</code></td><td>Load Register Byte</td><td>Read one 8-bit byte and zero-extend it.</td></tr>
+        <tr><td><code>LDRH</code></td><td>Load Register Halfword</td><td>Read one 16-bit halfword and zero-extend it.</td></tr>
+        <tr><td><code>LDRSB</code></td><td>Load Register Signed Byte</td><td>Read one signed byte and sign-extend it to 32 bits.</td></tr>
+        <tr><td><code>LDRSH</code></td><td><strong>Load Register Signed Halfword</strong></td><td>Read one signed 16-bit halfword and sign-extend it to 32 bits.</td></tr>
+        <tr><td><code>STR</code></td><td>Store Register</td><td>Write one 32-bit word from a register to memory.</td></tr>
+        <tr><td><code>STRB</code></td><td>Store Register Byte</td><td>Write the low 8 bits of a register to memory.</td></tr>
+        <tr><td><code>STRH</code></td><td>Store Register Halfword</td><td>Write the low 16 bits of a register to memory.</td></tr>
       </tbody>
     </table>
   </div>
+  <p><strong>Name pattern:</strong> <code>B</code> means byte, <code>H</code> means halfword, and <code>S</code> in <code>LDRSB</code>/<code>LDRSH</code> means signed. Here, <code>LDRSH</code> literally expands to <strong>Load Register Signed Halfword</strong>.
   <p>When moving through consecutive array elements, the address increment depends on the element size:</p>
   <ul><li>Byte array: advance by 1 byte.</li><li>Halfword array: advance by 2 bytes.</li><li>Word array: advance by 4 bytes.</li></ul>
   <h3>Little-Endian byte order</h3>
