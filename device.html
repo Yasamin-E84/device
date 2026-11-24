@@ -607,25 +607,27 @@ body { padding-top:var(--dock-height); }
 .lens { position:relative; width:16px; height:16px; border:2px solid currentColor; border-radius:50%; margin:-4px 4px 0 0; }
 .lens::after { content:""; position:absolute; top:11px; left:11px; width:9px; height:2px; background:currentColor; transform:rotate(45deg); transform-origin:left; }
 #topicPanel { position:absolute; top:100%; width:100%; max-width:560px; max-height:calc(100vh - var(--dock-height)); max-height:calc(100dvh - var(--dock-height)); overflow:auto; padding:12px; background:var(--panel); border-bottom:1px solid var(--accent); overscroll-behavior:contain; }
-#topicPanel { position:fixed; inset:0; z-index:101; width:100vw; height:100vh; height:100dvh; max-width:none; max-height:none; overflow:hidden; padding:3px; border:0; }
+#topicPanel { position:fixed; inset:0; z-index:101; width:100vw; height:100vh; height:100dvh; max-width:none; max-height:none; overflow:hidden; padding:0; border:0; }
 #topicPanel .topic-words, #topicPanel .keyword-list { max-height:none; overflow:visible; }
 #topicPanel h2 { font-size:1rem; }
-#panelClose { position:absolute; top:5px; right:5px; width:30px; height:30px; min-width:30px; min-height:30px; padding:0; border-radius:50%; }
-#courseSearch { display:flex; gap:4px; margin-bottom:10px; }
-#courseSearch { height:32px; margin:0 36px 3px 0; }
+#panelClose { position:static; flex:0 0 clamp(24px,6dvh,32px); width:clamp(24px,6dvh,32px); height:clamp(24px,6dvh,32px); min-width:24px; min-height:24px; padding:0; border-radius:50%; }
+#courseSearch { position:absolute; top:13dvh; left:17%; display:flex; width:66%; height:clamp(24px,6dvh,32px); gap:4px; margin:0; }
 #courseQuery { min-width:0; width:100%; padding:8px; font-size:16px; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:8px; pointer-events:none; }
-#courseSearch > button { min-height:30px; padding:3px 7px; }
-#watchSuggestions { display:flex; gap:5px; overflow-x:auto; padding:4px 0; }
-#watchSuggestions { height:32px; padding:1px 0; }
-#watchSuggestions button { flex:0 0 auto; min-height:38px; padding:5px 9px; }
-#watchSuggestions button { min-height:28px; padding:3px 7px; }
-#watchKeypad { display:grid; height:calc(100dvh - 68px); grid-template-rows:repeat(4,minmax(28px,1fr)); gap:3px; }
+#courseSearch > button[type="submit"] { display:none; }
+#watchSuggestions { position:absolute; top:calc(13dvh + clamp(24px,6dvh,32px) + 4px); left:11%; display:flex; width:78%; height:clamp(24px,6dvh,32px); gap:5px; overflow-x:auto; padding:1px 0; }
+#watchSuggestions button { flex:0 0 auto; min-width:0; min-height:0; height:100%; padding:3px 7px; font-size:clamp(10px,3dvh,14px); }
+#watchKeypad { position:absolute; top:max(35dvh,calc(13dvh + clamp(48px,12dvh,64px) + 8px)); left:0; display:grid; width:100%; height:43dvh; grid-template-rows:repeat(4,minmax(16px,1fr)); gap:clamp(2px,.6dvh,4px); }
 .key-row { display:flex; justify-content:center; gap:2px; min-width:0; }
 .key-row button { flex:1 1 0; min-width:0; min-height:0; height:100%; padding:0 1px; touch-action:manipulation; line-height:1; font-size:18px; font-weight:600; border-radius:6px; }
 .key-row button.key-wide { flex:1.7 1 0; font-size:13px; }
 .key-row button.key-space { flex:4 1 0; font-size:13px; }
 .key-row button.key-send { flex:1.7 1 0; font-size:20px; }
-@media (max-width:260px) { #courseSearch > button[type="submit"] { display:none; } }
+#watchKeypad .key-row:nth-child(1) { width:90%; margin-inline:auto; }
+#watchKeypad .key-row:nth-child(2) { width:96%; margin-inline:auto; }
+#watchKeypad .key-row:nth-child(3) { width:80%; margin-inline:auto; }
+#watchKeypad .key-row:nth-child(4) { width:72%; margin-inline:auto; }
+#topicPanel .topic-words, #topicPanel .quick-search, #topicPanel #examQuestions, #topicPanel > h2, #topicSuggestions { display:none; }
+#courseMatches { position:absolute; top:28dvh; left:10%; z-index:2; width:80%; }
 #topicPanel.has-query #topicSuggestions, #topicPanel.has-query #examQuestions, #topicPanel.has-query > h2 { display:none; }
 #topicSuggestions { margin-top:4px; max-height:calc(100dvh - 250px); overflow:auto; }
 #topicSuggestions button { display:block; width:100%; text-align:left; margin:4px 0; }
