@@ -390,13 +390,6 @@ summary:hover { color:var(--accent); }
 #exam-map .roadmap-card:nth-child(3) { border-color:rgba(243,201,105,.38); }
 #ch2-processor-compare .table-wrap td:first-child { font-weight:800; color:var(--accent); min-width:145px; }
 
-#watchPad summary { padding:10px 4px; color:var(--accent); cursor:pointer; }
-#padKeys { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:3px; }
-#padKeys button { min-width:0; padding:3px 0; min-height:36px; }
-#padQuery { display:block; min-height:1.6em; overflow-wrap:anywhere; }
-#padGo { width:100%; margin-top:5px; }
-#examQuestions > strong { color:var(--accent); padding-top:8px; }
-#examQuestions a { font-size:.85rem; }
   </style>
 
   <style>
@@ -558,10 +551,11 @@ details .answer p, details .answer li { font-size:.88rem; }
 }
 .term:hover .tip, .term:focus .tip, .term:focus-within .tip, .term.show-tip .tip { display:block; }
 .term .tip b { color:#087e70; display:block; margin-bottom:5px; }
+.watch-layout { overflow:hidden; }
 .back-to-top {
   position:fixed;
-  right:9px;
-  bottom:9px;
+  left:50vw; transform:translateX(-50%);
+  top:calc(100vh - 42px);
   z-index:30;
   padding:8px 10px;
   border-radius:99px;
@@ -599,53 +593,57 @@ body.modal-open { overflow:hidden; }
   .study-section, .diagram-card { break-inside:avoid; }
 }
 
-#watchPad summary { padding:10px 4px; color:var(--accent); cursor:pointer; }
-#padKeys { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:3px; }
-#padKeys button { min-width:0; padding:3px 0; min-height:36px; }
-#padQuery { display:block; min-height:1.6em; overflow-wrap:anywhere; }
-#padGo { width:100%; margin-top:5px; }
+#topics summary { cursor:pointer; padding:8px 4px; font-weight:800; color:var(--accent); }
+.topic-words { display:flex; flex-wrap:wrap; gap:6px; max-height:48vh; overflow:auto; padding:4px; }
+.topic-words a { display:inline-flex; align-items:center; min-height:42px; padding:6px 10px; background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:10px; font-size:.85rem; }
 #examQuestions > strong { color:var(--accent); padding-top:8px; }
 #examQuestions a { font-size:.85rem; }
   </style>
 </head>
 <body>
-<header class="hero">
-  <div class="hero-top">
-    <span class="eyebrow">GALAXY WATCH EDITION · OFFLINE STUDY GUIDE</span>
-    
-  </div>
-  <h1>Embedded Systems <span>&</span> ARM</h1>
-  <p class="hero-subtitle">Chapter 1 · Chapter 2 · Memory Mapping · Exam Practice</p>
-  <div class="hero-meta">
-    <span>English notes</span><span>·</span><span>Persian tap dictionary</span><span>·</span><span>Offline</span>
-  </div>
-  <p class="watch-zoom-note">Watch tip: tap A+ to enlarge text, A− to reduce it, or pinch the screen to zoom.</p>
-  <div class="progress-card">
-    <div class="progress-line">
-      <strong>Your study progress</strong>
-      <span id="progressText">0 / 0 topics checked</span>
-    </div>
-    <div class="progress-track"><div id="progressFill"></div></div>
-    <button id="resetProgress" class="text-btn" type="button">Reset checkmarks</button>
-  </div>
-</header>
-
 <div class="layout watch-layout">
   
 <section class="watch-controls" aria-label="Study controls">
-  <form id="searchForm" class="watch-search-row" role="search">
-    <label class="sr-only" for="searchBox">Search the study guide</label>
-    <input id="searchBox" type="text" inputmode="text" placeholder="Find: watchdog, XOR, ASIP..." autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
-    <button class="watch-control-btn search-submit" type="submit">Search</button>
-    <button id="clearSearch" class="watch-control-btn clear-btn" type="button" aria-label="Clear search">×</button>
-  </form>
-  <details id="watchPad">
-    <summary>Tap to type</summary>
-    <output id="padQuery" aria-label="Current search"></output>
-    <div id="padKeys"></div>
-    <button type="button" class="watch-control-btn" id="padGo">Find passages</button>
+  <details id="topics" open>
+    <summary>Search by topic</summary>
+    <nav class="topic-words" aria-label="Exam topics">
+        <a href="#exam-exam-intel-1">Microcontroller diagram</a>
+        <a href="#exam-exam-intel-2">ASIP vs ASIC</a>
+        <a href="#watchdog-sequence">Watchdog timer</a>
+        <a href="#exam-practice-8">Input capture</a>
+        <a href="#exam-practice-8">Output compare</a>
+        <a href="#logic-gates">Logic gates · AND, OR, XOR</a>
+        <a href="#exam-practice-9">ADD, SUB, EOR</a>
+        <a href="#exam-ch3-memory-mapping-1">Memory mapping</a>
+        <a href="#exam-practice-7">Memory-mapped I/O</a>
+        <a href="#ch2-mmio-diagram">Address decoding</a>
+        <a href="#exam-practice-1">Embedded systems</a>
+        <a href="#system-characteristics">System characteristics</a>
+        <a href="#exam-ch1-review-2">Sensor and actuator</a>
+        <a href="#ch1-diagram-lab">Camera diagram</a>
+        <a href="#ch1-nre">Design cost · NRE</a>
+        <a href="#ch1-memory-visual">Memory types</a>
+        <a href="#ch1-communication-diagrams">Serial and parallel</a>
+        <a href="#uart-words">UART</a>
+        <a href="#exam-practice-5">Infrared and RF</a>
+        <a href="#exam-practice-2">Hard and soft real-time</a>
+        <a href="#ch2-processor-compare">Processor performance</a>
+        <a href="#ch2-register-diagram">CPU registers</a>
+        <a href="#exam-practice-10">Program counter</a>
+        <a href="#exam-ch2-register-diagram-2">Link register</a>
+        <a href="#byte-order">Endianness</a>
+        <a href="#ch2-shifts">Bit shifts and rotates</a>
+        <a href="#ch2-flags">Status flags</a>
+        <a href="#exam-practice-11">SUB vs SUBS</a>
+        <a href="#exam-practice-13">Conditional branches</a>
+        <a href="#ch2-memory">Load and store</a>
+        <a href="#ch2-ldm-table">LDM and STM</a>
+        <a href="#exam-ch2-ldm-table-1">Write-back</a>
+        <a href="#exam-ch2-ldm-table-2">Stack pointer</a>
+        <a href="#ch2-reading">Trace assembly</a>
+        <a href="#exam-practice-16">Address regions</a>
+    </nav>
   </details>
-  <div id="searchResults" class="search-results" hidden aria-live="polite"></div>
   <div class="watch-control-row">
     <button id="fontDown" class="watch-control-btn" type="button" aria-label="Decrease text size">A−</button>
     <span id="fontValue" class="font-value">100%</span>
@@ -708,7 +706,6 @@ body.modal-open { overflow:hidden; }
   <details class="watch-index">
     <summary>☰ Browse chapters and topics</summary>
     <nav>
-      <a href="#start">Start here</a>
       <a href="#exam-map">Exam roadmap</a>
       <a href="#exam-intel">Earlier exam report</a>
       <a href="#chapter1">Chapter 1 · Embedded systems</a>
@@ -721,7 +718,7 @@ body.modal-open { overflow:hidden; }
       <a href="#ch1-communication-diagrams">Serial / parallel / IR / RF pictures</a>
       <a href="#ch1-features">System features</a>
       <a href="#ch1-realtime">Hard vs. soft real-time</a>
-      <a href="#ch1-review">Chapter 1 checkpoint</a>
+      <a href="#ch1-review">Chapter 1 practice</a>
       <a href="#chapter2">Chapter 2 · Microcontrollers</a>
       <a href="#ch2-processors">Processors & speed</a>
       <a href="#ch2-processor-compare">GP vs embedded processor</a>
@@ -739,12 +736,11 @@ body.modal-open { overflow:hidden; }
       <a href="#ch2-memory">Load / store / page 44</a>
       <a href="#ch2-multiple">Multiple transfer / page 65</a>
       <a href="#ch2-reading">Reading assembly examples</a>
-      <a href="#ch2-review">Chapter 2 checkpoint</a>
+      <a href="#ch2-review">Chapter 2 practice</a>
       <a href="#comparison-master">Comparison master sheet</a>
       <a href="#chapter3">Chapter 3 · Memory mapping</a>
       <a href="#practice">Practice questions</a>
       <a href="#ch3-memory-mapping">4GB address map & MMIO</a>
-      <a href="#ch3-review">Chapter 3 checkpoint</a>
       <a href="#dictionary">Dictionary</a>
     </nav>
   </details>
@@ -753,41 +749,9 @@ body.modal-open { overflow:hidden; }
 
 
   <main id="mainContent">
-    <section id="start" class="intro-section">
-      <div class="section-kicker">FIRST, THE BIG PICTURE</div>
-      <h2>What is this subject actually about?</h2>
-      <p><strong>Embedded Systems</strong> means small computing systems built inside larger devices. They receive information from the outside world, process it, and control something.</p>
-      <div class="flow">
-        <div><b>INPUT</b><small>Sensor / button</small></div><span>→</span>
-        <div><b>PROCESS</b><small>Processor / memory</small></div><span>→</span>
-        <div><b>OUTPUT</b><small>Motor / LED / screen</small></div>
-      </div>
-      <p class="plain-example">Example: a washing machine reads water-level and door sensors, decides what to do, and controls its motor and valves. The small computer doing this job is an embedded system.</p>
-      <div class="callout info">
-        <strong>The one-sentence map:</strong> Chapter 1 explains embedded systems and their design choices. Chapter 2 explains microcontrollers, peripherals, and ARM instructions. The added Chapter 3 section reviews memory mapping.
-      </div>
-      <div class="study-recipe">
-        <div class="recipe-title"><span>✍️</span><div><strong>Your notebook method</strong><small>English first. Persian only when you need it.</small></div></div>
-        <div class="recipe-steps">
-          <div><b>01 · READ</b><span>Read the English explanation.</span></div>
-          <div><b>02 · HOVER</b><span>Hover over dotted words for the Persian meaning.</span></div>
-          <div><b>03 · WRITE</b><span>Write the English answer in your notebook.</span></div>
-          <div><b>04 · EXPLAIN</b><span>Say what it means in your own words.</span></div>
-        </div>
-        <p class="small-note">You do not need to translate every sentence. Keep the English technical terms exactly as they appear in the lecture.</p>
-      </div>
-      <div class="topic answer-recipes">
-        <h3>Three English sentence patterns for the exam</h3>
-        <div class="recipe-card"><b>To define something</b><p><code>A / An ___ is a ___ that ___.</code></p><small>Example: “A timer is a hardware unit that counts clock pulses.”</small></div>
-        <div class="recipe-card"><b>To explain its purpose</b><p><code>It is used to ___ so that ___.</code></p><small>Example: “It is used to measure time so that the processor does not need to count manually.”</small></div>
-        <div class="recipe-card"><b>To compare two things</b><p><code>Unlike ___, ___.</code> or <code>Whereas ___, ___.</code></p><small>Example: “Unlike IR, RF does not require a direct line of sight.”</small></div>
-      </div>
-    </section>
-
-    <section id="exam-map" class="study-section">
+<section id="exam-map" class="study-section">
       <div class="section-kicker">YOUR EXAM ROUTE</div>
       <h2>What to study — and where to find it</h2>
-      <p>Use this as a map, not as another checklist. The actual “I can do this” checklists are waiting at the end of Chapter 1 and Chapter 2.</p>
 
       <div class="roadmap-grid">
         <article class="roadmap-card">
@@ -803,7 +767,7 @@ body.modal-open { overflow:hidden; }
             <li><strong>PDF pp.61–62:</strong> characteristics of embedded systems.</li>
             <li><strong>PDF p.69:</strong> hard real-time vs. soft real-time.</li>
           </ul>
-          <a href="#ch1-review" class="jump-link">Go to Chapter 1 checklist →</a>
+          <a href="#ch1-review" class="jump-link">Open Chapter 1 practice →</a>
         </article>
         <article class="roadmap-card">
           <span class="roadmap-number">02</span>
@@ -818,7 +782,7 @@ body.modal-open { overflow:hidden; }
             <li><strong>PDF p.65:</strong> multiple-register transfer addressing modes.</li>
             <li>Understand the final programming examples by tracing them — no full assembly-program writing required.</li>
           </ul>
-          <a href="#ch2-review" class="jump-link">Go to Chapter 2 checklist →</a>
+          <a href="#ch2-review" class="jump-link">Open Chapter 2 practice →</a>
         </article>
         <article class="roadmap-card">
           <span class="roadmap-number">03</span>
@@ -1191,7 +1155,7 @@ body.modal-open { overflow:hidden; }
         </div>
       </div>
       <div class="topic">
-        <h3>UART — know the basic idea</h3>
+        <h3 id="uart-words">UART — know the basic idea</h3>
         <p><span class="term" tabindex="0"><span>UART</span><span class="tip"><b dir="rtl">فرستنده/گیرنده سریال ناهمگام</b><br>A hardware unit that converts parallel data to serial when sending, and serial data back to parallel when receiving.</span></span> means Universal Asynchronous Receiver/Transmitter.</p>
         <ul>
           <li>Sending: takes parallel data and transmits it serially.</li>
@@ -1306,7 +1270,7 @@ body.modal-open { overflow:hidden; }
           dedicated purpose · real-time deadlines · reliability / dependability · energy efficiency · performance · low cost / size / weight · sensor and actuator interaction · limited resources · possible analog + digital hardware.
           <br><strong>Important:</strong> not every embedded system has every characteristic.
         </div>
-        <details class="watch-question">
+        <details id="system-characteristics" class="watch-question">
           <summary>Exam check: name five characteristics of an embedded system.</summary>
           <div class="answer">Dedicated application, real-time constraints, dependability, energy efficiency, and interaction with the physical world through sensors and actuators. Other points include performance, cost, size, weight, code-size efficiency, and a dedicated user interface.</div>
         </details>
@@ -1340,49 +1304,21 @@ body.modal-open { overflow:hidden; }
       </div>
     </section>
 
-    <section id="ch1-review" class="study-section chapter-checkpoint">
-      <div class="checkpoint-top">
-        <div>
-          <div class="section-kicker">CHAPTER 1 · CHECKPOINT</div>
-          <h2>Can you explain the big picture without looking?</h2>
-          <p>Tick an item only when you can explain it in your own words. You should be able to answer in English, even if you use Persian to check your understanding.</p>
-        </div>
-        <div class="checkpoint-stamp">01<br><small>REVIEW</small></div>
-      </div>
-      <div class="mission-strip"><span>🎯</span><p><strong>Your mission:</strong> explain how a digital camera works as an embedded system — from the light entering the lens to the image being processed, stored, displayed, or sent.</p></div>
-      <div class="review-list">
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-01"><span><b>1.</b> I can define an embedded system in two clear English sentences.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-02"><span><b>2.</b> I can explain the input → process → output idea and give an example.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-03"><span><b>3.</b> I can explain the main blocks in the digital-camera diagram.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-04"><span><b>4.</b> I can compare a general-purpose processor with an ASIC / single-purpose design.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-05"><span><b>5.</b> I can define NRE and explain why sales volume matters.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-06"><span><b>6.</b> I can compare serial and parallel communication and name the lecture's examples.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-07"><span><b>7.</b> I can explain UART's basic job and identify start, stop, and parity bits.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-08"><span><b>8.</b> I can distinguish IR from RF without mixing up line of sight.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-09"><span><b>9.</b> I can name the main embedded-system characteristics and explain sensor vs. actuator.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch1-10"><span><b>10.</b> I can compare hard real-time and soft real-time and give one example of each.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch1-11"><span><b>11.</b> I can identify the CCD, A/D, DSP, JPEG, memory, and interface labels in the camera diagram.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch1-12"><span><b>12.</b> I can compare GP, ASIP, and ASIC, especially ASIP vs ASIC.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch1-13"><span><b>13.</b> I can read the Write-ability / Storage-permanence memory diagram.</span></label>
-        <label class="review-item optional-review"><input type="checkbox" data-progress="review-ch1-optional"><span><b>Optional:</b> I have confirmed whether the memory / Write-ability pages are included.</span></label>
-      </div>
-      <div class="checkpoint-bottom">
-        <div class="checkpoint-meter"><strong>Chapter 1 mastery</strong><span>Use the boxes above to track what you can explain from memory.</span></div>
-        <details id="exam-ch1-review-1">
+    <section id="ch1-review" class="study-section">
+      <h2>Chapter 1 practice questions</h2>
+      <details id="exam-ch1-review-1">
           <summary>⚡ 60-second challenge: explain a washing machine</summary>
           <div class="answer">
             <p>A washing machine is an embedded system. Sensors provide input, such as water level or door status. The microcontroller processes this information according to its program, then controls outputs such as the motor and water valve. It performs a dedicated task inside a larger product.</p>
           </div>
         </details>
-        <details id="exam-ch1-review-2">
+      <details id="exam-ch1-review-2">
           <summary>🧠 Quick check: which one is the input and which one is the output?</summary>
           <div class="answer">
             <p><strong>Temperature sensor:</strong> input — it measures the environment.</p>
             <p><strong>Fan motor:</strong> output — it performs an action when controlled.</p>
           </div>
         </details>
-      </div>
-      <div class="callout success"><strong>Ready for Chapter 2?</strong> If you can explain the camera or washing-machine example, compare the communication types, and explain hard vs. soft real-time without reading, move on.</div>
     </section>
 
     <section id="chapter2" class="chapter-heading">
@@ -1763,7 +1699,7 @@ body.modal-open { overflow:hidden; }
         </tbody></table>
       </div>
       <div class="topic watchdog-focus">
-        <h3>Watchdog Timer — understand the sequence</h3>
+        <h3 id="watchdog-sequence">Watchdog Timer — understand the sequence</h3>
         <p>A <strong>Watchdog Timer (WDT)</strong> is a safety timer that checks whether the software is still running correctly. The program must periodically refresh, restart, or “kick” the watchdog before its countdown expires.</p>
         <div class="diagram-flow compact">
           <div><b>1 · Start</b><small>Watchdog begins counting</small></div><span>→</span>
@@ -1807,7 +1743,7 @@ body.modal-open { overflow:hidden; }
         </ul>
       </div>
       <div class="topic">
-        <h3>Word size and endianness</h3>
+        <h3 id="byte-order">Word size and endianness</h3>
         <p>The ARM Cortex-M3 is a <strong>32-bit</strong> processor architecture. Its general registers are 32 bits wide.</p>
         <p><span class="term" tabindex="0"><span>Endianness</span><span class="tip"><b dir="rtl">ترتیب قرارگیری بایت‌ها</b><br>The order in which the bytes of a multi-byte value are stored in memory.</span></span> tells us which byte of a multi-byte value is stored at the lower memory address.</p>
         <ul>
@@ -1925,7 +1861,7 @@ body.modal-open { overflow:hidden; }
         <p><strong>Remember:</strong> XOR is written as <code>EOR</code> in the ARM instruction list.</p>
       </div>
       <div class="topic">
-        <h3>How to calculate AND, OR, and XOR</h3>
+        <h3 id="logic-gates">How to calculate AND, OR, and XOR</h3>
         <p>Compare the two numbers one bit at a time. For each position:</p>
         <div class="table-wrap">
           <table>
@@ -2278,39 +2214,9 @@ BEQ EQUAL</pre>
       <details id="exam-ch2-ldm-table-2"><summary>What is the difference between Full and Empty stack?</summary><div class="answer">In a Full stack, SP points to the last occupied location. In an Empty stack, SP points to the next empty location.</div></details>
     </section>
 
-    <section id="ch2-review" class="study-section chapter-checkpoint">
-      <div class="checkpoint-top">
-        <div>
-          <div class="section-kicker">CHAPTER 2 · CHECKPOINT</div>
-          <h2>Can you follow what the microcontroller is doing?</h2>
-          <p>This chapter is about understanding the processor's actions. You do not need to write a complete assembly program. You do need to read a short sequence and tell what changes.</p>
-        </div>
-        <div class="checkpoint-stamp">02<br><small>REVIEW</small></div>
-      </div>
-      <div class="mission-strip"><span>🧩</span><p><strong>Your mission:</strong> imagine the processor is a tiny worker. Registers are its scratch paper, memory is its storage shelf, and instructions tell it what to do next.</p></div>
-      <div class="review-list">
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-01"><span><b>1.</b> I can explain the fetch/execute cycle and the three processor-performance techniques.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-02"><span><b>2.</b> I can define a microcontroller, name its main components, and compare it with a microprocessor.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-03"><span><b>3.</b> I can define memory-mapped I/O and explain how reading/writing an address controls a peripheral.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-04"><span><b>4.</b> I can explain what a timer does and why hardware timing is useful.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-05"><span><b>5.</b> I can distinguish Input Capture from Output Compare.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-06"><span><b>6.</b> I can explain ISA, 32-bit word size, and little-endian vs. big-endian.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-07"><span><b>7.</b> I know the purpose of R0–R12, SP, LR, PC, and xPSR.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-08"><span><b>8.</b> I can explain why the Program Counter matters and how a branch changes program flow.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-09"><span><b>9.</b> I can calculate ADD, SUB, EOR/XOR and identify which bit positions are set.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-10"><span><b>10.</b> I can perform LSL, LSR, ASR, ROR, and explain RRX.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-11"><span><b>11.</b> I understand N, Z, C, V, CMP, BEQ, BNE, and the difference between SUB and SUBS.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-12"><span><b>12.</b> I can explain LDR/STR, offset/pre-index/post-index, and the ! write-back symbol.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-13"><span><b>13.</b> I can explain LDM/STM and the IA, IB, DA, DB addressing modes.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch2-14"><span><b>14.</b> I can trace the worksheet and find its final register values without writing a new program.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch2-15"><span><b>15.</b> I can draw and label a simple microcontroller block diagram.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch2-16"><span><b>16.</b> I can explain ADDR, RD, WR, OE, EN, DATA, IN, and OUT on the MMIO picture.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch2-17"><span><b>17.</b> I can read a timer / Input Capture / Output Compare diagram.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch2-18"><span><b>18.</b> I can identify R13/SP, R14/LR, R15/PC, and the APSR flags in a register diagram.</span></label>
-<label class="review-item"><input type="checkbox" data-progress="review-ch2-19"><span><b>19.</b> I can explain the four LDM/STM modes and the effect of !.</span></label>
-      </div>
-      <div class="checkpoint-bottom">
-        <details id="exam-ch2-review-1">
+    <section id="ch2-review" class="study-section">
+      <h2>Chapter 2 practice questions</h2>
+      <details id="exam-ch2-review-1">
           <summary>✏️ Paper drill 1: two registers, three operations</summary>
           <div class="answer">
             <p>Given <code>R1 = 0x2C</code> and <code>R2 = 0x14</code>:</p>
@@ -2318,20 +2224,18 @@ BEQ EQUAL</pre>
             <p>Try the same process with new values from your teacher's examples.</p>
           </div>
         </details>
-        <details id="exam-ch2-review-2">
+      <details id="exam-ch2-review-2">
           <summary>✏️ Paper drill 2: what does LDMIA do?</summary>
           <div class="answer">
             <p><code>LDMIA R0!, {R1, R2, R3, R4}</code> loads four consecutive words from the memory address in R0 into R1–R4. The exclamation mark means the updated address is written back into R0.</p>
           </div>
         </details>
-        <details id="exam-ch2-review-3">
+      <details id="exam-ch2-review-3">
           <summary>🧠 Paper drill 3: why can SUB followed by BNE be tricky?</summary>
           <div class="answer">
             <p>Because <code>SUB</code> without S does not update the condition flags in the basic form. BNE checks the existing Z flag, which may have been set by an earlier instruction. Do not assume the subtraction changed Z.</p>
           </div>
         </details>
-      </div>
-      <div class="callout success"><strong>Ready for the exam?</strong> You are in good shape when you can calculate register results, explain the purpose of the main instructions, and trace a short example — without being asked to write a complete assembly program.</div>
     </section>
 
 
@@ -2430,20 +2334,7 @@ BEQ EQUAL</pre>
       <details id="exam-ch3-memory-mapping-2"><summary>Do not mix these two terms</summary><div class="answer"><p><strong>Memory map:</strong> the overall address-space layout. <strong>Memory-mapped I/O:</strong> the method of accessing peripheral registers through assigned addresses. MMIO is one use of the processor's address map.</p></div></details>
     </section>
 
-    <section id="ch3-review" class="study-section chapter-checkpoint">
-      <div class="checkpoint-top">
-        <div><div class="section-kicker">CHAPTER 3 · CHECKPOINT</div><h2>Memory mapping checkpoint</h2><p>This is provisional until the actual Chapter 3 slides are checked.</p></div>
-        <div class="checkpoint-stamp">03<br><small>REVIEW</small></div>
-      </div>
-      <div class="review-list">
-        <label class="review-item"><input type="checkbox" data-progress="review-ch3-01"><span><b>1.</b> I can distinguish a memory map from memory-mapped I/O.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch3-02"><span><b>2.</b> I can identify Code, SRAM, Peripheral, External RAM, External Device, and PPB/System regions.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch3-03"><span><b>3.</b> I know the starting addresses shown in the map.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch3-04"><span><b>4.</b> I can explain what the bit-band and alias regions refer to at a basic level.</span></label>
-        <label class="review-item"><input type="checkbox" data-progress="review-ch3-05"><span><b>5.</b> I can explain how the CPU reads and writes a mapped peripheral register.</span></label>
-      </div>
-      <div class="callout warning"><strong>Still needed:</strong> the actual Chapter 3 PDF / slide photos. This will let us add the exact diagrams, labels, and subtexts rather than guessing which memory-mapping model your teacher uses.</div>
-    </section>
+
 
     <section id="practice" class="study-section">
       <div class="section-kicker">TEST YOURSELF</div>
@@ -2619,7 +2510,7 @@ BEQ EQUAL</pre>
   <div id="diagramStage" class="diagram-stage"></div>
   <p class="modal-hint">Swipe sideways to inspect wide diagrams. Pinch to zoom.</p>
 </div>
-<a class="back-to-top" href="#searchForm" aria-label="Back to search">↑ Top</a>
+<a class="back-to-top" href="#topics" aria-label="Back to search">↑ Top</a>
 
 <script>
 (() => {
@@ -2630,13 +2521,7 @@ BEQ EQUAL</pre>
   };
   const themeToggle = document.getElementById("themeToggle");
   const printBtn = document.getElementById("printBtn");
-  const resetProgress = document.getElementById("resetProgress");
-  const searchBox = document.getElementById("searchBox");
-  const progressChecks = [...document.querySelectorAll('input[data-progress]')];
-  const progressText = document.getElementById("progressText");
-  const progressFill = document.getElementById("progressFill");
   const THEME_KEY = "embedded-guide-theme";
-  const CHECK_KEY = "embedded-guide-checks-v2";
 
   // Persian hints are deliberately short: translation first, plain explanation second.
   const glossary = [
@@ -2774,30 +2659,7 @@ BEQ EQUAL</pre>
 
   if (printBtn) printBtn.addEventListener("click", () => window.print());
 
-  function loadChecks() {
-    let saved = [];
-    try { saved = JSON.parse(safeStorage.get(CHECK_KEY) || "[]"); }
-    catch (_) { saved = []; }
-    progressChecks.forEach(box => { box.checked = saved.includes(box.dataset.progress); });
-    updateProgress();
-  }
 
-  function updateProgress() {
-    const total = progressChecks.length;
-    const done = progressChecks.filter(box => box.checked).length;
-    progressText.textContent = `${done} / ${total} chapter goals checked`;
-    progressFill.style.width = total ? `${(done / total) * 100}%` : "0%";
-    safeStorage.set(CHECK_KEY, JSON.stringify(
-      progressChecks.filter(box => box.checked).map(box => box.dataset.progress)
-    ));
-  }
-
-  progressChecks.forEach(box => box.addEventListener("change", updateProgress));
-  resetProgress.addEventListener("click", () => {
-    progressChecks.forEach(box => { box.checked = false; });
-    updateProgress();
-  });
-  loadChecks();
 
   function isWordCharacter(char) {
     return !!char && /[A-Za-z0-9]/.test(char);
@@ -2874,159 +2736,9 @@ BEQ EQUAL</pre>
     }
   }
 
-  // Capture visible study text before adding tooltip translations to the page.
-  const searchEntries = [...document.querySelectorAll(
-    "#mainContent section[id] h2, #mainContent section[id] h3, #mainContent section[id] h4, " +
-    "#mainContent section[id] p, #mainContent section[id] li, #mainContent section[id] td, " +
-    "#mainContent section[id] th, #mainContent section[id] figcaption, " +
-    "#mainContent section[id] .callout, #mainContent section[id] .answer, " +
-    "#mainContent section[id] summary, #mainContent section[id] pre"
-  )].map((element, index) => {
-    const section = element.closest("section[id]");
-    const text = (element.innerText || element.textContent).replace(/\s+/g, " ").trim();
-    if (!element.id) element.id = `search-hit-${index}`;
-    return {
-      element,
-      section,
-      text,
-      lower: text.toLocaleLowerCase(),
-      heading: section.querySelector("h2, h3").textContent.trim()
-    };
-  }).filter(entry => entry.text);
-
   addPersianHoverHints();
 
-  function normalizeQuery(value) {
-    return value.trim().replace(/\s+/g, " ").toLocaleLowerCase();
-  }
-
-  function containsWord(text, word) {
-    if (word.length > 3) return text.includes(word);
-    let at = text.indexOf(word);
-    while (at >= 0) {
-      const before = text[at - 1];
-      const after = text[at + word.length];
-      if ((!before || !/[\p{L}\p{N}]/u.test(before)) &&
-          (!after || !/[\p{L}\p{N}]/u.test(after))) return true;
-      at = text.indexOf(word, at + 1);
-    }
-    return false;
-  }
-
-  function matchingEntries(rawQuery) {
-    const query = normalizeQuery(rawQuery);
-    if (!query) return [];
-    const words = query.split(" ");
-    return searchEntries.map(entry => {
-      const exact = words.length === 1
-        ? containsWord(entry.lower, query)
-        : entry.lower.includes(query);
-      if (!exact && !words.every(word => containsWord(entry.lower, word))) return null;
-      const heading = entry.heading.toLocaleLowerCase();
-      const score = (heading.includes(query) ? 12 : 0) +
-        (exact ? 6 : 0) + (entry.section.id === "dictionary" ? 0 : 2);
-      return { ...entry, score };
-    }).filter(Boolean).sort((a, b) => b.score - a.score);
-  }
-
-  function jumpTo(entry) {
-    let parent = entry.element.closest("details");
-    while (parent) {
-      parent.open = true;
-      parent = parent.parentElement.closest("details");
-    }
-    entry.element.scrollIntoView({ block: "start", behavior: "smooth" });
-    entry.element.classList.add("search-target");
-    window.setTimeout(() => entry.element.classList.remove("search-target"), 2200);
-  }
-
-  // The search opens the actual matching passage. Other notes stay available.
-  const searchResults = document.getElementById("searchResults");
-  const clearSearch = document.getElementById("clearSearch");
-
-  function runSearch(rawQuery) {
-    const query = normalizeQuery(rawQuery);
-    searchResults.textContent = "";
-    if (!query) {
-      searchResults.hidden = true;
-      return;
-    }
-    const matches = matchingEntries(query);
-
-    const label = document.createElement("div");
-    label.className = "search-results-title";
-    label.textContent = matches.length ? `${matches.length} matching passages` : "No matching passage found";
-    searchResults.append(label);
-
-    matches.slice(0, 25).forEach(item => {
-      const link = document.createElement("a");
-      link.href = `#${item.element.id}`;
-      link.className = "search-result-link";
-      const title = document.createElement("strong");
-      title.textContent = item.heading;
-      const snippet = document.createElement("small");
-      const at = item.lower.indexOf(query);
-      snippet.textContent = at >= 0
-        ? item.text.slice(Math.max(0, at - 30), Math.min(item.text.length, at + query.length + 95))
-        : item.text.slice(0, 125);
-      link.append(title, snippet);
-      link.addEventListener("click", () => {
-        searchBox.blur();
-        jumpTo(item);
-      });
-      searchResults.append(link);
-    });
-    searchResults.hidden = false;
-  }
-
-  document.getElementById("searchForm").addEventListener("submit", event => {
-    event.preventDefault();
-    if (smallScreen && !searchBox.value.trim()) { pad.open = true; return; }
-    pad.open = false;
-    searchBox.blur();
-    runSearch(searchBox.value);
-  });
-  if (clearSearch) clearSearch.addEventListener("click", () => {
-    searchBox.value = "";
-    padQuery.textContent = "";
-    runSearch("");
-  });
-
-  const pad = document.getElementById("watchPad");
-  const padQuery = document.getElementById("padQuery");
-  const padKeys = document.getElementById("padKeys");
-  const smallScreen = window.matchMedia("(max-width: 500px)").matches;
-  if (smallScreen) {
-    searchBox.readOnly = true;
-    searchBox.placeholder = "Tap to type";
-    searchBox.addEventListener("click", () => { pad.open = true; });
-  }
-  function drawKeys(numeric) {
-    padKeys.textContent = "";
-    const chars = numeric ? "1234567890-!/#" : "abcdefghijklmnopqrstuvwxyz";
-    [...chars, numeric ? "ABC" : "123", "Space", "⌫"].forEach(key => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "watch-control-btn";
-      button.textContent = key;
-      if (key === "⌫") button.setAttribute("aria-label", "Backspace");
-      button.addEventListener("click", () => {
-        if (key === "123" || key === "ABC") return drawKeys(!numeric);
-        if (key === "⌫") searchBox.value = searchBox.value.slice(0, -1);
-        else searchBox.value += key === "Space" ? " " : key;
-        padQuery.textContent = searchBox.value;
-      });
-      padKeys.appendChild(button);
-    });
-  }
-  drawKeys(false);
-  pad.addEventListener("toggle", () => { padQuery.textContent = searchBox.value; });
-  document.getElementById("padGo").addEventListener("click", () => {
-    pad.open = false;
-    runSearch(searchBox.value);
-    if (searchBox.value.trim()) searchResults.scrollIntoView({block:"center"});
-  });
-  document.getElementById("examQuestions").addEventListener("click", event => {
+  document.querySelector(".watch-controls").addEventListener("click", event => {
     const link = event.target.closest("a");
     if (!link) return;
     const target = document.getElementById(link.hash.slice(1));
