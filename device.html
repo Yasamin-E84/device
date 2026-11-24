@@ -462,22 +462,19 @@ body {
   font-size:.78rem;
   touch-action:manipulation;
 }
-.watch-control-btn:active, .quick-keywords button:active { border-color:var(--accent); background:var(--panel-3); }
+.watch-control-btn:active, .quick-search a:active { border-color:var(--accent); background:var(--panel-3); }
 .clear-btn { min-width:38px; font-size:1.2rem; }
 .font-value { min-width:35px; text-align:center; color:var(--accent); font-size:.7rem; font-weight:800; }
-.quick-keywords { display:flex; flex-wrap:nowrap; gap:6px; overflow-x:auto; padding:9px 1px 3px; scrollbar-width:thin; }
-.quick-keywords button {
-  flex:0 0 auto;
-  min-height:32px;
-  padding:6px 9px;
-  border:1px solid var(--line);
-  border-radius:99px;
-  background:var(--panel-2);
-  color:var(--muted);
-  font-size:.7rem;
-  white-space:nowrap;
-}
-.quick-label { flex:0 0 100%; color:var(--muted); font-size:.58rem; font-weight:900; letter-spacing:.12em; }
+.search-submit { min-width:58px; background:var(--accent); color:var(--bg); }
+.quick-search { margin-top:9px; border-top:1px solid var(--line); padding-top:7px; }
+.quick-search summary { padding:8px 4px; font-size:.82rem; font-weight:800; color:var(--accent); cursor:pointer; }
+.keyword-list { display:grid; gap:5px; max-height:48vh; overflow-y:auto; padding:4px 2px 8px; }
+.keyword-list a { display:block; padding:9px; background:var(--panel-2); border:1px solid var(--line); border-radius:9px; color:var(--text); }
+.keyword-list strong, .keyword-list small { display:block; }
+.keyword-list strong { font-size:.78rem; color:var(--accent); }
+.keyword-list small { margin-top:2px; font-size:.68rem; line-height:1.35; color:var(--muted); }
+.search-target { outline:2px solid var(--accent); outline-offset:4px; border-radius:4px; }
+[id^="search-hit-"] { scroll-margin-top:16px; }
 .watch-index { margin-top:8px; border-top:1px solid var(--line); padding-top:7px; }
 .watch-index summary { padding:8px 4px; font-size:.82rem; font-weight:800; color:var(--accent); cursor:pointer; }
 .watch-index nav { display:grid; grid-template-columns:1fr; gap:4px; max-height:42vh; overflow-y:auto; padding:4px 2px 7px; }
@@ -622,11 +619,12 @@ body.modal-open { overflow:hidden; }
 <div class="layout watch-layout">
   
 <section class="watch-controls" aria-label="Study controls">
-  <div class="watch-search-row">
+  <form id="searchForm" class="watch-search-row" role="search">
     <label class="sr-only" for="searchBox">Search the study guide</label>
     <input id="searchBox" type="search" placeholder="Find: watchdog, XOR, ASIP..." autocomplete="off" enterkeyhint="search">
+    <button class="watch-control-btn search-submit" type="submit">Search</button>
     <button id="clearSearch" class="watch-control-btn clear-btn" type="button" aria-label="Clear search">×</button>
-  </div>
+  </form>
   <div id="searchResults" class="search-results" hidden aria-live="polite"></div>
   <div class="watch-control-row">
     <button id="fontDown" class="watch-control-btn" type="button" aria-label="Decrease text size">A−</button>
@@ -635,18 +633,10 @@ body.modal-open { overflow:hidden; }
     <button id="fontReset" class="watch-control-btn" type="button">Reset</button>
     <button id="themeToggle" class="watch-control-btn" type="button" aria-label="Toggle light and dark mode">☼ / ☾</button>
   </div>
-  <div class="quick-keywords" aria-label="Quick keyword search">
-    <span class="quick-label">QUICK FIND</span>
-    <button type="button" data-search-term="embedded system characteristics">Characteristics</button>
-    <button type="button" data-search-term="watchdog timer">Watchdog</button>
-    <button type="button" data-search-term="microcontroller">Microcontroller</button>
-    <button type="button" data-search-term="memory mapping">Memory map</button>
-    <button type="button" data-search-term="ASIP ASIC">ASIP / ASIC</button>
-    <button type="button" data-search-term="input capture output compare">Capture / Compare</button>
-    <button type="button" data-search-term="XOR EOR shift">XOR / Shift</button>
-    <button type="button" data-search-term="program counter PC">PC</button>
-    <button type="button" data-search-term="LDM STM">LDM / STM</button>
-  </div>
+  <details class="quick-search">
+    <summary>☰ Quick search · all keywords</summary>
+    <nav id="keywordList" class="keyword-list" aria-label="Keyword explanations"></nav>
+  </details>
   <details class="watch-index">
     <summary>☰ Browse chapters and topics</summary>
     <nav>
@@ -2816,49 +2806,105 @@ BEQ EQUAL</pre>
     }
   }
 
+  // Capture visible study text before adding tooltip translations to the page.
+  const searchEntries = [...document.querySelectorAll(
+    "#mainContent section[id] h2, #mainContent section[id] h3, #mainContent section[id] h4, " +
+    "#mainContent section[id] p, #mainContent section[id] li, #mainContent section[id] td, " +
+    "#mainContent section[id] th, #mainContent section[id] figcaption, " +
+    "#mainContent section[id] .callout, #mainContent section[id] .answer, " +
+    "#mainContent section[id] summary, #mainContent section[id] pre"
+  )].map((element, index) => {
+    const section = element.closest("section[id]");
+    const text = (element.innerText || element.textContent).replace(/\s+/g, " ").trim();
+    element.id ||= `search-hit-${index}`;
+    return {
+      element,
+      section,
+      text,
+      lower: text.toLocaleLowerCase(),
+      heading: section.querySelector("h2, h3")?.textContent?.trim() || section.id
+    };
+  }).filter(entry => entry.text);
+
   addPersianHoverHints();
 
-  // Keyword search: show matching chapter / topic sections without deleting or hiding the notes.
+  function normalizeQuery(value) {
+    return value.trim().replace(/\s+/g, " ").toLocaleLowerCase();
+  }
+
+  function containsWord(text, word) {
+    if (word.length > 3) return text.includes(word);
+    let at = text.indexOf(word);
+    while (at >= 0) {
+      const before = text[at - 1];
+      const after = text[at + word.length];
+      if ((!before || !/[\p{L}\p{N}]/u.test(before)) &&
+          (!after || !/[\p{L}\p{N}]/u.test(after))) return true;
+      at = text.indexOf(word, at + 1);
+    }
+    return false;
+  }
+
+  function matchingEntries(rawQuery) {
+    const query = normalizeQuery(rawQuery);
+    if (!query) return [];
+    const words = query.split(" ");
+    return searchEntries.map(entry => {
+      const exact = words.length === 1
+        ? containsWord(entry.lower, query)
+        : entry.lower.includes(query);
+      if (!exact && !words.every(word => containsWord(entry.lower, word))) return null;
+      const heading = entry.heading.toLocaleLowerCase();
+      const score = (heading.includes(query) ? 12 : 0) +
+        (exact ? 6 : 0) + (entry.section.id === "dictionary" ? 0 : 2);
+      return { ...entry, score };
+    }).filter(Boolean).sort((a, b) => b.score - a.score);
+  }
+
+  function jumpTo(entry) {
+    let parent = entry.element.closest("details");
+    while (parent) {
+      parent.open = true;
+      parent = parent.parentElement.closest("details");
+    }
+    entry.element.scrollIntoView({ block: "start", behavior: "smooth" });
+    entry.element.classList.add("search-target");
+    window.setTimeout(() => entry.element.classList.remove("search-target"), 2200);
+  }
+
+  // The search opens the actual matching passage. Other notes stay available.
   const searchResults = document.getElementById("searchResults");
   const clearSearch = document.getElementById("clearSearch");
-  const sectionIndex = [...document.querySelectorAll("#mainContent section[id]")];
 
   function runSearch(rawQuery) {
-    const query = rawQuery.trim().toLowerCase();
+    const query = normalizeQuery(rawQuery);
     searchResults.replaceChildren();
     if (!query) {
       searchResults.hidden = true;
       return;
     }
-    const words = query.split(/\s+/).filter(Boolean);
-    const matches = sectionIndex.map(section => {
-      const content = (section.innerText || section.textContent || "").toLowerCase();
-      const found = words.filter(word => content.includes(word)).length;
-      const heading = section.querySelector("h2, h3")?.textContent?.trim() || section.id;
-      const headingLower = heading.toLowerCase();
-      const headingScore = words.filter(word => headingLower.includes(word)).length;
-      return { section, found, score: found + headingScore * 2, heading };
-    }).filter(item => item.found > 0).sort((a, b) => b.score - a.score);
+    const matches = matchingEntries(query);
 
     const label = document.createElement("div");
     label.className = "search-results-title";
-    label.textContent = matches.length ? `${matches.length} matching sections` : "No matching topic found";
+    label.textContent = matches.length ? `${matches.length} matching passages` : "No matching passage found";
     searchResults.append(label);
 
-    matches.slice(0, 12).forEach(item => {
+    matches.slice(0, 25).forEach(item => {
       const link = document.createElement("a");
-      link.href = `#${item.section.id}`;
+      link.href = `#${item.element.id}`;
       link.className = "search-result-link";
       const title = document.createElement("strong");
       title.textContent = item.heading;
       const snippet = document.createElement("small");
-      const plain = (item.section.innerText || item.section.textContent || "").replace(/\s+/g, " ").trim();
-      const at = plain.toLowerCase().indexOf(words[0]);
-      snippet.textContent = at >= 0 ? plain.slice(Math.max(0, at - 32), Math.min(plain.length, at + 105)) : plain.slice(0, 120);
+      const at = item.lower.indexOf(query);
+      snippet.textContent = at >= 0
+        ? item.text.slice(Math.max(0, at - 30), Math.min(item.text.length, at + query.length + 95))
+        : item.text.slice(0, 125);
       link.append(title, snippet);
       link.addEventListener("click", () => {
-        searchResults.hidden = true;
         searchBox.blur();
+        jumpTo(item);
       });
       searchResults.append(link);
     });
@@ -2866,16 +2912,38 @@ BEQ EQUAL</pre>
   }
 
   searchBox.addEventListener("input", () => runSearch(searchBox.value));
+  document.getElementById("searchForm").addEventListener("submit", event => {
+    event.preventDefault();
+    searchBox.blur();
+    runSearch(searchBox.value);
+  });
   if (clearSearch) clearSearch.addEventListener("click", () => {
     searchBox.value = "";
     runSearch("");
-    searchBox.focus();
   });
-  document.querySelectorAll("[data-search-term]").forEach(button => {
-    button.addEventListener("click", () => {
-      searchBox.value = button.dataset.searchTerm;
-      runSearch(searchBox.value);
-    });
+
+  const keywordList = document.getElementById("keywordList");
+  const keywords = new Map(glossary.map(([term, persian, explanation]) => [
+    normalizeQuery(term), { term, explanation: `${persian} — ${explanation}` }
+  ]));
+  document.querySelectorAll("#dictionary .dictionary-grid > div").forEach(item => {
+    const term = item.querySelector("b")?.textContent?.trim();
+    const explanation = item.querySelector("span")?.textContent?.trim();
+    if (term && !keywords.has(normalizeQuery(term))) {
+      keywords.set(normalizeQuery(term), { term, explanation });
+    }
+  });
+  [...keywords.values()].sort((a, b) => a.term.localeCompare(b.term)).forEach(({ term, explanation }) => {
+    const match = matchingEntries(term).find(entry => entry.section.id !== "dictionary");
+    const link = document.createElement("a");
+    link.href = match ? `#${match.element.id}` : "#dictionary";
+    const name = document.createElement("strong");
+    name.textContent = term;
+    const meaning = document.createElement("small");
+    meaning.textContent = explanation;
+    link.append(name, meaning);
+    if (match) link.addEventListener("click", () => jumpTo(match));
+    keywordList.append(link);
   });
 
   // Reader text zoom; native browser pinch-zoom remains enabled as well.
