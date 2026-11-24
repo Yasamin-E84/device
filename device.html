@@ -607,7 +607,7 @@ body { padding-top:var(--dock-height); }
 .lens { position:relative; width:16px; height:16px; border:2px solid currentColor; border-radius:50%; margin:-4px 4px 0 0; }
 .lens::after { content:""; position:absolute; top:11px; left:11px; width:9px; height:2px; background:currentColor; transform:rotate(45deg); transform-origin:left; }
 #topicPanel { position:absolute; top:100%; width:100%; max-width:560px; max-height:calc(100vh - var(--dock-height)); max-height:calc(100dvh - var(--dock-height)); overflow:auto; padding:12px; background:var(--panel); border-bottom:1px solid var(--accent); overscroll-behavior:contain; }
-#topicPanel { position:fixed; inset:0; z-index:101; width:100vw; height:100vh; height:100dvh; max-width:none; max-height:none; overflow:hidden; padding:5px; border:0; }
+#topicPanel { position:fixed; inset:0; z-index:101; width:100vw; height:100vh; height:100dvh; max-width:none; max-height:none; overflow:hidden; padding:3px; border:0; }
 #topicPanel .topic-words, #topicPanel .keyword-list { max-height:none; overflow:visible; }
 #topicPanel h2 { font-size:1rem; }
 #panelClose { position:absolute; top:5px; right:5px; width:30px; height:30px; min-width:30px; min-height:30px; padding:0; border-radius:50%; }
@@ -619,11 +619,13 @@ body { padding-top:var(--dock-height); }
 #watchSuggestions { height:32px; padding:1px 0; }
 #watchSuggestions button { flex:0 0 auto; min-height:38px; padding:5px 9px; }
 #watchSuggestions button { min-height:28px; padding:3px 7px; }
-#watchKeypad { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
-#watchKeypad { height:calc(100dvh - 75px); grid-template-rows:repeat(4,minmax(30px,1fr)); gap:3px; }
-#watchKeypad button { min-width:0; min-height:40px; padding:3px 2px; touch-action:manipulation; line-height:1.15; }
-#watchKeypad button { min-height:0; }
-#watchKeypad button small { display:block; opacity:.72; font-size:.62rem; }
+#watchKeypad { display:grid; height:calc(100dvh - 68px); grid-template-rows:repeat(4,minmax(28px,1fr)); gap:3px; }
+.key-row { display:flex; justify-content:center; gap:2px; min-width:0; }
+.key-row button { flex:1 1 0; min-width:0; min-height:0; height:100%; padding:0 1px; touch-action:manipulation; line-height:1; font-size:18px; font-weight:600; border-radius:6px; }
+.key-row button.key-wide { flex:1.7 1 0; font-size:13px; }
+.key-row button.key-space { flex:4 1 0; font-size:13px; }
+.key-row button.key-send { flex:1.7 1 0; font-size:20px; }
+@media (max-width:260px) { #courseSearch > button[type="submit"] { display:none; } }
 #topicPanel.has-query #topicSuggestions, #topicPanel.has-query #examQuestions, #topicPanel.has-query > h2 { display:none; }
 #topicSuggestions { margin-top:4px; max-height:calc(100dvh - 250px); overflow:auto; }
 #topicSuggestions button { display:block; width:100%; text-align:left; margin:4px 0; }
@@ -2682,15 +2684,17 @@ BEQ EQUAL</pre>
   });
   addPersianHoverHints();
 
-  // Use a local T9 keypad so opening search never launches the watch IME.
-  const t9 = {a:"2",b:"2",c:"2",d:"3",e:"3",f:"3",g:"4",h:"4",i:"4",j:"5",k:"5",l:"5",m:"6",n:"6",o:"6",p:"7",q:"7",r:"7",s:"7",t:"8",u:"8",v:"8",w:"9",x:"9",y:"9",z:"9"};
+  // A local QWERTY keyboard keeps search off the watch's system IME.
   const candidates = [...new Set(groups.flatMap(g => g.aliases).filter(Boolean))];
-  let keySequence = "";
+  let committedText = "";
+  let keyBuffer = "";
+  let shifted = false;
+  let symbols = false;
   function drawSuggestions() {
     suggestionsBox.textContent = "";
-    const encode = word => [...word.toLowerCase()].filter(char => t9[char]).map(char => t9[char]).join("");
-    const matches = candidates.filter(word => encode(word).startsWith(keySequence) && keySequence.length > 0);
-    const exact = matches.filter(word => encode(word) === keySequence);
+    const prefix = normalize(keyBuffer);
+    const matches = candidates.filter(word => word.startsWith(prefix) && prefix.length > 0);
+    const exact = matches.filter(word => word === prefix);
     const choices = [...new Set([...(exact.length ? exact : []), ...matches].slice(0, 8))];
     choices.forEach(word => {
       const choice = document.createElement("button");
@@ -2698,46 +2702,64 @@ BEQ EQUAL</pre>
       choice.className = "watch-control-btn";
       choice.textContent = word;
       choice.addEventListener("click", () => {
-        queryInput.value = (queryInput.value.trim() ? queryInput.value.trim() + " " : "") + word + " ";
-        keySequence = "";
+        committedText = (committedText.trim() ? committedText.trim() + " " : "") + word + " ";
+        keyBuffer = "";
+        queryInput.value = committedText;
         drawSuggestions();
-        queryInput.placeholder = "Tap keypad, then choose a word";
       });
       suggestionsBox.appendChild(choice);
     });
   }
-  const keyLabels = [["1","Find"],["2","ABC"],["3","DEF"],["4","GHI"],["5","JKL"],["6","MNO"],["7","PQRS"],["8","TUV"],["9","WXYZ"],["⌫","Delete"],["0","Space"],["↵","Go"]];
-  keyLabels.forEach(([key, label]) => {
+  function makeKey(label, action, className = "") {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "watch-control-btn";
-    button.textContent = key;
-    const caption = document.createElement("small");
-    caption.textContent = label;
-    button.appendChild(caption);
-    button.addEventListener("click", () => {
-      if (key === "⌫") {
-        if (keySequence) keySequence = keySequence.slice(0, -1);
-        else queryInput.value = queryInput.value.trimEnd().replace(/\S+$/, "");
-      } else if (key === "0") {
-        if (keySequence) {
-          const encode = word => [...word.toLowerCase()].filter(char => t9[char]).map(char => t9[char]).join("");
-          const word = candidates.find(candidate => encode(candidate) === keySequence) ||
-            candidates.find(candidate => encode(candidate).startsWith(keySequence));
-          if (word) queryInput.value = (queryInput.value.trim() ? queryInput.value.trim() + " " : "") + word;
-          keySequence = "";
-        }
-        queryInput.value = queryInput.value.trimEnd() + " ";
-      } else if (key === "↵" || key === "1") {
-        document.getElementById("courseSearch").requestSubmit();
-        return;
-      } else {
-        keySequence += key;
+    button.className = "watch-control-btn " + className;
+    button.textContent = label;
+    button.addEventListener("click", action);
+    return button;
+  }
+  function updateTypedText() {
+    queryInput.value = committedText + keyBuffer;
+    drawSuggestions();
+  }
+  function typeCharacter(char) {
+    keyBuffer += char;
+    updateTypedText();
+  }
+  function commitSpace() {
+    committedText += keyBuffer + " ";
+    keyBuffer = "";
+    updateTypedText();
+  }
+  function drawKeyboard() {
+    keypad.replaceChildren();
+    const rows = symbols
+      ? ["1234567890", "!@#$%^&*()", "-'\u0022:;,.?/"]
+      : ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+    rows.forEach((letters, rowIndex) => {
+      const row = document.createElement("div");
+      row.className = "key-row";
+      if (rowIndex === 2) {
+        row.appendChild(makeKey("⇧", () => { shifted = !shifted; drawKeyboard(); }, "key-wide"));
       }
-      drawSuggestions();
+      for (const char of letters) {
+        row.appendChild(makeKey(shifted ? char.toUpperCase() : char, () => typeCharacter(char)));
+      }
+      if (rowIndex === 2) row.appendChild(makeKey("⌫", () => {
+        if (keyBuffer) keyBuffer = keyBuffer.slice(0, -1);
+        else committedText = committedText.slice(0, -1);
+        updateTypedText();
+      }, "key-wide"));
+      keypad.appendChild(row);
     });
-    keypad.appendChild(button);
-  });
+    const controls = document.createElement("div");
+    controls.className = "key-row";
+    controls.appendChild(makeKey(symbols ? "ABC" : "?123", () => { symbols = !symbols; drawKeyboard(); }, "key-wide"));
+    controls.appendChild(makeKey("space", commitSpace, "key-space"));
+    controls.appendChild(makeKey("➤", () => document.getElementById("courseSearch").requestSubmit(), "key-send"));
+    keypad.appendChild(controls);
+  }
+  drawKeyboard();
 
   const originalPositions = [];
   let readingPosition = 0;
@@ -2787,6 +2809,8 @@ BEQ EQUAL</pre>
     view.hidden = true;
     course.hidden = false;
     exitTopic.hidden = true;
+    committedText = "";
+    keyBuffer = "";
     queryInput.value = "";
     matchesBox.textContent = "";
     showTopics(false);
