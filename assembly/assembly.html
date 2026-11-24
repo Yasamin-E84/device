@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="A compact ARM Cortex-M3 assembly reference with an English QWERTY watch search.">
+<title>ARM Cortex-M3 Assembly Quick Reference</title>
+<style>
+
+:root{
+  --bg:#f3f6fb;--surface:#ffffff;--surface2:#f7f9fd;--text:#172033;--muted:#5c687b;
+  --line:#dce3ee;--blue:#2854a0;--teal:#087e78;--gold:#d98b12;
+  --code:#1e1e1e;--codeText:#d4d4d4;--font:16px;--radius:15px;
+  --shadow:0 5px 22px rgba(20,40,75,.07);
+}
+*{box-sizing:border-box}
+html{font-size:var(--font);scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,"Segoe UI",Roboto,"Helvetica Neue",Arial,system-ui,sans-serif;
+  line-height:1.72;font-size:1rem;
+}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+button,input{font:inherit}
+button{cursor:pointer}
+.hero{background:linear-gradient(130deg,#101827,#1e3b70 62%,#087e78);color:#fff;padding:28px 18px 22px;border-bottom:4px solid #e7a62b}
+.hero-inner{max-width:1120px;margin:auto}
+.eyebrow{font-size:.7rem;letter-spacing:.12em;color:#c8d7f1;font-weight:800;text-transform:uppercase}
+h1{font-size:clamp(1.55rem,4vw,2.35rem);line-height:1.2;margin:9px 0}
+.hero p{margin:6px 0;color:#dbe6f8;font-size:.96rem}
+.pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.pill{font-size:.72rem;padding:4px 10px;border-radius:99px;background:#ffffff1c;border:1px solid #ffffff35}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 2px 12px #15243b0c}
+.toolbar-inner{max-width:1120px;margin:auto;padding:9px 14px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.search{flex:1;min-width:190px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);outline:none}
+.search:focus{border-color:var(--teal);box-shadow:0 0 0 3px #087e781c}
+.ctrl{border:1px solid var(--line);background:var(--surface2);color:var(--text);padding:7px 10px;border-radius:9px;font-size:.82rem;font-weight:750;min-width:39px}
+.ctrl:hover{border-color:var(--teal)}
+.zoom-label{font-size:.72rem;color:var(--muted);min-width:38px;text-align:center}
+.wrap{max-width:1120px;margin:19px auto;padding:0 14px 60px;display:grid;grid-template-columns:235px minmax(0,1fr);gap:18px;align-items:start}
+.toc{position:sticky;top:78px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;max-height:calc(100vh - 92px);overflow:auto;box-shadow:var(--shadow)}
+.toc strong{display:block;color:var(--blue);padding-bottom:8px;border-bottom:2px solid var(--line);margin-bottom:7px}
+.toc a{display:block;color:var(--muted);font-size:.78rem;padding:5px 7px;border-radius:7px}
+.toc a:hover{background:var(--surface2);color:var(--blue);text-decoration:none}
+main{min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:19px;margin-bottom:14px;box-shadow:var(--shadow);scroll-margin-top:82px}
+.panel h2{font-size:1.2rem;color:var(--blue);margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line);line-height:1.4}
+.panel h3{font-size:1rem;color:var(--teal);margin:17px 0 7px;line-height:1.45}
+.panel h4{font-size:.92rem;margin:12px 0 5px}
+p{margin:7px 0 11px}
+ul,ol{padding-left:23px;margin:6px 0 12px}
+li{margin:4px 0}
+.note,.warning,.good{padding:11px 13px;border-radius:11px;margin:12px 0;border-left:4px solid var(--teal);background:#eaf8f5}
+.warning{border-color:var(--gold);background:#fff7e7}
+.good{border-color:#438c53;background:#edf8ee}
+.small{font-size:.82rem;color:var(--muted)}
+kbd,.tag,.inline-code{font-family:"Cascadia Code",Consolas,monospace;direction:ltr;display:inline-block;background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.88em}
+pre{
+  direction:ltr;text-align:left;white-space:pre;overflow:auto;background:var(--code);color:var(--codeText);
+  border-radius:11px;padding:13px 15px;font:.84rem/1.72 "Cascadia Code",Consolas,"Courier New",monospace;
+  margin:9px 0 12px;tab-size:4;border:1px solid #30363d;
+}
+pre code{color:inherit;background:none;border:0;padding:0;direction:ltr;font:inherit}
+.tok-comment{color:#6a9955;font-style:italic}
+.tok-directive{color:#c586c0}
+.tok-instruction{color:#569cd6;font-weight:650}
+.tok-register{color:#9cdcfe}
+.tok-number{color:#b5cea8}
+.tok-label{color:#dcdcaa}
+.tok-string{color:#ce9178}
+.tok-symbol{color:#d4d4d4}
+table{border-collapse:collapse;width:100%;font-size:.82rem;margin:10px 0}
+th,td{border:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+th{background:var(--surface2);color:var(--blue)}
+.table-wrap{overflow-x:auto}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.mini{background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:11px;min-width:0}
+details{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--surface2);overflow:hidden}
+summary{cursor:pointer;font-weight:750;padding:10px 12px;color:var(--blue);line-height:1.5}
+details .inside{padding:0 12px 12px}
+.exercise{border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0;background:var(--surface)}
+.exercise-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.number{background:var(--blue);color:white;border-radius:7px;padding:2px 8px;font-size:.72rem;font-weight:850}
+.level{font-size:.68rem;border-radius:99px;padding:2px 8px;background:#e7f5f2;color:#086c64}
+.exercise h3{margin:0;color:var(--text);font-size:.95rem}
+.exercise p{margin:6px 0}
+.solution summary{color:var(--teal)}
+.solution .inside{background:var(--surface2)}
+.solution pre{margin-top:8px}
+.hidden{display:none!important}
+footer{color:var(--muted);text-align:center;font-size:.75rem;padding:20px}
+.top{position:fixed;bottom:13px;right:13px;z-index:15;background:var(--blue);color:white;border-radius:99px;padding:8px 12px;font-size:.76rem;font-weight:800;box-shadow:var(--shadow)}
+body.dark{
+  --bg:#0c1220;--surface:#141e30;--surface2:#1a2940;--text:#e7edf8;--muted:#a8b5c9;
+  --line:#2c3b54;--blue:#91b6ff;--teal:#67d6c8;--gold:#f0bd62;
+  --code:#1e1e1e;--codeText:#d4d4d4;--shadow:0 5px 22px #0003;
+}
+body.dark .note{background:#12332f}
+body.dark .warning{background:#382b18}
+body.dark .good{background:#193321}
+body.dark .level{background:#183b36;color:#8de2d7}
+@media(max-width:820px){
+ .wrap{grid-template-columns:1fr}
+ .toc{position:relative;top:auto;max-height:none}
+ .toc nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}
+ .panel{padding:15px}
+}
+@media(max-width:540px){
+ .toolbar-inner{gap:5px;padding:8px}
+ .search{min-width:100%;order:-1}
+ .grid2{grid-template-columns:1fr}
+ .panel{padding:13px}
+ pre{font-size:.78rem}
+}
+@media print{
+ .toolbar,.toc,.top{display:none!important}
+ .wrap{display:block;max-width:none;margin:0;padding:0}
+ .panel{box-shadow:none;break-inside:avoid}
+ details .inside{display:block}
+ body{background:white;color:black}
+}
+
+
+/* Sticky English command search and watch-shaped QWERTY keypad */
+:root { --dock-height:54px; }
+html { scroll-padding-top:calc(var(--dock-height) + 8px); }
+body { padding-top:var(--dock-height); }
+.search-dock { position:fixed; z-index:100; inset:0 0 auto; display:flex; justify-content:center; align-items:center; height:var(--dock-height); background:var(--surface); border-bottom:1px solid var(--line); }
+#findButton { display:grid; place-items:center; width:44px; height:44px; color:var(--teal); border:1px solid var(--line); border-radius:50%; background:var(--surface2); cursor:pointer; }
+.lens { position:relative; width:16px; height:16px; border:2px solid currentColor; border-radius:50%; margin:-4px 4px 0 0; }
+.lens::after { content:""; position:absolute; top:11px; left:11px; width:9px; height:2px; background:currentColor; transform:rotate(45deg); transform-origin:left; }
+#topicPanel { position:fixed; inset:0; z-index:101; width:100vw; height:100vh; height:100dvh; overflow:hidden; padding:0; border:0; background:var(--surface); color:var(--text); }
+#topicPanel[hidden] { display:none !important; }
+#panelClose { position:static; flex:0 0 clamp(24px,6dvh,32px); width:clamp(24px,6dvh,32px); height:clamp(24px,6dvh,32px); min-width:24px; min-height:24px; padding:0; border-radius:50%; }
+#courseSearch { position:absolute; top:13dvh; left:17%; display:flex; width:66%; height:clamp(24px,6dvh,32px); gap:4px; margin:0; }
+#courseQuery { min-width:0; width:100%; padding:6px 8px; font-size:16px; background:var(--surface2); color:var(--text); border:1px solid var(--line); border-radius:8px; pointer-events:none; }
+#courseSearch > button[type="submit"] { display:none; }
+#watchSuggestions { position:absolute; top:calc(13dvh + clamp(24px,6dvh,32px) + 4px); left:11%; display:flex; width:78%; height:clamp(24px,6dvh,32px); gap:5px; overflow-x:auto; padding:1px 0; }
+#watchSuggestions button { flex:0 0 auto; min-width:0; min-height:0; height:100%; padding:3px 7px; font-size:clamp(10px,3dvh,14px); }
+#watchKeypad { position:absolute; top:max(35dvh,calc(13dvh + clamp(48px,12dvh,64px) + 8px)); left:0; display:grid; width:100%; height:43dvh; grid-template-rows:repeat(4,minmax(16px,1fr)); gap:clamp(2px,.6dvh,4px); }
+.key-row { display:flex; justify-content:center; gap:2px; min-width:0; }
+.key-row button { flex:1 1 0; min-width:0; min-height:0; height:100%; padding:0 1px; touch-action:manipulation; line-height:1; font-size:18px; font-weight:700; border-radius:6px; }
+.key-row button.key-wide { flex:1.7 1 0; font-size:13px; }
+.key-row button.key-space { flex:4 1 0; font-size:13px; }
+.key-row button.key-send { flex:1.7 1 0; font-size:20px; }
+#watchKeypad .key-row:nth-child(1) { width:90%; margin-inline:auto; }
+#watchKeypad .key-row:nth-child(2) { width:96%; margin-inline:auto; }
+#watchKeypad .key-row:nth-child(3) { width:80%; margin-inline:auto; }
+#watchKeypad .key-row:nth-child(4) { width:72%; margin-inline:auto; }
+#courseMatches { position:absolute; top:28dvh; left:10%; z-index:2; width:80%; }
+#leaveTopic { position:fixed; bottom:9px; left:50%; transform:translateX(-50%); z-index:110; width:46px; height:46px; border-radius:50%; border:1px solid var(--teal); background:var(--surface); color:var(--text); font-size:27px; cursor:pointer; box-shadow:var(--shadow); }
+#topicView { padding:16px; margin:10px 0 70px; }
+#topicView[hidden], #mainContent[hidden], #leaveTopic[hidden] { display:none !important; }
+#topicTitle { margin:0 0 12px; }
+#topicBlocks > .panel { margin-inline:0; }
+.legacy-controls { display:none !important; }
+.toc { display:none !important; }
+.wrap { display:block; width:100%; min-width:0; max-width:1120px; }
+main,#mainContent,#topicView,#topicBlocks,.panel { min-width:0; max-width:100%; }
+pre,.table-wrap { max-width:100%; }
+.assembly-intro { margin-top:12px; }
+.assembly-shortcuts { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.assembly-shortcuts span { border:1px solid var(--line); border-radius:8px; padding:3px 8px; font:700 .76rem/1.5 "Cascadia Code",Consolas,monospace; direction:ltr; }
+@media(max-width:540px) { .hero { padding:17px 13px 13px; } .hero h1 { font-size:1.35rem; } .hero p { font-size:.84rem; } .wrap { padding:0 8px 50px; margin:10px auto; } .panel { padding:12px; } pre { font-size:.76rem; } #topicView { padding:10px; } }
+@media print { .search-dock,#topicPanel,#leaveTopic { display:none !important; } body { padding-top:0; } }
+</style>
+</head>
+<body class="dark">
+<header class="hero" id="top"><div class="hero-inner">
+  <div class="eyebrow">QUICK REFERENCE · ARM CORTEX-M3 · THUMB ASSEMBLY</div>
+  <h1>ARM Cortex-M3 Assembly Cheat Sheet</h1>
+  <p>Find a command, see what it changes, and check a short example. Search uses English command names.</p>
+  <div class="assembly-shortcuts"><span>MOV</span><span>ADD / SUBS</span><span>CMP / BNE</span><span>LDRB / STR</span><span>LDMIA / STMDB</span></div>
+</div></header>
+<header class="search-dock">
+  <button type="button" id="findButton" aria-label="Search assembly commands" aria-expanded="false" aria-controls="topicPanel"><span class="lens" aria-hidden="true"></span></button>
+  <div id="topicPanel" hidden>
+    <form id="courseSearch" role="search">
+      <input id="courseQuery" type="text" aria-label="Search ARM assembly in English" placeholder="Type an English command" autocomplete="off" readonly tabindex="-1">
+      <button class="ctrl" type="submit">Find</button>
+      <button class="ctrl" id="panelClose" type="button" aria-label="Close search">×</button>
+    </form>
+    <div id="watchSuggestions" aria-label="Command suggestions"></div>
+    <div id="watchKeypad" aria-label="Built-in QWERTY keyboard"></div>
+    <div id="courseMatches" aria-live="polite"></div>
+  </div>
+</header>
+<div class="legacy-controls" aria-hidden="true">
+  <input id="search" type="search" readonly>
+  <button id="smaller" type="button"></button><span id="zoomLabel">100%</span>
+  <button id="larger" type="button"></button><button id="resetZoom" type="button"></button><button id="theme" type="button"></button>
+</div>
+<div class="wrap">
+  <div id="topicView" class="panel" role="region" aria-labelledby="topicTitle" hidden><h2 id="topicTitle" tabindex="-1"></h2><div id="topicBlocks"></div></div>
+  <main id="mainContent">
+    <section class="panel search-item assembly-intro" id="overview">
+      <h2>Read any instruction in three steps</h2>
+      <div class="note"><strong>Operation → destination ← inputs.</strong> In <code>ADD R0, R1, R2</code>, add R1 and R2, then write the result to R0.</div>
+      <ul>
+        <li><code>#5</code> is the literal number 5; <code>[R1]</code> means memory at the address in R1.</li>
+        <li><code>!</code> writes an updated address back into its base register.</li>
+        <li>An instruction changes only the destination and flags it explicitly updates.</li>
+      </ul>
+      <p>Use the sticky search button, type a command with the QWERTY keypad, tap its suggestion, then tap the arrow. The result shows the whole relevant reference section; tap × at the bottom to return.</p>
+    </section>
+<section class="panel search-item assembly-intro" id="overview"><h2>Read any instruction in three steps</h2><div class="note"><strong>Operation → destination ← inputs.</strong> In <code>ADD R0, R1, R2</code>, add R1 and R2, then write the result to R0.</div><ul><li><code>#5</code> is the literal number 5; <code>[R1]</code> means memory at the address in R1.</li><li><code>!</code> writes an updated address back into its base register.</li><li>An instruction changes only the destination and flags it explicitly updates.</li></ul><p>Tap the sticky search button, type a command with the QWERTY keypad, tap its suggestion, then tap the arrow. The result shows its full reference section; tap × at the bottom to return.</p></section>
+<section class="panel search-item" id="mind">
+  <h2>1. The Assembly Mental Model</h2>
+  <p>In a high-level language, you might write <span class="inline-code">x = a + b</span>. In assembly, you specify exactly where the data comes from, where the operation happens, and where the result goes.</p>
+  <div class="grid2">
+    <div class="mini"><h3>Register</h3><p>A very fast storage location inside the CPU. It can hold a number, an address, or an intermediate result.</p></div>
+    <div class="mini"><h3>Memory</h3><p>Where data is stored. Every memory location has an address. You use addresses to read and write data.</p></div>
+  </div>
+  <h3>A tiny example</h3>
+  <pre><code>MOVS R0, #5
+MOVS R1, #3
+ADDS R2, R0, R1</code></pre>
+  <p>Read the lines as follows:</p>
+  <ol>
+    <li>Put the number 5 into R0.</li>
+    <li>Put the number 3 into R1.</li>
+    <li>Add R0 and R1, then put the result into R2.</li>
+  </ol>
+  <div class="good"><strong>Result:</strong> R0 = 5, R1 = 3, R2 = 8.</div>
+  <p>An assembler translates human-readable instructions into machine code. The CPU ultimately executes that machine code.</p>
+</section>
+<section class="panel search-item" id="syntax">
+  <h2>2. Syntax and Program Structure</h2>
+  <h3>2.1. The shape of an instruction</h3>
+  <pre><code>MNEMONIC{S}  DESTINATION, SOURCE1, SOURCE2</code></pre>
+  <p>For many three-operand instructions, the destination comes first:</p>
+  <pre><code>ADD R0, R1, R2    @ R0 = R1 + R2
+SUB R3, R4, #2    @ R3 = R4 - 2</code></pre>
+  <ul>
+    <li><strong>Mnemonic:</strong> the instruction name, such as ADD, MOV, or LDR.</li>
+    <li><strong>Destination:</strong> where the result is written.</li>
+    <li><strong>Source:</strong> the values the instruction operates on.</li>
+    <li><strong>#:</strong> an immediate constant, not a memory address.</li>
+    <li><strong>Label:</strong> a named location in the program, usually written with a colon, such as <code>LOOP:</code>.</li>
+    <li><strong>[R1]:</strong> the memory location whose address is stored in R1.</li>
+    <li><strong>!:</strong> in certain addressing forms, write the updated address back into the base register.</li>
+    <li><strong>{R0,R1,...}:</strong> a list of registers used by a multiple-register transfer.</li>
+  </ul>
+  <div class="warning"><strong>Comment syntax:</strong> Your sample uses GNU Assembler directives such as <code>.syntax unified</code>. In GNU AS for ARM, use <code>@</code> for comments. Your instructor's assembler may use different comment conventions, so follow the environment used in class.</div>
+
+  <h3>2.2. Directives and program sections</h3>
+  <pre><code>.syntax unified
+.cpu cortex-m3
+.thumb
+
+.data
+.align 2
+
+numbers:
+    .word 10, 20, 30, 40
+
+bytes:
+    .byte 0x12, 0x34, 0x56, 0x78
+
+halfwords:
+    .hword 0x1234, 0x0000
+
+result:
+    .word 0
+
+.text
+.global main
+
+main:
+    LDR R0, =numbers
+    LDR R1, [R0]</code></pre>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Directive</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>.syntax unified</code></td><td>Selects the Unified Assembly Language syntax.</td></tr>
+        <tr><td><code>.cpu cortex-m3</code></td><td>Specifies the target processor.</td></tr>
+        <tr><td><code>.thumb</code></td><td>Uses the Thumb / Thumb-2 instruction set supported by Cortex-M3.</td></tr>
+        <tr><td><code>.data</code></td><td>Begins the data section.</td></tr>
+        <tr><td><code>.text</code></td><td>Begins the code section.</td></tr>
+        <tr><td><code>.global main</code></td><td>Makes the symbol <code>main</code> visible to the linker.</td></tr>
+        <tr><td><code>.word</code></td><td>Defines a 32-bit value (4 bytes).</td></tr>
+        <tr><td><code>.hword</code></td><td>Defines a 16-bit value (2 bytes).</td></tr>
+        <tr><td><code>.byte</code></td><td>Defines an 8-bit value (1 byte).</td></tr>
+        <tr><td><code>.align 2</code></td><td>For GNU AS on ARM, aligns to a 2² = 4-byte boundary.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warning"><strong>Labels are case-sensitive:</strong> Do not assume <code>Numbers</code> and <code>numbers</code> are the same symbol. Keep the spelling consistent. If you declare <code>.global main</code>, define <code>main:</code>, not <code>Main:</code>.</div>
+</section>
+<section class="panel search-item" id="registers">
+  <h2>3. ARM Cortex-M3 Registers</h2>
+  <p>The general-purpose ARM registers in this model are 32 bits wide. Each one can hold a 32-bit value.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Register</th><th>Also called</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>R0–R12</td><td>General-purpose registers</td><td>Hold data, addresses, and calculation results.</td></tr>
+        <tr><td>R13</td><td>SP</td><td>Stack Pointer.</td></tr>
+        <tr><td>R14</td><td>LR</td><td>Link Register; holds the return address for a subroutine call.</td></tr>
+        <tr><td>R15</td><td>PC</td><td>Program Counter; controls the program's execution location.</td></tr>
+        <tr><td>xPSR / APSR</td><td>Status registers</td><td>Hold processor status and condition flags.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><strong>Memorize these:</strong> R13 = SP, R14 = LR, R15 = PC. They have special roles and are common targets for conceptual questions.</div>
+  <p><strong>Example:</strong> When <code>BL FUNCTION</code> executes, the return address is stored in LR and execution branches to FUNCTION.</p>
+</section>
+<section class="panel search-item" id="instructions">
+  <h2>4. Main Instruction Families</h2>
+  <h3>4.1. Data movement</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instruction</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>MOV</code></td><td>Copies a value.</td><td><code>MOV R0, R1</code> → R0 = R1</td></tr>
+        <tr><td><code>MVN</code></td><td>Copies the bitwise inverse (NOT).</td><td><code>MVN R0, R1</code> → R0 = NOT R1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.2. Arithmetic instructions</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instruction</th><th>Operation</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>ADD</code></td><td>Add</td><td>Rd = Rn + Operand2</td></tr>
+        <tr><td><code>ADC</code></td><td>Add with Carry</td><td>Rd = Rn + Operand2 + C</td></tr>
+        <tr><td><code>SUB</code></td><td>Subtract</td><td>Rd = Rn − Operand2</td></tr>
+        <tr><td><code>SBC</code></td><td>Subtract with Carry</td><td>Rd = Rn − Operand2 + C − 1</td></tr>
+        <tr><td><code>RSB</code></td><td>Reverse subtract</td><td>Rd = Operand2 − Rn</td></tr>
+        <tr><td><code>RSC</code></td><td>Reverse subtract with Carry</td><td>Rd = Operand2 − Rn + C − 1</td></tr>
+        <tr><td><code>MUL</code></td><td>Multiply</td><td>Rd = Rm × Rs (lower 32 bits)</td></tr>
+        <tr><td><code>MLA</code></td><td>Multiply and Accumulate</td><td>Rd = (Rm × Rs) + Rn</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <pre><code>ADD R0, R1, R2       @ R0 = R1 + R2
+SUB R0, R1, #2       @ R0 = R1 - 2
+ADC R3, R3, R4       @ R3 = R3 + R4 + Carry
+RSB R5, R5, #0       @ R5 = 0 - R5 (negate)
+MUL R6, R1, R2       @ R6 = R1 * R2</code></pre>
+  <div class="warning"><strong>MUL:</strong> In the lecture examples, an immediate operand is not supported by MUL. To multiply by a power of two, you can often use a shift instead.</div>
+
+  <h3>4.3. Logical and bitwise instructions</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instruction</th><th>Operation</th><th>Remember</th></tr></thead>
+      <tbody>
+        <tr><td><code>AND</code></td><td>Bitwise AND</td><td>A bit is 1 only if both input bits are 1.</td></tr>
+        <tr><td><code>ORR</code></td><td>Bitwise OR</td><td>A bit is 1 if at least one input bit is 1.</td></tr>
+        <tr><td><code>EOR</code></td><td>Bitwise XOR</td><td>A bit is 1 if the input bits are different.</td></tr>
+        <tr><td><code>BIC</code></td><td>Bit Clear</td><td>Clears bits that are 1 in the second operand.</td></tr>
+        <tr><td><code>MVN</code></td><td>Bitwise NOT</td><td>Inverts every bit.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <pre><code>AND R0, R1, R2       @ R0 = R1 AND R2
+ORR R0, R1, #0x10    @ Set bit 4
+EOR R0, R1, R2       @ XOR
+BIC R0, R1, #0x04    @ Clear bit 2
+MVN R0, R1           @ NOT R1</code></pre>
+
+  <h3>4.4. Shifts and rotation</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Operation</th><th>Full name</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td><code>LSL</code></td><td>Logical Shift Left</td><td>Shifts left; zeros enter from the right. Often equivalent to multiplying by a power of 2.</td></tr>
+        <tr><td><code>LSR</code></td><td>Logical Shift Right</td><td>Shifts right; zeros enter from the left.</td></tr>
+        <tr><td><code>ASR</code></td><td>Arithmetic Shift Right</td><td>Shifts right while preserving the sign bit.</td></tr>
+        <tr><td><code>ROR</code></td><td>Rotate Right</td><td>Bits shifted out on the right re-enter on the left.</td></tr>
+        <tr><td><code>RRX</code></td><td>Rotate Right Extended</td><td>Rotates right by one bit through the Carry flag.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <pre><code>MOV R0, R1, LSL #2   @ R0 = R1 shifted left by 2
+MOV R2, R2, LSR #1   @ Logical shift right
+ADD R3, R4, R5, LSL #3</code></pre>
+  <p><strong>Example:</strong> If R1 = 5, shifting left by two bits multiplies it by 4: 5 × 4 = 20. Therefore, <code>MOV R0, R1, LSL #2</code> puts 20 in R0.</p>
+
+  <h3>4.5. Immediate operands</h3>
+  <p>The <code>#</code> symbol means that a constant is written directly in the instruction:</p>
+  <pre><code>MOVS R0, #10
+ADD  R1, R0, #5
+AND  R2, R1, #0x0F</code></pre>
+  <p>Hexadecimal numbers use the <code>0x</code> prefix, for example <code>#0xFF</code>. Not every constant is encodable in every instruction form; if the assembler rejects a value, check that instruction's encoding restrictions.</p>
+</section>
+<section class="panel search-item" id="flags">
+  <h2>5. Status Flags, CMP, and the S Suffix</h2>
+  <p>The flags in APSR record information about an operation's result. Conditional branch instructions use these flags to decide whether to branch.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Flag</th><th>Name</th><th>Simple meaning</th></tr></thead>
+      <tbody>
+        <tr><td><strong>N</strong></td><td>Negative</td><td>The sign bit of the result is 1.</td></tr>
+        <tr><td><strong>Z</strong></td><td>Zero</td><td>The result is zero.</td></tr>
+        <tr><td><strong>C</strong></td><td>Carry</td><td>Carry status in addition and related operations.</td></tr>
+        <tr><td><strong>V</strong></td><td>Overflow</td><td>Signed arithmetic overflow.</td></tr>
+        <tr><td><strong>Q</strong></td><td>Sticky saturation flag</td><td>Used by relevant saturation instructions.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>The very important S rule</h3>
+  <pre><code>ADD  R0, R1, R2    @ Add; normally does not update flags
+ADDS R0, R1, R2    @ Add; updates flags
+
+SUB  R0, R1, R2    @ Subtract; does not update flags
+SUBS R0, R1, R2    @ Subtract; updates flags</code></pre>
+  <div class="warning"><strong>Common exam trap:</strong> A register result and the status flags are separate things. A <code>SUB</code> instruction can make R0 equal to zero without changing Z, because it has no S suffix. A later BEQ/BNE may still use flags left by an earlier instruction.</div>
+  <h3>What does CMP do?</h3>
+  <p><code>CMP R0, R1</code> behaves like calculating <code>R0 - R1</code> for the purpose of setting flags. It does <strong>not</strong> store the subtraction result in a destination register.</p>
+  <pre><code>CMP R0, #5
+BEQ IS_FIVE       @ Branch if equal
+BNE NOT_FIVE      @ Branch if not equal</code></pre>
+  <p>Other comparison/test instructions include <code>CMN</code>, <code>TST</code>, and <code>TEQ</code>. They update flags without writing a normal result to a destination register.</p>
+</section>
+<section class="panel search-item" id="branches">
+  <h2>6. Branches, Conditions, and Loops</h2>
+  <h3>6.1. Branch instructions</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instruction</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>B LABEL</code></td><td>Unconditional branch to a label.</td></tr>
+        <tr><td><code>BEQ LABEL</code></td><td>Branch if equal / Z = 1.</td></tr>
+        <tr><td><code>BNE LABEL</code></td><td>Branch if not equal / Z = 0.</td></tr>
+        <tr><td><code>BGT / BGE</code></td><td>Greater than / greater than or equal, for signed comparisons.</td></tr>
+        <tr><td><code>BLT / BLE</code></td><td>Less than / less than or equal, for signed comparisons.</td></tr>
+        <tr><td><code>BHI / BLS</code></td><td>Higher than / lower or same, for unsigned comparisons.</td></tr>
+        <tr><td><code>BL LABEL</code></td><td>Calls a subroutine; the return address is saved in LR.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>6.2. Common condition codes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Suffix</th><th>Meaning</th><th>Flag condition</th></tr></thead>
+      <tbody>
+        <tr><td><code>EQ</code></td><td>Equal</td><td>Z = 1</td></tr>
+        <tr><td><code>NE</code></td><td>Not equal</td><td>Z = 0</td></tr>
+        <tr><td><code>MI / PL</code></td><td>Negative / positive or zero</td><td>N = 1 / N = 0</td></tr>
+        <tr><td><code>GT / GE</code></td><td>Greater / greater or equal (signed)</td><td>Z=0 and N=V / N=V</td></tr>
+        <tr><td><code>LT / LE</code></td><td>Less / less or equal (signed)</td><td>N≠V / Z=1 or N≠V</td></tr>
+        <tr><td><code>HI / HS</code></td><td>Higher / higher or same (unsigned)</td><td>C=1 and Z=0 / C=1</td></tr>
+        <tr><td><code>LO / LS</code></td><td>Lower / lower or same (unsigned)</td><td>C=0 / C=0 or Z=1</td></tr>
+        <tr><td><code>VS / VC</code></td><td>Overflow / no overflow</td><td>V=1 / V=0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><strong>Signed or unsigned?</strong> Use GT/GE/LT/LE for signed values. Use HI/HS/LO/LS for unsigned values. EQ and NE are commonly used for equality tests.</div>
+  <h3>6.3. Standard counter-loop pattern</h3>
+  <pre><code>MOVS R0, #0
+LOOP:
+    ADDS R0, R0, #1
+    CMP  R0, #10
+    BNE  LOOP
+DONE:
+    B DONE</code></pre>
+  <p>R0 starts at zero. Each iteration adds one, compares R0 with 10, and repeats until R0 equals 10.</p>
+  <h3>6.4. A subroutine</h3>
+  <pre><code>MAIN:
+    MOVS R0, #4
+    BL DOUBLE
+    B FINISH
+
+DOUBLE:
+    ADDS R0, R0, R0
+    MOV PC, LR
+
+FINISH:
+    B FINISH</code></pre>
+  <p><code>BL</code> saves the return address in LR. The lecture slides show returning with <code>MOV PC, R14</code>; R14 is the same register as LR.</p>
+</section>
+<section class="panel search-item" id="memory">
+  <h2>7. Memory and Load / Store Instructions</h2>
+  <p>ARM uses Load and Store instructions to transfer data between memory and registers. A common pattern is to put an address in a register, then use that register to access memory.</p>
+  <pre><code>LDR R0, =NUMBERS   @ Put the address of NUMBERS in R0
+LDR R1, [R0]       @ Read a 32-bit value from the address in R0
+STR R1, [R0]       @ Write R1 to that memory address</code></pre>
+  <div class="warning"><strong>Do not confuse these forms:</strong><br>
+    <code>LDR R0, =NUMBERS</code> means put the address of the label in R0.<br>
+    <code>LDR R0, [R1]</code> means read a value from the memory address stored in R1.
+  </div>
+  <h3>Data size and the matching instruction</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instruction</th><th>Size</th><th>Operation</th></tr></thead>
+      <tbody>
+        <tr><td><code>LDR / STR</code></td><td>Word = 32 bits = 4 bytes</td><td>Load / store a word.</td></tr>
+        <tr><td><code>LDRB / STRB</code></td><td>Byte = 8 bits = 1 byte</td><td>Load / store a byte.</td></tr>
+        <tr><td><code>LDRH / STRH</code></td><td>Halfword = 16 bits = 2 bytes</td><td>Load / store a halfword.</td></tr>
+        <tr><td><code>LDRSH</code></td><td>Signed halfword</td><td>Load a halfword and sign-extend it.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>When moving through consecutive array elements, the address increment depends on the element size:</p>
+  <ul><li>Byte array: advance by 1 byte.</li><li>Halfword array: advance by 2 bytes.</li><li>Word array: advance by 4 bytes.</li></ul>
+  <h3>Little-Endian byte order</h3>
+  <p>In Little-Endian format, the least significant byte (LSB) is stored at the lowest address. For example:</p>
+  <pre><code>bytes: .byte 0x12, 0x34, 0x56, 0x78
+
+LDR R0, =bytes
+LDRH R1, [R0]       @ R1 = 0x3412
+LDRH R2, [R0, #2]   @ R2 = 0x7856</code></pre>
+  <div class="good">If the first two bytes are 0x12 and 0x34, the halfword value in Little-Endian order is 0x3412, not 0x1234.</div>
+</section>
+<section class="panel search-item" id="addressing">
+  <h2>8. Addressing Modes</h2>
+  <p>For the examples below, assume R1 = 0x1000 and that the question provides the memory contents.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mode</th><th>Example</th><th>Address accessed</th><th>Does R1 change?</th></tr></thead>
+      <tbody>
+        <tr><td>Register indirect</td><td><code>LDR R0, [R1]</code></td><td>0x1000</td><td>No.</td></tr>
+        <tr><td>Offset</td><td><code>LDR R0, [R1, #4]</code></td><td>0x1004</td><td>No.</td></tr>
+        <tr><td>Pre-indexed</td><td><code>LDR R0, [R1, #4]!</code></td><td>0x1004</td><td>Yes, R1 becomes 0x1004.</td></tr>
+        <tr><td>Post-indexed</td><td><code>LDR R0, [R1], #4</code></td><td>First 0x1000</td><td>After the read, R1 becomes 0x1004.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><strong>Remember:</strong> A plain offset changes the effective address but not R1 itself. Pre-index with <code>!</code> writes the updated address back. Post-index uses the old address first, then updates R1.</div>
+  <pre><code>LDR R0, [R1, #4]     @ Read from R1 + 4
+LDR R0, [R1, #4]!    @ Update R1 to R1 + 4
+LDR R0, [R1], #4     @ Read from old R1, then add 4</code></pre>
+</section>
+<section class="panel search-item" id="multiple">
+  <h2>9. Multiple Transfers, LDM/STM, and the Stack</h2>
+  <h3>9.1. LDM and STM</h3>
+  <ul>
+    <li><code>LDM</code> = Load Multiple; loads several memory values into several registers.</li>
+    <li><code>STM</code> = Store Multiple; stores several registers into memory.</li>
+    <li><code>IA</code> = Increment After; addresses increase, and the first transfer uses the base address.</li>
+    <li><code>IB</code> = Increment Before; the address is incremented before the first transfer.</li>
+    <li><code>DA</code> = Decrement After; transfers use decreasing addresses, after the base.</li>
+    <li><code>DB</code> = Decrement Before; the address is decremented before the first transfer.</li>
+  </ul>
+  <pre><code>LDR   R0, =NUMBERS
+LDMIA R0!, {R1, R2, R3, R4}</code></pre>
+  <p>If R0 initially contains address 0x1000, the values are loaded like this:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Destination register</th><th>Memory address</th></tr></thead>
+      <tbody><tr><td>R1</td><td>0x1000</td></tr><tr><td>R2</td><td>0x1004</td></tr><tr><td>R3</td><td>0x1008</td></tr><tr><td>R4</td><td>0x100C</td></tr></tbody>
+    </table>
+  </div>
+  <div class="warning"><strong>Key rule from the lecture:</strong> The lowest-numbered register gets the lowest memory address. The order in which register names are typed inside the braces does not change the transfer order. With <code>!</code>, the base register is also updated.</div>
+  <h3>9.2. The stack</h3>
+  <p>In the Full Descending stack model, the stack grows toward lower memory addresses. The lecture shows the standard pattern with these instructions:</p>
+  <pre><code>STMFD SP!, {R0, R1, R2}   @ Push
+LDMFD SP!, {R0, R1, R2}   @ Pop</code></pre>
+  <p><code>STMFD</code> is equivalent to <code>STMDB</code>, and <code>LDMFD</code> is equivalent to <code>LDMIA</code> for the standard Full Descending stack convention.</p>
+</section>
+<section class="panel search-item" id="sample">
+  <h2>10. Walk Through Your Three-Page Assembly Example</h2>
+  <p>This example combines several topics: data definitions, loading multiple words, byte and halfword loads, addition, storing results, and a BEQ condition.</p>
+  <h3>10.1. Read the data definitions first</h3>
+  <pre><code>numbers:   .word 10, 20, 30, 40
+bytes:     .byte 0x12, 0x34, 0x56, 0x78
+halfwords: .hword 0x1234, 0x0000
+
+sum_result:  .word 0
+byte_result: .byte 0
+half_result: .hword 0</code></pre>
+  <h3>10.2. Load four numbers and add them</h3>
+  <pre><code>LDR R0, =numbers
+LDMIA R0!, {R1, R2, R3, R4}
+
+ADD R5, R1, R2
+ADD R5, R5, R3
+ADD R5, R5, R4</code></pre>
+  <ol>
+    <li>R1=10, R2=20, R3=30, R4=40.</li>
+    <li>R5 = 10 + 20 + 30 + 40 = 100.</li>
+    <li>Four words were loaded, so R0 advances by 4 × 4 = 16 bytes.</li>
+  </ol>
+  <h3>10.3. Load two bytes, add them, and store the result</h3>
+  <pre><code>LDR R6, =bytes
+LDRB R7, [R6], #1
+LDRB R8, [R6], #1
+ADD R7, R7, R8
+STRB R7, [R6]</code></pre>
+  <ol>
+    <li>R7 = 0x12, then R6 advances by one byte.</li>
+    <li>R8 = 0x34, then R6 advances by another byte.</li>
+    <li>R7 = 0x12 + 0x34 = 0x46.</li>
+    <li>The value 0x46 is stored in the third byte of the array.</li>
+  </ol>
+  <h3>10.4. Load and add halfwords</h3>
+  <pre><code>LDRH R9, [R6]
+LDR R10, =halfwords
+LDRH R11, [R10]
+ADD R11, R11, R9
+STRH R11, [R10, #2]</code></pre>
+  <ul>
+    <li>After the two post-indexed loads, R6 points to the third byte of the byte array.</li>
+    <li>The two bytes there are 0x46 and 0x78. In Little-Endian order, R9 = 0x7846.</li>
+    <li>R11 initially contains 0x1234.</li>
+    <li>R11 = 0x1234 + 0x7846 = 0x8A7A.</li>
+    <li>The value 0x8A7A is stored in the second halfword of <code>halfwords</code>.</li>
+  </ul>
+  <h3>10.5. The final condition</h3>
+  <pre><code>CMP R5, #100
+BEQ EQUAL
+MOVS R0, #0
+B FINISH
+
+EQUAL:
+MOVS R0, #1
+
+FINISH:
+B FINISH</code></pre>
+  <p>Because R5 equals 100, CMP sets Z=1. Therefore BEQ is taken, and R0 becomes 1. The program then stays in the FINISH loop.</p>
+  <div class="good"><strong>Important final values:</strong> R5 = 100, R7 = 0x46, R9 = 0x7846, R11 = 0x8A7A, and R0 = 1 on the final path.</div>
+
+  <h3>10.6. Apparent typos and inconsistencies in the submitted version</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Text in the file</th><th>Suggested correction</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td><code>.data.</code></td><td><code>.data</code></td><td>There is an extra period at the end of the directive.</td></tr>
+        <tr><td><code>.align2</code></td><td><code>.align 2</code></td><td>A space is needed between the directive and its argument.</td></tr>
+        <tr><td><code>LDRR10</code></td><td><code>LDR R10</code></td><td>The space between the instruction and register is missing.</td></tr>
+        <tr><td><code>LDR R0,byte_result</code></td><td><code>LDR R0, =byte_result</code></td><td>Use <code>=</code> to load the label's address into R0.</td></tr>
+        <tr><td><code>.global main</code> and <code>Main:</code></td><td>Use <code>main</code> for both.</td><td>Do not assume symbol names are case-insensitive.</td></tr>
+        <tr><td><code>Numbers</code> and <code>numbers</code></td><td>Choose one spelling.</td><td>The label and its references must match exactly.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">These corrections are intended to make the sample consistent with GNU Assembler syntax. If your instructor uses a different assembler, its syntax is the final authority.</p>
+</section>
+<section class="panel search-item" id="traps">
+  <h2>11. Common Exam Traps</h2>
+  <ol>
+    <li><strong>MOV is not LDR:</strong> MOV copies a register/immediate value; LDR reads memory or, with the equals form, loads a label address.</li>
+    <li><strong>LDR and STR have opposite directions:</strong> LDR transfers memory to a register; STR transfers a register to memory.</li>
+    <li><strong>Data size matters:</strong> LDRB reads one byte, LDRH reads two bytes, and LDR reads one word.</li>
+    <li><strong>Post-index:</strong> access memory first, then update the base register.</li>
+    <li><strong>Pre-index with !:</strong> update the base register as part of the access.</li>
+    <li><strong>! with LDM/STM:</strong> updates the base register after the multiple transfer.</li>
+    <li><strong>LDM/STM register order:</strong> register number determines the address order, not the order in which names appear in braces.</li>
+    <li><strong>SUB versus SUBS:</strong> SUB does not update flags; SUBS does.</li>
+    <li><strong>CMP:</strong> does not store a subtraction result in a general-purpose register; it updates flags.</li>
+    <li><strong>BNE:</strong> branches when Z=0. It does not directly inspect a register's numeric value.</li>
+    <li><strong>Label spelling:</strong> keep the capitalization of a label identical everywhere.</li>
+    <li><strong>Little-Endian:</strong> the least significant byte is stored at the lowest address.</li>
+    <li><strong>Signed versus unsigned:</strong> GT and HI are not interchangeable. GT is signed; HI is unsigned.</li>
+  </ol>
+</section>
+    <footer>ARM Cortex-M3 · Thumb / Unified Assembly · Single-file quick reference</footer>
+  </main>
+</div>
+<button id="leaveTopic" type="button" aria-label="Return to the full cheat sheet" hidden>×</button>
+<script>
+(() => {
+  const panel=document.getElementById("topicPanel"), findButton=document.getElementById("findButton");
+  const queryInput=document.getElementById("courseQuery"), keypad=document.getElementById("watchKeypad");
+  const suggestionsBox=document.getElementById("watchSuggestions"), matchesBox=document.getElementById("courseMatches");
+  const course=document.getElementById("mainContent"), view=document.getElementById("topicView");
+  const topicBlocks=document.getElementById("topicBlocks"), leaveTopic=document.getElementById("leaveTopic");
+  const normalize=text=>(text.toLowerCase().match(/[a-z0-9]+/g)||[]).join(" ");
+  const hasPhrase=(text,phrase)=>(" "+text+" ").includes(" "+phrase+" ");
+  function group(title,aliases,ids){return {title,aliases:[title,...aliases.split("|")].map(normalize).filter(Boolean),nodes:ids.split(" ").map(id=>document.getElementById(id)).filter(Boolean)};}
+  const groups=[
+    group("Read assembly syntax","syntax|instruction format|mnemonic|operand|destination|source|immediate|label|comment|directives|.syntax|.cpu|.thumb|.data|.text|.global|.word|.hword|.byte|.align|assembler", "overview mind syntax"),
+    group("ARM Cortex-M3 registers","register|registers|R0|R1|R2|R3|R4|R5|R6|R7|R8|R9|R10|R11|R12|R13|R14|R15|SP|LR|PC|APSR|xPSR|stack pointer|link register|program counter", "registers"),
+    group("Move, arithmetic, and logic commands","MOV|MOVS|MVN|ADD|ADC|SUB|SBC|RSB|RSC|MUL|MLA|AND|ORR|EOR|BIC|bitwise|XOR|arithmetic|data processing", "instructions"),
+    group("Shifts and rotations","LSL|LSR|ASL|ASR|ROR|RRX|shift|shifts|rotate|rotation", "instructions"),
+    group("Flags and comparisons","flags|S suffix|ADDS|SUBS|CMP|CMN|TST|TEQ|N flag|Z flag|C flag|V flag|carry|zero flag|negative flag|overflow", "flags"),
+    group("Branches, conditions, and loops","branch|branches|B|BEQ|BNE|BGT|BGE|BLT|BLE|BHI|BHS|BLO|BLS|BL|BX|EQ|NE|MI|PL|GT|GE|LT|LE|HI|HS|LO|LS|VS|VC|condition code|signed comparison|unsigned comparison|loop|subroutine|call|return", "branches flags"),
+    group("Load/store and memory","memory|load|store|LDR|LDRB|LDRH|LDRSB|LDRSH|STR|STRB|STRH|byte|halfword|word|little endian|endianness|address value", "memory"),
+    group("Addressing modes","addressing|register indirect|offset|pre-index|pre-indexed|post-index|post-indexed|write back|writeback|address update|effective address", "addressing"),
+    group("LDM/STM and stack","LDM|STM|LDMIA|LDMIB|LDMDA|LDMDB|STMIA|STMIB|STMDA|STMDB|LDMFD|STMFD|IA|IB|DA|DB|stack|push|pop|full descending|multiple transfer", "multiple registers"),
+    group("Trace and debug a program","trace|tracing|walk through|sample program|debug|read code|array example|program example", "mind sample"),
+    group("Common mistakes and quick checks","common mistakes|exam traps|mistakes|quick checks|LDR versus MOV|SUB versus SUBS|register order", "traps flags memory addressing multiple")
+  ];
+  groups.forEach(g=>{g.text=normalize(g.nodes.map(n=>n.innerText).join(" "));});
+  const candidates=[...new Set(groups.flatMap(g=>g.aliases))];
+  let typed="",committed="",shifted=false,symbols=false;
+  function updateQuery(){queryInput.value=committed+typed;drawSuggestions();}
+  function drawSuggestions(){
+    suggestionsBox.replaceChildren();
+    const prefix=normalize(typed);
+    if(!prefix)return;
+    const found=candidates.filter(word=>word.startsWith(prefix));
+    const options=[...new Set([...found.filter(word=>word===prefix),...found])].slice(0,8);
+    options.forEach(word=>{const b=document.createElement("button");b.type="button";b.className="ctrl";b.textContent=word;b.addEventListener("click",()=>{committed+=(committed.trim()?" ":"")+word+" ";typed="";updateQuery();});suggestionsBox.appendChild(b);});
+  }
+  function makeKey(label,action,extra=""){const b=document.createElement("button");b.type="button";b.className="ctrl "+extra;b.textContent=label;b.addEventListener("click",action);return b;}
+  function updateTyped(){queryInput.value=committed+typed;drawSuggestions();}
+  function drawKeyboard(){
+    keypad.replaceChildren();
+    const rows=symbols?["1234567890","!@#$%^&*()","-'\":;,.?/"]:["qwertyuiop","asdfghjkl","zxcvbnm"];
+    rows.forEach((letters,index)=>{const row=document.createElement("div");row.className="key-row";if(index===2)row.appendChild(makeKey("⇧",()=>{shifted=!shifted;drawKeyboard();},"key-wide"));for(const ch of letters)row.appendChild(makeKey(shifted?ch.toUpperCase():ch,()=>{typed+=ch;updateTyped();}));if(index===2)row.appendChild(makeKey("⌫",()=>{if(typed)typed=typed.slice(0,-1);else committed=committed.trimEnd().slice(0,-1);updateTyped();},"key-wide"));keypad.appendChild(row);});
+    const row=document.createElement("div");row.className="key-row";row.appendChild(makeKey(symbols?"ABC":"?123",()=>{symbols=!symbols;drawKeyboard();},"key-wide"));row.appendChild(makeKey("space",()=>{committed+=typed+" ";typed="";updateTyped();},"key-space"));row.appendChild(makeKey("➤",()=>document.getElementById("courseSearch").requestSubmit(),"key-send"));keypad.appendChild(row);
+  }
+  drawKeyboard();
+  function openSearch(open){panel.hidden=!open;findButton.style.visibility=open?"hidden":"visible";findButton.setAttribute("aria-expanded",String(open));}
+  findButton.addEventListener("click",()=>openSearch(panel.hidden));
+  document.getElementById("panelClose").addEventListener("click",()=>openSearch(false));
+  const original=[];let returnY=0;
+  function restore(){for(const [node,marker] of original)marker.replaceWith(node);original.length=0;topicBlocks.replaceChildren();}
+  function showGroup(g){
+    if(view.hidden)returnY=window.scrollY;
+    restore();
+    for(const node of g.nodes){const marker=document.createComment("reference position");node.before(marker);original.push([node,marker]);topicBlocks.appendChild(node);}
+    document.getElementById("topicTitle").textContent=g.title;course.hidden=true;view.hidden=false;leaveTopic.hidden=false;openSearch(false);window.scrollTo(0,0);
+  }
+  function resetView(){restore();view.hidden=true;course.hidden=false;leaveTopic.hidden=true;queryInput.value="";typed="";committed="";matchesBox.replaceChildren();openSearch(false);window.scrollTo(0,returnY);}
+  leaveTopic.addEventListener("click",resetView);
+  document.getElementById("courseSearch").addEventListener("submit",event=>{
+    event.preventDefault();const query=normalize(queryInput.value);matchesBox.replaceChildren();if(!query)return;
+    const words=query.split(" ");
+    const found=groups.map(g=>{const exact=g.aliases.includes(query);const alias=Math.max(0,...g.aliases.filter(a=>hasPhrase(query,a)).map(a=>a.length));const textMatch=words.every(word=>hasPhrase(g.text,word));return {g,score:exact?1000:alias?10+alias:textMatch?1:0};}).filter(x=>x.score).sort((a,b)=>b.score-a.score);
+    if(found.length&&(found.length===1||found[0].score>found[1].score)){showGroup(found[0].g);return;}
+    const message=document.createElement("p");message.textContent=found.length?"Choose a reference section":"No matching command";matchesBox.appendChild(message);
+    found.slice(0,5).forEach(({g})=>{const b=document.createElement("button");b.type="button";b.className="ctrl";b.textContent=g.title;b.addEventListener("click",()=>showGroup(g));matchesBox.appendChild(b);});
+  });
+  document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!panel.hidden)openSearch(false);});
+})();
+</script>
+<script>
+
+(() => {
+  const root = document.documentElement;
+  const body = document.body;
+  const search = document.getElementById("search");
+  const searchable = [...document.querySelectorAll(".search-item")];
+  let size = 16;
+
+  function applySize() {
+    root.style.setProperty("--font", size + "px");
+    document.getElementById("zoomLabel").textContent = Math.round(size / 16 * 100) + "%";
+  }
+  document.getElementById("larger").addEventListener("click", () => { size = Math.min(23, size + 1); applySize(); });
+  document.getElementById("smaller").addEventListener("click", () => { size = Math.max(13, size - 1); applySize(); });
+  document.getElementById("resetZoom").addEventListener("click", () => { size = 16; applySize(); });
+  document.getElementById("theme").addEventListener("click", () => body.classList.toggle("dark"));
+
+  search.addEventListener("input", () => {
+    const q = search.value.trim().toLowerCase();
+    searchable.forEach(item => {
+      const content = (item.innerText || item.textContent || "").toLowerCase();
+      item.classList.toggle("hidden", q !== "" && !content.includes(q));
+    });
+  });
+
+  // VS Code Dark+ inspired syntax highlighting for the assembly examples.
+  const instructionNames = new Set((
+    "ADC ADD ADDS AND ASR B BCC BCS BEQ BGE BGT BHI BHS BL BLE BLO BLS BLT BMI BNE BPL BVC BVS " +
+    "BIC BX CMN CMP EOR LDM LDMDA LDMDB LDMIA LDMIB LDR LDRB LDRH LDRSB LDRSH MLA MLS MOV MOVS " +
+    "MVN MUL ORR POP PUSH ROR RRX RSB RSC SBC STM STMDA STMDB STMIA STMIB STR STRB STRH SUB SUBS " +
+    "TST TEQ"
+  ).split(/\s+/));
+  const registerPattern = /^(R(?:1[0-5]|[0-9])|SP|LR|PC|APSR|CPSR|SPSR)$/i;
+
+  function escapeText(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function highlightToken(token) {
+    const upper = token.toUpperCase();
+    if (/^@/.test(token) || /^;/.test(token)) return `<span class="tok-comment">${escapeText(token)}</span>`;
+    if (/^\.[A-Za-z_][\w.]*/.test(token)) return `<span class="tok-directive">${escapeText(token)}</span>`;
+    if (/^(0x[0-9a-f]+|\#?-?\d+)$/i.test(token) || /^#/.test(token)) return `<span class="tok-number">${escapeText(token)}</span>`;
+    if (registerPattern.test(token)) return `<span class="tok-register">${escapeText(token)}</span>`;
+    if (instructionNames.has(upper)) return `<span class="tok-instruction">${escapeText(token)}</span>`;
+    return escapeText(token);
+  }
+  function highlightLine(line) {
+    const commentIndex = line.search(/@|;/);
+    let codePart = commentIndex >= 0 ? line.slice(0, commentIndex) : line;
+    const commentPart = commentIndex >= 0 ? line.slice(commentIndex) : "";
+    const labelMatch = codePart.match(/^(\s*)([A-Za-z_.$][\w.$]*:)(.*)$/);
+    if (labelMatch) {
+      const lead = escapeText(labelMatch[1]);
+      const label = `<span class="tok-label">${escapeText(labelMatch[2])}</span>`;
+      codePart = lead + label + tokenize(labelMatch[3]);
+    } else {
+      codePart = tokenize(codePart);
+    }
+    if (commentPart) codePart += `<span class="tok-comment">${escapeText(commentPart)}</span>`;
+    return codePart;
+  }
+  function tokenize(text) {
+    return text.split(/(\s+|,|\[|\]|\{|\}|\!|\=|\+|\-|\*|:)/).map(part => {
+      if (!part) return "";
+      if (/^\s+$/.test(part) || /^[,\[\]{}!=+\-*:]$/.test(part)) return escapeText(part);
+      return highlightToken(part);
+    }).join("");
+  }
+  document.querySelectorAll("pre code").forEach(code => {
+    const raw = code.textContent.replace(/\r\n/g, "\n");
+    code.innerHTML = raw.split("\n").map(highlightLine).join("\n");
+  });
+
+  document.querySelectorAll(".toc a").forEach(a => a.addEventListener("click", () => {
+    const target = document.querySelector(a.getAttribute("href"));
+    if (target) target.scrollIntoView({behavior:"smooth", block:"start"});
+  }));
+  applySize();
+})();
+
+</script>
+</body></html>
