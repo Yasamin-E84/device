@@ -612,6 +612,11 @@ body { padding-top:var(--dock-height); }
 #courseSearch { display:flex; gap:4px; margin-bottom:10px; }
 #courseQuery { min-width:0; width:100%; padding:8px; font-size:16px; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:8px; }
 @media print { .search-dock {display:none} body {padding-top:0} }
+#leaveTopic { position:fixed; bottom:8px; left:50%; transform:translateX(-50%); z-index:90; width:44px; height:44px; border-radius:50%; border:1px solid var(--accent); background:var(--panel); color:var(--text); font-size:26px; cursor:pointer; }
+#topicView { padding-bottom:64px; }
+#topicTitle { font-size:1.25rem; }
+#topicBlocks > .study-section { padding-inline:0; border:0; box-shadow:none; }
+#topicView[hidden], #mainContent[hidden], #leaveTopic[hidden] { display:none !important; }
 </style>
 </head>
 <body>
@@ -625,7 +630,7 @@ body { padding-top:var(--dock-height); }
     <div id="courseMatches" aria-live="polite"></div>
     <h2>Topics</h2>
     <nav class="topic-words" aria-label="Exam topics">
-        <a href="#exam-exam-intel-1">Microcontroller diagram</a>
+        <a href="#exam-exam-intel-1">Microcontrollers</a>
         <a href="#exam-exam-intel-2">ASIP vs ASIC</a>
         <a href="#watchdog-sequence">Watchdog timer</a>
         <a href="#exam-practice-8">Input capture</a>
@@ -721,6 +726,7 @@ body { padding-top:var(--dock-height); }
 
 
 
+  <div id="topicView" class="study-section" role="region" aria-labelledby="topicTitle" hidden><h1 id="topicTitle" tabindex="-1"></h1><div id="topicBlocks"></div></div>
   <main id="mainContent">
 
 
@@ -1213,7 +1219,7 @@ body { padding-top:var(--dock-height); }
           <li><strong>Interface / data-transfer instructions:</strong> load from or store to external memory.</li>
         </ul>
       </div>
-      <div class="topic">
+      <div id="processor-environment" class="topic">
         <h3>General-purpose processor vs. embedded processor</h3>
         <div class="two-col">
           <div class="mini-card">
@@ -1567,7 +1573,7 @@ body { padding-top:var(--dock-height); }
           <tr><td><strong>Output Compare</strong></td><td>Compares the timer count with a preset value.</td><td>Trigger an output change at a precise future time.</td></tr>
         </tbody></table>
       </div>
-      <div class="topic watchdog-focus">
+      <div id="watchdog-block" class="topic watchdog-focus">
         <h3 id="watchdog-sequence">Watchdog Timer — understand the sequence</h3>
         <p>A <strong>Watchdog Timer (WDT)</strong> is a safety timer that checks whether the software is still running correctly. The program must periodically refresh, restart, or “kick” the watchdog before its countdown expires.</p>
         <div class="diagram-flow compact">
@@ -2381,6 +2387,7 @@ BEQ EQUAL</pre>
   </main>
 </div>
 
+<button type="button" id="leaveTopic" aria-label="Clear search and return to full course" hidden>×</button>
 <div id="diagramModal" class="diagram-modal" hidden role="dialog" aria-modal="true" aria-label="Enlarged diagram">
   <div class="diagram-modal-top">
     <strong>Diagram zoom</strong>
@@ -2594,70 +2601,158 @@ BEQ EQUAL</pre>
     }
   }
 
-  // Include folded answers and worked examples. Ignore hidden tooltip text.
-  const passages = Array.from(document.querySelectorAll(
-    "main h2, main h3, main h4, main p, main li, main summary, main .answer, main tr, main pre, main .callout, main .dictionary-grid > div"
-  )).map((element, index) => {
-    const copy = element.cloneNode(true);
-    copy.querySelectorAll(".tip").forEach(tip => tip.remove());
-    const text = copy.textContent.replace(/\s+/g, " ").trim();
-    if (!element.id) element.id = "passage-" + index;
-    return {element, text, words: tokenize(text)};
+  const course = document.getElementById("mainContent");
+  const view = document.getElementById("topicView");
+  const blocks = document.getElementById("topicBlocks");
+  const exitTopic = document.getElementById("leaveTopic");
+  const panel = document.getElementById("topicPanel");
+  const findButton = document.getElementById("findButton");
+  const queryInput = document.getElementById("courseQuery");
+  const matchesBox = document.getElementById("courseMatches");
+
+  function normalize(text) {
+    return (text.toLowerCase().match(/[a-z0-9\u0600-\u06ff]+/g) || []).join(" ");
+  }
+  function includesPhrase(text, phrase) {
+    return (" " + text + " ").includes(" " + phrase + " ");
+  }
+
+  // Each topic uses the original course blocks so its diagrams and dictionary hints still work.
+  function group(title, aliases, ids) {
+    const nodes = ids.split(" ").map(id => document.getElementById(id));
+    return {title, aliases: [title, ...aliases.split("|")].map(normalize), nodes, extras: []};
+  }
+  const groups = [
+    group("Microcontrollers", "microcontroller|MCU|MCUs|microprocessor|microcontroller diagram|microcontroller vs microprocessor", "ch2-mcu ch2-mcu-diagram processor-environment ch2-processor-compare exam-exam-intel-1 exam-practice-6 exam-practice-14"),
+    group("Processor designs and NRE", "ASIP|ASIC|ASIP vs ASIC|GP|NRE|single purpose|design cost", "ch1-nre ch1-processor-compare exam-exam-intel-2 exam-practice-3 exam-practice-15"),
+    group("Watchdog timer", "watchdog|WDT|timeout|refresh", "watchdog-block"),
+    group("Timers, input capture and output compare", "timer|timers|counter|input capture|output compare|prescaler|resolution", "ch2-timers ch2-timing-diagrams exam-practice-8"),
+    group("Embedded systems", "embedded system|system characteristics|sensor|actuator|hardware and software", "ch1-definition ch1-features ch1-review exam-practice-1"),
+    group("Digital camera and design flow", "camera|CCD|JPEG|camera diagram|design flow", "ch1-diagram-lab"),
+    group("Hard and soft real-time", "real time|deadline|hard real time|soft real time", "ch1-realtime exam-practice-2"),
+    group("Memory types", "RAM|ROM|flash|EEPROM|volatile|write ability|storage permanence", "ch1-memory ch1-memory-visual"),
+    group("Communication interfaces", "UART|serial|parallel|infrared|RF|IR|baud|parity", "ch1-communication ch1-communication-diagrams exam-practice-4 exam-practice-5"),
+    group("Processor performance", "processor|processors|processor speed|cache|fetch execute|branch prediction", "ch2-processors ch2-processor-compare"),
+    group("Memory mapping and peripheral I/O", "MMIO|memory map|memory mapping|memory mapped IO|memory mapped I/O|address decoding|address regions|bit band", "ch2-mapped ch2-mmio-diagram ch3-memory-mapping exam-practice-7 exam-practice-16 exam-practice-17"),
+    group("ARM registers and byte order", "CPU registers|register|program counter|PC|link register|LR|stack pointer|SP|endianness|little endian|big endian|ISA|Thumb", "ch2-arm ch2-register-diagram exam-practice-10"),
+    group("Arithmetic and logic", "logic gates|AND|OR|XOR|EOR|ADD|SUB|bits", "ch2-operations ch2-instruction-compare exam-practice-9 exam-ch2-review-1"),
+    group("Shifts and rotates", "shift|shifts|LSL|LSR|ASR|ROR|RRX|rotate", "ch2-shifts"),
+    group("Flags and branches", "status flags|conditional branches|flags|CMP|BEQ|BNE|SUBS|ADDS|SUB vs SUBS", "ch2-flags exam-practice-11 exam-practice-13 exam-ch2-review-3"),
+    group("Load and store", "LDR|STR|offset|pre indexed|post indexed|addressing modes", "ch2-memory"),
+    group("Multiple-register transfers and stacks", "LDM|STM|LDMIA|STMDB|IA|IB|DA|DB|write back|full stack|empty stack", "ch2-multiple ch2-ldm-table exam-practice-12 exam-ch2-review-2"),
+    group("Tracing assembly", "trace assembly|assembly worksheet|assembly|data declarations", "ch2-reading")
+  ];
+  // Collect linked dictionary definitions and comparison rows without importing unrelated entries.
+  const supplements = course.querySelectorAll(".dictionary-grid > div, #comparison-master tbody tr");
+  groups.forEach(g => {
+    supplements.forEach(el => {
+      const label = el.firstElementChild.textContent;
+      if (g.aliases.some(a => includesPhrase(normalize(label), a))) {
+        g.extras.push([label, [...el.children].slice(1).map(c => c.textContent.trim()).join(" · ")]);
+      }
+    });
+    const text = g.nodes.map(n => {
+      const copy = n.cloneNode(true);
+      copy.querySelectorAll(".tip").forEach(t => t.remove());
+      return copy.textContent;
+    }).join(" ");
+    g.text = normalize(text + " " + g.extras.map(parts => parts.join(" ")).join(" "));
   });
   addPersianHoverHints();
 
-  function tokenize(text) {
-    return text.toLowerCase().match(/[a-z0-9\u0600-\u06ff]+/g) || [];
+  const originalPositions = [];
+  let readingPosition = 0;
+  function putBlocksBack() {
+    for (const [node, marker] of originalPositions) marker.replaceWith(node);
+    originalPositions.length = 0;
+    blocks.textContent = "";
   }
-  const queryInput = document.getElementById("courseQuery");
-  const matchesBox = document.getElementById("courseMatches");
-  document.getElementById("courseSearch").addEventListener("submit", event => {
-    event.preventDefault();
-    const words = tokenize(queryInput.value);
-    matchesBox.textContent = "";
-    if (!words.length) return;
-    const phrase = words.join(" ");
-    const matches = passages.filter(p => words.every(w => p.words.includes(w)))
-      .map(p => {
-        const normalized = p.words.join(" ");
-        const score = (normalized === phrase ? 10 : 0) +
-          (normalized.includes(phrase) ? 4 : 0) +
-          (p.element.matches("h2,h3,h4,summary,.dictionary-grid > div") ? 2 : 0);
-        return {p, score};
-      }).sort((a,b) => b.score - a.score);
-    const status = document.createElement("p");
-    status.className = "search-results-title";
-    status.textContent = matches.length ? matches.length + " matching passages" : "No matching passage";
-    matchesBox.appendChild(status);
-    matches.forEach(({p}) => {
-      const link = document.createElement("a");
-      link.className = "search-result-link";
-      link.href = "#" + p.element.id;
-      const start = Math.max(0, p.text.toLowerCase().indexOf(words[0]) - 32);
-      link.textContent = (start ? "…" : "") + p.text.slice(start, start + 150) +
-        (p.text.length > start + 150 ? "…" : "");
-      matchesBox.appendChild(link);
-    });
-  });
-
-  const findButton = document.getElementById("findButton");
-  const panel = document.getElementById("topicPanel");
   function showTopics(open) {
     panel.hidden = !open;
     findButton.setAttribute("aria-expanded", String(open));
     findButton.setAttribute("aria-label", open ? "Close search" : "Search course topics");
   }
-  findButton.addEventListener("click", () => showTopics(panel.hidden));
-  panel.addEventListener("click", event => {
-    const link = event.target.closest("a[href^='#']");
-    if (!link) return;
-    const target = document.getElementById(link.hash.slice(1));
-    let folded = target && target.closest("details");
-    while (folded) {
-      folded.open = true;
-      folded = folded.parentElement.closest("details");
+  function showGroup(g, question) {
+    if (view.hidden) readingPosition = window.scrollY;
+    putBlocksBack();
+    for (const node of g.nodes) {
+      const marker = document.createComment("course position");
+      node.before(marker);
+      originalPositions.push([node, marker]);
+      blocks.appendChild(node);
     }
+    if (g.extras.length) {
+      const list = document.createElement("dl");
+      for (const [term, meaning] of g.extras) {
+        const dt = document.createElement("dt");
+        const dd = document.createElement("dd");
+        dt.textContent = term;
+        dd.textContent = meaning;
+        list.append(dt, dd);
+      }
+      blocks.appendChild(list);
+    }
+    document.getElementById("topicTitle").textContent = g.title;
+    course.hidden = true;
+    view.hidden = false;
+    exitTopic.hidden = false;
     showTopics(false);
+    document.getElementById("topicTitle").focus({preventScroll:true});
+    if (question && question.tagName === "DETAILS") {
+      question.open = true;
+      question.scrollIntoView();
+    } else window.scrollTo(0, 0);
+  }
+  function clearTopic() {
+    putBlocksBack();
+    view.hidden = true;
+    course.hidden = false;
+    exitTopic.hidden = true;
+    queryInput.value = "";
+    matchesBox.textContent = "";
+    showTopics(false);
+    findButton.focus({preventScroll:true});
+    window.scrollTo(0, readingPosition);
+  }
+  exitTopic.addEventListener("click", clearTopic);
+  findButton.addEventListener("click", () => showTopics(panel.hidden));
+  panel.querySelectorAll("a[href^='#']").forEach(link => {
+    const target = document.getElementById(link.hash.slice(1));
+    const label = normalize(link.textContent);
+    const g = groups.find(item => item.aliases.includes(label)) ||
+      groups.find(item => item.nodes.includes(target)) ||
+      groups.find(item => item.nodes.some(node => node.contains(target)));
+    if (!g) return;
+    link.addEventListener("click", event => {
+      event.preventDefault();
+      showGroup(g, link.closest("#examQuestions") ? target : null);
+    });
+  });
+  document.getElementById("courseSearch").addEventListener("submit", event => {
+    event.preventDefault();
+    const query = normalize(queryInput.value);
+    matchesBox.textContent = "";
+    if (!query) return;
+    const words = query.split(" ");
+    const results = groups.map(g => {
+      const exact = g.aliases.includes(query);
+      const aliasScore = Math.max(0, ...g.aliases.filter(a => includesPhrase(query,a)).map(a => a.length));
+      const matched = words.every(w => includesPhrase(g.text,w));
+      return {g, score:exact ? 1000 : aliasScore ? 10 + aliasScore : matched ? 1 : 0};
+    }).filter(hit => hit.score).sort((a,b) => b.score-a.score);
+    if (results.length && (results.length === 1 || results[0].score > results[1].score)) {
+      showGroup(results[0].g);
+      return;
+    }
+    matchesBox.textContent = results.length ? "Choose a topic" : "No matching topic";
+    for (const {g} of results) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "watch-control-btn";
+      button.textContent = g.title;
+      button.addEventListener("click", () => showGroup(g));
+      matchesBox.appendChild(button);
+    }
   });
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && !panel.hidden) {
