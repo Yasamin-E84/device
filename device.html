@@ -598,14 +598,25 @@ body.modal-open { overflow:hidden; }
 .topic-words a { display:inline-flex; align-items:center; min-height:42px; padding:6px 10px; background:var(--panel-2); color:var(--text); border:1px solid var(--line); border-radius:10px; font-size:.85rem; }
 #examQuestions > strong { color:var(--accent); padding-top:8px; }
 #examQuestions a { font-size:.85rem; }
-  </style>
+  
+:root { --dock-height: 54px; }
+html { scroll-padding-top:calc(var(--dock-height) + 6px); }
+body { padding-top:var(--dock-height); }
+.search-dock { position:fixed; z-index:100; inset:0 0 auto; display:flex; justify-content:center; align-items:center; height:var(--dock-height); background:var(--bg); border-bottom:1px solid var(--line); }
+#findButton { display:grid; place-items:center; width:44px; height:44px; color:var(--accent); border:1px solid var(--line); border-radius:50%; background:var(--panel); cursor:pointer; }
+.lens { position:relative; width:16px; height:16px; border:2px solid currentColor; border-radius:50%; margin:-4px 4px 0 0; }
+.lens::after { content:""; position:absolute; top:11px; left:11px; width:9px; height:2px; background:currentColor; transform:rotate(45deg); transform-origin:left; }
+#topicPanel { position:absolute; top:100%; width:100%; max-width:560px; max-height:calc(100vh - var(--dock-height)); max-height:calc(100dvh - var(--dock-height)); overflow:auto; padding:12px; background:var(--panel); border-bottom:1px solid var(--accent); overscroll-behavior:contain; }
+#topicPanel .topic-words, #topicPanel .keyword-list { max-height:none; overflow:visible; }
+#topicPanel h2 { font-size:1rem; }
+@media print { .search-dock {display:none} body {padding-top:0} }
+</style>
 </head>
 <body>
-<div class="layout watch-layout">
-  
-<section class="watch-controls" aria-label="Study controls">
-  <details id="topics" open>
-    <summary>Search by topic</summary>
+<header class="search-dock">
+  <button type="button" id="findButton" aria-label="Search course topics" aria-expanded="false" aria-controls="topicPanel"><span class="lens" aria-hidden="true"></span></button>
+  <div id="topicPanel" hidden>
+    <h2>Topics</h2>
     <nav class="topic-words" aria-label="Exam topics">
         <a href="#exam-exam-intel-1">Microcontroller diagram</a>
         <a href="#exam-exam-intel-2">ASIP vs ASIC</a>
@@ -643,17 +654,9 @@ body.modal-open { overflow:hidden; }
         <a href="#ch2-reading">Trace assembly</a>
         <a href="#exam-practice-16">Address regions</a>
     </nav>
-  </details>
-  <div class="watch-control-row">
-    <button id="fontDown" class="watch-control-btn" type="button" aria-label="Decrease text size">A−</button>
-    <span id="fontValue" class="font-value">100%</span>
-    <button id="fontUp" class="watch-control-btn" type="button" aria-label="Increase text size">A+</button>
-    <button id="fontReset" class="watch-control-btn" type="button">Reset</button>
-    <button id="themeToggle" class="watch-control-btn" type="button" aria-label="Toggle light and dark mode">☼ / ☾</button>
-  </div>
-  <details class="quick-search">
-    <summary>Quick search · exam questions</summary>
-    <nav id="examQuestions" class="keyword-list" aria-label="Exam questions"><strong>Reported from the earlier sitting</strong><a href="#exam-exam-intel-1">Draw and label a microcontroller.</a>
+    <details class="quick-search">
+    <summary>Exam questions</summary>
+    <nav id="examQuestions" class="keyword-list" aria-label="Exam questions"><strong>Model answers</strong><a href="#exam-exam-intel-1">Draw and label a microcontroller.</a>
 <a href="#exam-exam-intel-2">Compare ASIP and ASIC.</a><strong>Practice on paper</strong><a href="#exam-practice-1">Define an embedded system in two sentences.</a>
 <a href="#exam-practice-2">What is the difference between hard and soft real-time?</a>
 <a href="#exam-practice-3">What does NRE stand for?</a>
@@ -683,7 +686,7 @@ body.modal-open { overflow:hidden; }
 <a href="#exam-ch1-diagram-lab-3">Why does the camera have a DSP / JPEG co-processor?</a>
 <a href="#exam-ch1-diagram-lab-4">Which blocks are memory?</a>
 <a href="#exam-ch1-diagram-lab-5">What might a small caption ask?</a>
-<a href="#exam-ch1-processor-compare-1">Write this short ASIP-vs-ASIC comparison in your notebook</a>
+<a href="#exam-ch1-processor-compare-1">How do ASIP and ASIC differ?</a>
 <a href="#exam-ch1-communication-diagrams-1">Quick picture question: which one can work when an object blocks the direct path?</a>
 <a href="#exam-ch1-review-1">⚡ 60-second challenge: explain a washing machine</a>
 <a href="#exam-ch1-review-2">🧠 Quick check: which one is the input and which one is the output?</a>
@@ -703,165 +706,24 @@ body.modal-open { overflow:hidden; }
 <a href="#exam-ch3-memory-mapping-1">Memory Mapping · short exam answer</a>
 <a href="#exam-ch3-memory-mapping-2">Do not mix these two terms</a></nav>
   </details>
-  <details class="watch-index">
-    <summary>☰ Browse chapters and topics</summary>
-    <nav>
-      <a href="#exam-map">Exam roadmap</a>
-      <a href="#exam-intel">Earlier exam report</a>
-      <a href="#chapter1">Chapter 1 · Embedded systems</a>
-      <a href="#ch1-definition">Definition & diagram</a>
-      <a href="#ch1-diagram-lab">Camera & design-flow diagrams</a>
-      <a href="#ch1-nre">NRE / GP / ASIC</a>
-      <a href="#ch1-processor-compare">GP vs ASIP vs ASIC</a>
-      <a href="#ch1-memory">Memory note</a>
-      <a href="#ch1-communication">Communication</a>
-      <a href="#ch1-communication-diagrams">Serial / parallel / IR / RF pictures</a>
-      <a href="#ch1-features">System features</a>
-      <a href="#ch1-realtime">Hard vs. soft real-time</a>
-      <a href="#ch1-review">Chapter 1 practice</a>
-      <a href="#chapter2">Chapter 2 · Microcontrollers</a>
-      <a href="#ch2-processors">Processors & speed</a>
-      <a href="#ch2-processor-compare">GP vs embedded processor</a>
-      <a href="#ch2-mcu">Microcontroller</a>
-      <a href="#ch2-mcu-diagram">Draw the microcontroller</a>
-      <a href="#ch2-mapped">Memory-mapped I/O</a>
-      <a href="#ch2-mmio-diagram">MMIO circuit diagram</a>
-      <a href="#ch2-timers">Timers / capture / compare</a>
-      <a href="#ch2-timing-diagrams">Timer / Capture / Compare diagrams</a>
-      <a href="#ch2-arm">ARM ISA & registers</a>
-      <a href="#ch2-register-diagram">Register and flag diagrams</a>
-      <a href="#ch2-operations">Arithmetic / logic / bits</a>
-      <a href="#ch2-shifts">Shift operations</a>
-      <a href="#ch2-flags">Flags & branches</a>
-      <a href="#ch2-memory">Load / store / page 44</a>
-      <a href="#ch2-multiple">Multiple transfer / page 65</a>
-      <a href="#ch2-reading">Reading assembly examples</a>
-      <a href="#ch2-review">Chapter 2 practice</a>
-      <a href="#comparison-master">Comparison master sheet</a>
-      <a href="#chapter3">Chapter 3 · Memory mapping</a>
-      <a href="#practice">Practice questions</a>
-      <a href="#ch3-memory-mapping">4GB address map & MMIO</a>
-      <a href="#dictionary">Dictionary</a>
-    </nav>
-  </details>
-  <p class="watch-tip">Tip: tap dotted-underlined words for Persian meanings. Use A+ / A− or pinch to zoom.</p>
-</section>
+  </div>
+</header>
+
+<div class="layout watch-layout">
+  
+
 
 
   <main id="mainContent">
-<section id="exam-map" class="study-section">
-      <div class="section-kicker">YOUR EXAM ROUTE</div>
-      <h2>What to study — and where to find it</h2>
-
-      <div class="roadmap-grid">
-        <article class="roadmap-card">
-          <span class="roadmap-number">01</span>
-          <h3>Chapter 1 · Embedded Systems</h3>
-          <ul>
-            <li><strong>PDF p.7:</strong> skim / read quickly.</li>
-            <li><strong>PDF pp.22–23:</strong> definition and digital-camera diagram — important.</li>
-            <li><strong>Slide 15 / PDF p.33:</strong> NRE and GP vs. ASIC comparison.</li>
-            <li><strong>PDF p.44:</strong> serial communication and its examples.</li>
-            <li><strong>PDF pp.46–47:</strong> Infrared (IR) and Radio Frequency (RF) — skim-level.</li>
-            <li><strong>PDF p.60:</strong> importance of embedded systems.</li>
-            <li><strong>PDF pp.61–62:</strong> characteristics of embedded systems.</li>
-            <li><strong>PDF p.69:</strong> hard real-time vs. soft real-time.</li>
-          </ul>
-          <a href="#ch1-review" class="jump-link">Open Chapter 1 practice →</a>
-        </article>
-        <article class="roadmap-card">
-          <span class="roadmap-number">02</span>
-          <h3>Chapter 2 · Microcontrollers & ARM</h3>
-          <ul>
-            <li>Microcontroller definition, features, and why we use it.</li>
-            <li>Processor features and performance improvements.</li>
-            <li>Memory-mapped I/O; timer; Input Capture; Output Compare.</li>
-            <li>ARM ISA, registers, and Program Counter (PC).</li>
-            <li>Register calculations: ADD, SUB, XOR/EOR, shifts, and bit positions.</li>
-            <li><strong>PDF p.44:</strong> immediate, index register, shifted index register.</li>
-            <li><strong>PDF p.65:</strong> multiple-register transfer addressing modes.</li>
-            <li>Understand the final programming examples by tracing them — no full assembly-program writing required.</li>
-          </ul>
-          <a href="#ch2-review" class="jump-link">Open Chapter 2 practice →</a>
-        </article>
-        <article class="roadmap-card">
-          <span class="roadmap-number">03</span>
-          <h3>Chapter 3 · Memory Mapping</h3>
-          <ul>
-            <li>Memory map vs. memory-mapped I/O — do not confuse them.</li>
-            <li>Cortex-M3 4GB address regions and their start addresses.</li>
-            <li>SRAM / peripheral bit-band and alias regions, if present in your slides.</li>
-            <li>MMIO read/write path and the ADDR, RD, WR, OE, EN, DATA labels.</li>
-            <li><strong>Exact Chapter 3 slides still needed</strong> to verify all labels and subtopics.</li>
-          </ul>
-          <a href="#ch3-memory-mapping" class="jump-link">Go to Chapter 3 memory mapping →</a>
-        </article>
-      </div>
-
-      <div class="callout warning">
-        <strong>Excluded pages:</strong> the class-group note says ES2 PDF pp.73–74 are excluded. I have not made Supervisor Calls or Miscellaneous Instructions exam topics.
-      </div>
-      <div class="callout caution">
-        <strong>One unclear handwritten note:</strong> “pp.35–40 excluded” appears alongside a note about memory features / Write-ability / high-end. Since those notes seem to conflict, Write-ability stays in a short optional section. Confirm the exact page range with your class group before studying it deeply.
-      </div>
-      <div class="callout caution"><strong>New source note:</strong> the comparison tables and extra diagrams were added using the HTML review guide you uploaded from the other ChatGPT. They are study redraws and explanations, not verified screenshots of the original lecture slides. Chapter 3 slides have not been provided yet.</div>
-      <div class="callout info">
-        <strong>Your exam strategy:</strong> memorize the short English definitions and comparisons. Use the Persian dotted-underlined hints only when a technical word feels unfamiliar. For assembly, explain what each instruction does and trace the register values — don't spend your time trying to write a complete program.
-      </div>
-    </section>
 
 
-    <section id="exam-intel" class="study-section exam-intel">
-      <div class="section-kicker">CLASS-GROUP REPORT · 23 NOVEMBER 2026</div>
-      <h2>What students reported from the earlier sitting</h2>
-      <p>This is a report from the class chat, not an official exam paper. Use it as a clue about question style, not as a promise that your sitting will be identical.</p>
-      <div class="exam-stats">
-        <div><strong>4</strong><span>reported questions</span></div>
-        <div><strong>1.75</strong><span>descriptive marks</span></div>
-        <div><strong>3.25</strong><span>instruction / result marks</span></div>
-      </div>
-      <div class="two-col">
-        <article class="mini-card">
-          <h3>Descriptive questions reported</h3>
-          <ol>
-            <li><strong>Draw / explain a microcontroller diagram.</strong></li>
-            <li><strong>Compare ASIP and ASIC.</strong></li>
-          </ol>
-        </article>
-        <article class="mini-card">
-          <h3>Programming-style questions reported</h3>
-          <ul>
-            <li>Memory values and instructions were reportedly supplied.</li>
-            <li>Students were asked to calculate or identify the result.</li>
-            <li>They did not have to invent a complete assembly program from scratch.</li>
-          </ul>
-        </article>
-      </div>
-      <div class="callout info">
-        <strong>How this changes your preparation:</strong> learn the diagrams and comparisons well enough to explain them in English. For assembly, practise tracing the given instructions line by line and calculating final register / memory values.
-      </div>
-      <div class="callout warning">
-        <strong>Do not cross topics out yet.</strong> You are in the later sitting. Keep both reported descriptive questions in the guide as backup. When you send the questions from your own sitting, we can mark only what is genuinely no longer needed.
-      </div>
-      <details id="exam-exam-intel-1">
-        <summary>Past-sitting question 1 · “Draw a microcontroller diagram” — what should I write?</summary>
-        <div class="answer">
-          <p>A microcontroller is a small computer integrated into one chip. Its main blocks include a CPU core, program memory (Flash / ROM), data memory (RAM), an internal bus, and peripherals such as GPIO, timers, and communication interfaces. Depending on the device, it may also include an ADC, PWM, or other special-purpose units. The CPU reads inputs, processes data, and controls outputs.</p>
-          <p><strong>Drawing order:</strong> draw the chip boundary → place the CPU in the centre → add Flash / ROM and RAM → add the bus → add I/O and peripheral blocks → show input and output connections.</p>
-        </div>
-      </details>
-      <details id="exam-exam-intel-2">
-        <summary>Past-sitting question 2 · “Compare ASIP and ASIC” — model answer</summary>
-        <div class="answer">
-          <p>An <strong>ASIP</strong> is a programmable processor designed for a particular class of applications. It still has an instruction set and executes instructions, but its datapath and operations are optimized for that application area. An <strong>ASIC</strong> is custom hardware designed for a specific function. It usually uses hardwired control rather than a general program stored in program memory. Therefore, an ASIP keeps more flexibility, while an ASIC can be more efficient for its fixed task.</p>
-        </div>
-      </details>
-    </section>
+
+    
 
     <section id="chapter1" class="chapter-heading">
       <div class="section-kicker">CHAPTER 1</div>
       <h2>Embedded Systems — the basics</h2>
-      <p>Learn the definitions and the purpose of the system. Prioritize the definitions, comparison tables, and the labels / subtexts inside the lecture diagrams.</p>
+      
     </section>
 
     <section id="ch1-definition" class="study-section">
@@ -875,7 +737,7 @@ body.modal-open { overflow:hidden; }
 
       <div class="topic">
         <h3>Understand the digital-camera diagram</h3>
-        <p>The lecture uses a digital camera as an example of an embedded system. You should be able to identify every named block, explain its role, follow the arrows, and sketch a simplified version.</p>
+        <p>A digital camera is an embedded system.</p>
         <ol class="steps">
           <li><strong>Lens:</strong> lets light enter the camera.</li>
           <li><strong>CCD sensor:</strong> converts incoming light into an electrical signal.</li>
@@ -887,7 +749,7 @@ body.modal-open { overflow:hidden; }
           <li><strong>Software:</strong> tells the hardware what operations to perform.</li>
         </ol>
         <div class="mini-flow">Light → CCD → A/D conversion → processor + memory → image / display / communication</div>
-        <p class="small-note">Source pointer: ES1 PDF p.23 shows the camera block diagram; p.41 labels memory, controllers, interface, processor, converters, and software.</p>
+        
       </div>
 
       <div class="topic">
@@ -920,7 +782,7 @@ body.modal-open { overflow:hidden; }
 
     <section id="ch1-diagram-lab" class="study-section">
       <h2>Diagram lab 1 · The digital camera and the design flow</h2>
-      <p>The uploaded reference guide names the blocks in the digital-camera example. The drawing below is a study reconstruction to help you read the labels; it is not claimed to be an exact screenshot of the teacher's original slide.</p>
+      
       <figure class="diagram-card">
         <figcaption>Figure 1 · Digital camera as an embedded system</figcaption>
         <svg viewBox="0 0 1040 290" role="img" aria-label="Digital camera block diagram: light, lens, CCD sensor, sample and hold, A to D converter, CPU, DSP and JPEG co-processors, memory, display and interfaces">
@@ -1029,7 +891,7 @@ body.modal-open { overflow:hidden; }
         <p>Example: designing a custom chip takes a large amount of engineering work once. After the design is finished, manufacturing additional copies does not require repeating the original design work.</p>
         <p>The lecture slide compares GP and ASIC using “NRE / sale-volume”. For the exam, recognize the term and understand that the one-time design cost is considered in relation to how many units will be sold. The slide labels GP as <strong>high</strong> and ASIC as <strong>low</strong> for this comparison.</p>
         <div class="callout info"><strong>What to be able to say:</strong> NRE is a non-recurring, one-time engineering cost. It matters when deciding whether a custom single-purpose design is worthwhile for the expected sales volume.</div>
-        <p class="small-note">Source pointer: ES1 slide 15, which is PDF p.33.</p>
+        
       </div>
     </section>
 
@@ -1048,7 +910,7 @@ body.modal-open { overflow:hidden; }
             <tr><td><strong>Datapath</strong></td><td>General ALU and broad register set.</td><td>Customized datapath, registers, and functional units for its application class.</td><td>Datapath is tailored to the exact fixed algorithm.</td></tr>
             <tr><td><strong>Flexibility</strong></td><td>Highest.</td><td>Middle: more specialized than GP, but still programmable.</td><td>Lowest.</td></tr>
             <tr><td><strong>Performance / power</strong></td><td>General-purpose overhead can make it less efficient for one narrow task.</td><td>Can offer a useful balance of performance, area, and power.</td><td>Can be very fast and power-efficient for its fixed function.</td></tr>
-            <tr><td><strong>Examples in the uploaded reference</strong></td><td>Pentium, Athlon, PowerPC.</td><td>DSPs and video/network signal processors.</td><td>Digital voice recorder logic and high-efficiency Bitcoin-mining hardware.</td></tr>
+            <tr><td><strong>Examples</strong></td><td>Pentium, Athlon, PowerPC.</td><td>DSPs and video/network signal processors.</td><td>Digital voice recorder logic and high-efficiency Bitcoin-mining hardware.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1061,7 +923,7 @@ body.modal-open { overflow:hidden; }
         <strong>Common exam trap:</strong> ASIP is still a processor that executes instructions. ASIC is custom hardware for a fixed function. Do not write that both are simply “processors for one task.”
       </div>
       <details id="exam-ch1-processor-compare-1">
-        <summary>Write this short ASIP-vs-ASIC comparison in your notebook</summary>
+        <summary>How do ASIP and ASIC differ?</summary>
         <div class="answer">
           <p>An ASIP is a programmable processor optimized for a specific class of applications. It has a specialized instruction set and datapath, but it still executes instructions. An ASIC is a custom integrated circuit designed for a specific function and generally uses hardwired logic. ASIP is more flexible, while ASIC can be more efficient for a fixed task.</p>
         </div>
@@ -1070,7 +932,7 @@ body.modal-open { overflow:hidden; }
 
     <section id="ch1-memory" class="study-section">
       <h2>3. Memory and Write-ability — optional until confirmed</h2>
-      <div class="callout caution"><strong>Read this only as a safety net:</strong> your notes mention Write-ability and “high-end”, but also say pages 35–40 are excluded. Confirm whether the memory section is actually in the exam.</div>
+      
       <div class="topic">
         <p><strong>Memory</strong> stores bits (0s and 1s). One feature is <span class="term" tabindex="0"><span>Write-ability</span><span class="tip"><b dir="rtl">قابلیت نوشتن / امکان برنامه‌ریزی حافظه</b><br>How easily and how quickly the processor or another device can write new data into memory.</span></span>: how easily and quickly new data can be written.</p>
         <ul>
@@ -1086,7 +948,7 @@ body.modal-open { overflow:hidden; }
 
     <section id="ch1-memory-visual" class="study-section">
       <h2>Picture reading · Memory write-ability and storage permanence</h2>
-      <p>The uploaded review guide includes a two-axis memory diagram. Be ready to read both axes and recognize the memory labels.</p>
+      
       <figure class="diagram-card">
         <figcaption>Figure 3 · Two different memory properties</figcaption>
         <svg viewBox="0 0 850 330" role="img" aria-label="Memory property chart with write ability on horizontal axis and storage permanence on vertical axis">
@@ -1209,7 +1071,7 @@ body.modal-open { overflow:hidden; }
             <text x="450" y="158" text-anchor="middle" font-size="11" fill="#513c86">multiple data lines · several bits travel together</text>
           </g>
         </svg>
-        <p class="diagram-caption">Serial sends data bit-by-bit over a data line; parallel uses multiple data lines at the same time. The uploaded reference emphasizes serial links for longer distances and parallel links for short distances inside a processing node.</p>
+        <p class="diagram-caption">Serial sends data bit-by-bit over a data line; parallel uses multiple data lines at the same time. Serial links are often used over longer distances and parallel links within a processing node.</p>
       </figure>
       <div class="table-wrap">
         <table><thead><tr><th>Feature</th><th>Serial</th><th>Parallel</th></tr></thead><tbody>
@@ -1245,7 +1107,7 @@ body.modal-open { overflow:hidden; }
     <section id="ch1-features" class="study-section">
       <h2>5. Characteristics of embedded systems</h2>
       <div class="topic">
-        <p>Know these as a list and understand each one. The lecture emphasizes that <strong>not every embedded system has every characteristic</strong>.</p>
+        <p>Characteristics vary by system.</p>
         <ol>
           <li><strong>Dependability:</strong> the system should be trustworthy. It includes:
             <ul>
@@ -1324,7 +1186,7 @@ body.modal-open { overflow:hidden; }
     <section id="chapter2" class="chapter-heading">
       <div class="section-kicker">CHAPTER 2</div>
       <h2>Microcontrollers and ARM Cortex-M3</h2>
-      <p>This is the more technical part. Read it slowly. The aim is to understand what each block or instruction does, not to become an assembly programmer overnight.</p>
+      
     </section>
 
     <section id="ch2-processors" class="study-section">
@@ -1379,14 +1241,14 @@ body.modal-open { overflow:hidden; }
           <li><strong>Branch prediction:</strong> the processor predicts which direction a conditional branch will take, so it can prepare the likely next instructions instead of waiting.</li>
           <li><strong>Multiple / out-of-order issue:</strong> the processor can issue more than one instruction in a cycle and/or execute independent instructions when their data is ready, rather than waiting rigidly for the original order.</li>
         </ol>
-        <p class="small-note">These are the three performance ideas explicitly listed on the processor slide. Do not replace them with a different list when answering this course question.</p>
+        
       </div>
     </section>
 
 
     <section id="ch2-processor-compare" class="study-section">
       <h2>Comparison · General-purpose processor vs embedded processor</h2>
-      <p>The uploaded review guide compares a traditional GP processor with an embedded processor / microcontroller. Learn the contrast in the table, not just the first two bullet points.</p>
+      
       <div class="table-wrap">
         <table><thead><tr><th>Feature</th><th>General-purpose processor</th><th>Embedded processor / microcontroller</th></tr></thead><tbody>
           <tr><td><strong>Main goal</strong></td><td>High general performance across many applications.</td><td>Low cost and enough performance for a specific product task.</td></tr>
@@ -1451,7 +1313,7 @@ body.modal-open { overflow:hidden; }
 
     <section id="ch2-mcu-diagram" class="study-section">
       <h2>Diagram lab 2 · Draw and explain a microcontroller</h2>
-      <p><strong>This is a high-priority diagram:</strong> classmates reported that the earlier sitting asked for a microcontroller diagram. The picture below is a clean study reconstruction from the components listed in the uploaded guide. Check your original lecture slide for any exact block names your teacher uses.</p>
+      
       <figure class="diagram-card">
         <figcaption>Figure 6 · Typical microcontroller block diagram</figcaption>
         <svg viewBox="0 0 1000 420" role="img" aria-label="Microcontroller chip containing CPU, Flash ROM, SRAM, internal bus, GPIO, timers, UART SPI I2C, ADC and PWM connected to external inputs and outputs">
@@ -1509,7 +1371,7 @@ body.modal-open { overflow:hidden; }
             <li>Add GPIO, timer, communication, and converter blocks.</li>
             <li>Draw external input and output devices outside the chip.</li>
           </ol>
-          <p class="small-note">The diagram must communicate the blocks and their relationships. Use the exact names from your lecture if they differ from this simplified drawing.</p>
+          
         </div>
       </div>
       <div class="table-wrap">
@@ -1533,7 +1395,7 @@ body.modal-open { overflow:hidden; }
           <li>Writing <strong>0</strong> may turn it off.</li>
           <li>Reading a button's mapped address may return <strong>1</strong> when pressed and <strong>0</strong> when not pressed.</li>
         </ul>
-        <div class="callout warning"><strong>Updated exam note:</strong> an earlier note said this diagram did not need to be drawn, but the newer class information says the teacher may ask about pictures and their subtexts. Learn the MMIO labels and data directions; practise a simplified sketch as a precaution.</div>
+        
       </div>
       <div class="topic">
         <h3>Bus words you should recognize</h3>
@@ -1557,7 +1419,7 @@ body.modal-open { overflow:hidden; }
 
     <section id="ch2-mmio-diagram" class="study-section">
       <h2>Diagram lab 3 · Memory-mapped input and output circuit</h2>
-      <p>The earlier handwritten note said the MMIO figure did not need to be drawn. The newer class information says pictures and their subtexts may be examined, so learn the labels and the direction of data flow too.</p>
+      
       <figure class="diagram-card">
         <figcaption>Figure 7 · Memory-mapped input and output registers</figcaption>
         <svg viewBox="0 0 1040 390" role="img" aria-label="CPU connected to address decoder and data bus; input register selected by address and read enable; output register written by address and write enable">
@@ -1594,12 +1456,12 @@ body.modal-open { overflow:hidden; }
             <text x="728" y="76">OE</text><text x="728" y="290">EN</text>
           </g>
           <text x="330" y="255" font-family="Arial" font-size="11" text-anchor="middle" fill="#53677f">RD = read control · WR = write control</text>
-          <text x="620" y="370" font-family="Arial" font-size="11" text-anchor="middle" fill="#53677f">Conceptual circuit view based on the uploaded reference guide's input/output register description.</text>
+          <text x="620" y="370" font-family="Arial" font-size="11" text-anchor="middle" fill="#53677f">Memory-mapped input and output registers.</text>
         </svg>
         <p class="diagram-caption"><strong>Input register:</strong> the environment supplies data; the selected register drives the DATA bus when OE is enabled. <strong>Output register:</strong> the CPU writes data into the register; EN allows it to latch the value, and its OUT remains connected to the external device.</p>
       </figure>
       <div class="table-wrap">
-        <table><thead><tr><th>Label</th><th>Meaning in the uploaded reference</th><th>What to remember</th></tr></thead><tbody>
+        <table><thead><tr><th>Label</th><th>Meaning</th><th>What to remember</th></tr></thead><tbody>
           <tr><td><code>ADDR</code></td><td>Address lines entering the decoder.</td><td>Which register is being selected?</td></tr>
           <tr><td><code>RD</code></td><td>Read control used with the address to select an input register.</td><td>CPU is reading data.</td></tr>
           <tr><td><code>WR</code></td><td>Write control used with the address to select an output register.</td><td>CPU is writing data.</td></tr>
@@ -1643,7 +1505,7 @@ body.modal-open { overflow:hidden; }
         <p><strong>Example:</strong> configure the timer to change an output pin after 1,000 clock ticks. The processor can do other work while the timer counts.</p>
       </div>
       <div class="topic">
-        <h3>Capture vs. Compare — memorize this</h3>
+        <h3>Capture vs. Compare</h3>
         <div class="two-col">
           <div class="mini-card accent-blue"><h4>Capture</h4><p>“When did the input event happen?”</p><p>It records the current timer value.</p></div>
           <div class="mini-card accent-purple"><h4>Compare</h4><p>“When should the output event happen?”</p><p>It triggers an action when the count reaches a preset value.</p></div>
@@ -1788,7 +1650,7 @@ body.modal-open { overflow:hidden; }
       </div>
       <div class="topic">
         <h3>Thumb-2 note</h3>
-        <p>The Cortex-M3 uses the Thumb instruction set with Thumb-2 extensions. Instructions can be 16 or 32 bits long. For your exam, the practical point is that the Cortex-M3 executes Thumb instructions; you are not expected to memorize instruction encodings from the bit diagrams unless your teacher specifically asks.</p>
+        <p>The Cortex-M3 uses the Thumb instruction set with Thumb-2 extensions. Instructions can be 16 or 32 bits long.</p>
       </div>
     </section>
 
@@ -1876,7 +1738,7 @@ body.modal-open { overflow:hidden; }
         </div>
       </div>
       <div class="topic">
-        <h3>Worked register example — exactly the kind of calculation in your note</h3>
+        <h3>Worked register example</h3>
         <p>Suppose the question gives:</p>
         <p><code>R1 = 0x2C</code> and <code>R2 = 0x14</code></p>
         <p>Convert to 8-bit binary so you can see the bits:</p>
@@ -2096,8 +1958,8 @@ LDRH R0, [R1]      ; read one halfword</pre>
     </section>
 
     <section id="ch2-reading" class="study-section">
-      <h2>17. Reading the uploaded assembly worksheet — no program writing required</h2>
-      <p>The separate assembly PDF is a worked program with arrays of words, bytes, and halfwords. You should understand what each group of instructions is doing. You do not need to reproduce the whole program from memory.</p>
+      <h2>17. Tracing an assembly program</h2>
+      <p>This program processes arrays of words, bytes, and halfwords.</p>
 
       <div class="topic">
         <h3>First: understand the data declarations</h3>
@@ -2186,14 +2048,14 @@ BEQ EQUAL</pre>
           <li>The equal path sets R0 to 1. If the values were not equal, the other path would set R0 to 0.</li>
         </ul>
         <div class="callout success"><strong>Final values to understand:</strong> R5 = 100, R7 = 0x46, R11 = 0x8A7A. The comparison is equal, so the equal branch is taken and R0 becomes 1.</div>
-        <p class="small-note">This explanation follows the intended data flow in your uploaded worksheet. A couple of address-loading lines in the worksheet appear to use shortened assembler notation; focus on the purpose of the instruction rather than copying the worksheet as a new program.</p>
+        <p class="small-note">Some address loads use abbreviated assembler notation.</p>
       </div>
     </section>
 
 
     <section id="ch2-ldm-table" class="study-section">
       <h2>Worked comparison · LDM / STM address modes (IA, IB, DA, DB)</h2>
-      <p>The uploaded review guide gives a worked example with <code>R9 = 0x100C</code> and register list <code>{R0, R1, R5}</code>. This table is useful for reading a memory diagram and finding the updated base register.</p>
+      
       <div class="callout warning"><strong>Golden rule from the reference:</strong> the lowest-numbered register is associated with the lowest memory address. The order in which the registers are typed inside the braces does not change this rule.</div>
       <div class="table-wrap">
         <table><thead><tr><th>Instruction</th><th>Address mode</th><th>Register placement (low → high address)</th><th>Final R9 with !</th></tr></thead><tbody>
@@ -2221,7 +2083,7 @@ BEQ EQUAL</pre>
           <div class="answer">
             <p>Given <code>R1 = 0x2C</code> and <code>R2 = 0x14</code>:</p>
             <ul><li>ADD → <code>0x40</code></li><li>SUB → <code>0x18</code></li><li>EOR → <code>0x38</code>, which is <code>0011 1000</code>; bits 5, 4, and 3 are set.</li></ul>
-            <p>Try the same process with new values from your teacher's examples.</p>
+            
           </div>
         </details>
       <details id="exam-ch2-review-2">
@@ -2242,7 +2104,7 @@ BEQ EQUAL</pre>
     <section id="comparison-master" class="study-section">
       <div class="section-kicker">ONE-PAGE REVISION</div>
       <h2>Comparison master sheet</h2>
-      <p>These are the comparisons spread across the chapters. Use this page for fast revision, but learn the detailed explanations in their original sections too.</p>
+      
       <div class="table-wrap">
         <table><thead><tr><th>Compare</th><th>First item</th><th>Second item</th><th>One-line memory clue</th></tr></thead><tbody>
           <tr><td>GP vs ASIP</td><td>General-purpose; broad range of programs.</td><td>Programmable but optimized for a family of tasks.</td><td>ASIP is specialized but still programmable.</td></tr>
@@ -2262,18 +2124,18 @@ BEQ EQUAL</pre>
           <tr><td>ADD vs ADDS / SUB vs SUBS</td><td>Basic ADD/SUB do not update flags.</td><td>ADDS/SUBS update flags.</td><td>Check the S suffix before a conditional branch.</td></tr>
         </tbody></table>
       </div>
-      <div class="callout info"><strong>Notebook exercise:</strong> cover the last column and explain each pair aloud. Then cover the first three columns and try to recreate the comparison from memory.</div>
+      
     </section>
 
     <section id="chapter3" class="chapter-heading">
-      <div class="section-kicker">NEWLY REPORTED EXAM SCOPE</div>
+      <div class="section-kicker">CHAPTER 3</div>
       <h2>Chapter 3 · Memory Mapping</h2>
-      <p>This chapter was not in the original handwritten list, but you have now heard that Memory Mapping from Chapter 3 may be included.</p>
+      
     </section>
 
     <section id="ch3-memory-mapping" class="study-section">
       <h2>Memory Mapping · two related ideas you must not confuse</h2>
-      <div class="callout warning"><strong>Source limitation:</strong> you have not uploaded the actual Chapter 3 slides yet. This section is a provisional study base built from the Memory-Mapped I/O and Cortex-M3 4GB address-map material in the HTML guide you uploaded. It may not cover every label or method used in your teacher's Chapter 3. Send the Chapter 3 pages when you can, and this section can be matched to them exactly.</div>
+      
       <div class="two-col">
         <div class="mini-card">
           <h3>1. Memory map / address map</h3>
@@ -2308,10 +2170,10 @@ BEQ EQUAL</pre>
             </g>
           </g>
         </svg>
-        <p class="diagram-caption">The uploaded review guide lists the region start addresses and sizes as shown. The drawing is a study map, not a byte-by-byte scale diagram.</p>
+        
       </figure>
       <div class="table-wrap">
-        <table><thead><tr><th>Start address</th><th>Region</th><th>What the uploaded guide says it contains</th></tr></thead><tbody>
+        <table><thead><tr><th>Start address</th><th>Region</th><th>Contents</th></tr></thead><tbody>
           <tr><td><code>0x00000000</code></td><td>Code (0.5 GB)</td><td>Program code and interrupt vector table.</td></tr>
           <tr><td><code>0x20000000</code></td><td>SRAM (0.5 GB)</td><td>Includes 1 MB bit-band region and 32 MB alias region starting at <code>0x22000000</code>.</td></tr>
           <tr><td><code>0x40000000</code></td><td>Peripheral (0.5 GB)</td><td>Includes 1 MB bit-band region and 32 MB alias region starting at <code>0x42000000</code>.</td></tr>
@@ -2320,7 +2182,7 @@ BEQ EQUAL</pre>
           <tr><td><code>0xE0000000</code></td><td>PPB &amp; System</td><td>Includes internal PPB components such as ITM, DWT, FPB, and SCS, plus external PPB components such as TPIU, ETM, and ROM Table.</td></tr>
         </tbody></table>
       </div>
-      <div class="callout info"><strong>Bit-band labels:</strong> the reference lists a 1 MB bit-band area and a 32 MB alias area for SRAM, and the same pattern for the peripheral region. The alias region provides a way to address individual bits through word addresses. Learn the names and starting addresses if they appear in your lecture's map.</div>
+      <div class="callout info"><strong>Bit-band labels:</strong> the reference lists a 1 MB bit-band area and a 32 MB alias area for SRAM, and the same pattern for the peripheral region. The alias region provides a way to address individual bits through word addresses.</div>
       <h3>What a memory map picture can ask</h3>
       <div class="question-grid">
         <div><b>Which region starts at 0x20000000?</b><span>SRAM region.</span></div>
@@ -2336,10 +2198,24 @@ BEQ EQUAL</pre>
 
 
 
+    <section id="exam-intel" class="study-section"><h2>Microcontroller and processor design questions</h2>
+<details id="exam-exam-intel-1">
+        <summary>Draw and label a microcontroller.</summary>
+        <div class="answer">
+          <p>A microcontroller is a small computer integrated into one chip. Its main blocks include a CPU core, program memory (Flash / ROM), data memory (RAM), an internal bus, and peripherals such as GPIO, timers, and communication interfaces. Depending on the device, it may also include an ADC, PWM, or other special-purpose units. The CPU reads inputs, processes data, and controls outputs.</p>
+          <p><strong>Drawing order:</strong> draw the chip boundary → place the CPU in the centre → add Flash / ROM and RAM → add the bus → add I/O and peripheral blocks → show input and output connections.</p>
+        </div>
+      </details>
+<details id="exam-exam-intel-2">
+        <summary>Compare ASIP and ASIC.</summary>
+        <div class="answer">
+          <p>An <strong>ASIP</strong> is a programmable processor designed for a particular class of applications. It still has an instruction set and executes instructions, but its datapath and operations are optimized for that application area. An <strong>ASIC</strong> is custom hardware designed for a specific function. It usually uses hardwired control rather than a general program stored in program memory. Therefore, an ASIP keeps more flexibility, while an ASIC can be more efficient for its fixed task.</p>
+        </div>
+      </details></section>
     <section id="practice" class="study-section">
       <div class="section-kicker">TEST YOURSELF</div>
-      <h2>Practice questions — try on paper first</h2>
-      <p>Write your answer before opening the explanation. These questions target the exact skills listed in your notes.</p>
+      <h2>Practice questions</h2>
+      
 
       <div class="topic">
         <details id="exam-practice-1">
@@ -2441,15 +2317,15 @@ BEQ EQUAL</pre>
       <div class="topic">
         <details id="exam-practice-17">
           <summary>Picture style · In the MMIO circuit, which control is used for a read?</summary>
-          <div class="answer">RD is the read control. In the uploaded guide, ADDR and RD select the input register; OE lets its output drive the DATA bus.</div>
+          <div class="answer">RD is the read control. ADDR and RD select the input register; OE lets its output drive the DATA bus.</div>
         </details>
       </div>
     </section>
 
     <section id="dictionary" class="study-section">
-      <div class="section-kicker">HOVER OR FOCUS THE DOTTED WORDS</div>
-      <h2>Mini dictionary</h2>
-      <p>Throughout the notes, technical terms with a dotted underline have a Persian translation and a short explanation. Hover over a word on a computer, or tap/focus it on a phone. This list is a quick revision sheet.</p>
+      <div class="section-kicker">TERMINOLOGY</div>
+      <h2>Technical dictionary</h2>
+      
       <div class="dictionary-grid">
         <div><b>Embedded system</b><span>سیستم نهفته — a computer built into a larger product.</span></div>
         <div><b>Processor / CPU</b><span>پردازنده — executes instructions.</span></div>
@@ -2494,11 +2370,7 @@ BEQ EQUAL</pre>
       </div>
     </section>
 
-    <footer class="footer">
-      <p><strong>Source alignment:</strong> notes were prepared from your uploaded ES1, ES2, ARM Cortex-M3, and assembly worksheet PDFs. Duplicate uploads were treated as duplicate copies, not separate chapters.</p>
-      <p>Study strategy: read one topic, close the screen, write the explanation from memory, then reopen and correct it. Understanding the flow is more useful than memorizing assembly syntax.</p>
-      <p class="small-note">The guide follows the scope you supplied. If a page range in the handwritten note conflicts with another note, it is marked as uncertain instead of silently guessed.</p>
-    </footer>
+    
   </main>
 </div>
 
@@ -2510,18 +2382,10 @@ BEQ EQUAL</pre>
   <div id="diagramStage" class="diagram-stage"></div>
   <p class="modal-hint">Swipe sideways to inspect wide diagrams. Pinch to zoom.</p>
 </div>
-<a class="back-to-top" href="#topics" aria-label="Back to search">↑ Top</a>
+
 
 <script>
 (() => {
-  const root = document.documentElement;
-  const safeStorage = {
-    get(key) { try { return window.localStorage.getItem(key); } catch (_) { return null; } },
-    set(key, value) { try { window.localStorage.setItem(key, value); } catch (_) {} }
-  };
-  const themeToggle = document.getElementById("themeToggle");
-  const printBtn = document.getElementById("printBtn");
-  const THEME_KEY = "embedded-guide-theme";
 
   // Persian hints are deliberately short: translation first, plain explanation second.
   const glossary = [
@@ -2648,19 +2512,6 @@ BEQ EQUAL</pre>
     ["infinite loop", "حلقه بی‌نهایت", "A loop that continues without reaching its intended exit condition."]
   ];
 
-  // Restore the last selected theme. The guide starts in dark mode by default.
-  const savedTheme = safeStorage.get(THEME_KEY);
-  if (savedTheme === "light" || savedTheme === "dark") root.dataset.theme = savedTheme;
-
-  themeToggle.addEventListener("click", () => {
-    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
-    safeStorage.set(THEME_KEY, root.dataset.theme);
-  });
-
-  if (printBtn) printBtn.addEventListener("click", () => window.print());
-
-
-
   function isWordCharacter(char) {
     return !!char && /[A-Za-z0-9]/.test(char);
   }
@@ -2738,36 +2589,27 @@ BEQ EQUAL</pre>
 
   addPersianHoverHints();
 
-  document.querySelector(".watch-controls").addEventListener("click", event => {
-    const link = event.target.closest("a");
+  const findButton = document.getElementById("findButton");
+  const panel = document.getElementById("topicPanel");
+  function showTopics(open) {
+    panel.hidden = !open;
+    findButton.setAttribute("aria-expanded", String(open));
+    findButton.setAttribute("aria-label", open ? "Close search" : "Search course topics");
+  }
+  findButton.addEventListener("click", () => showTopics(panel.hidden));
+  panel.addEventListener("click", event => {
+    const link = event.target.closest("a[href^='#']");
     if (!link) return;
     const target = document.getElementById(link.hash.slice(1));
-    if (target.tagName === "DETAILS") target.open = true;
+    if (target && target.tagName === "DETAILS") target.open = true;
+    showTopics(false);
   });
-
-  // Reader text zoom; native browser pinch-zoom remains enabled as well.
-  let readerSize = Number(safeStorage.get("embedded-watch-font") || 16);
-  if (!Number.isFinite(readerSize)) readerSize = 16;
-  readerSize = Math.min(23, Math.max(14, readerSize));
-  const fontValue = document.getElementById("fontValue");
-  function applyReaderSize() {
-    root.style.setProperty("--reader-font", `${readerSize}px`);
-    fontValue.textContent = `${Math.round(readerSize / 16 * 100)}%`;
-    safeStorage.set("embedded-watch-font", String(readerSize));
-  }
-  document.getElementById("fontDown").addEventListener("click", () => {
-    readerSize = Math.max(14, readerSize - 1);
-    applyReaderSize();
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !panel.hidden) {
+      showTopics(false);
+      findButton.focus();
+    }
   });
-  document.getElementById("fontUp").addEventListener("click", () => {
-    readerSize = Math.min(23, readerSize + 1);
-    applyReaderSize();
-  });
-  document.getElementById("fontReset").addEventListener("click", () => {
-    readerSize = 16;
-    applyReaderSize();
-  });
-  applyReaderSize();
 
   // Tap the dotted-underlined term to open / close its bilingual dictionary hint.
   document.addEventListener("click", event => {
