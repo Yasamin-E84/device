@@ -621,7 +621,7 @@ body.modal-open { overflow:hidden; }
 <section class="watch-controls" aria-label="Study controls">
   <form id="searchForm" class="watch-search-row" role="search">
     <label class="sr-only" for="searchBox">Search the study guide</label>
-    <input id="searchBox" type="search" placeholder="Find: watchdog, XOR, ASIP..." autocomplete="off" enterkeyhint="search">
+    <input id="searchBox" type="text" inputmode="text" placeholder="Find: watchdog, XOR, ASIP..." autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
     <button class="watch-control-btn search-submit" type="submit">Search</button>
     <button id="clearSearch" class="watch-control-btn clear-btn" type="button" aria-label="Clear search">×</button>
   </form>
@@ -2911,7 +2911,6 @@ BEQ EQUAL</pre>
     searchResults.hidden = false;
   }
 
-  searchBox.addEventListener("input", () => runSearch(searchBox.value));
   document.getElementById("searchForm").addEventListener("submit", event => {
     event.preventDefault();
     searchBox.blur();
