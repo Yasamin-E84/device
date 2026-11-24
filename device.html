@@ -390,6 +390,13 @@ summary:hover { color:var(--accent); }
 #exam-map .roadmap-card:nth-child(3) { border-color:rgba(243,201,105,.38); }
 #ch2-processor-compare .table-wrap td:first-child { font-weight:800; color:var(--accent); min-width:145px; }
 
+#watchPad summary { padding:10px 4px; color:var(--accent); cursor:pointer; }
+#padKeys { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:3px; }
+#padKeys button { min-width:0; padding:3px 0; min-height:36px; }
+#padQuery { display:block; min-height:1.6em; overflow-wrap:anywhere; }
+#padGo { width:100%; margin-top:5px; }
+#examQuestions > strong { color:var(--accent); padding-top:8px; }
+#examQuestions a { font-size:.85rem; }
   </style>
 
   <style>
@@ -592,6 +599,13 @@ body.modal-open { overflow:hidden; }
   .study-section, .diagram-card { break-inside:avoid; }
 }
 
+#watchPad summary { padding:10px 4px; color:var(--accent); cursor:pointer; }
+#padKeys { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:3px; }
+#padKeys button { min-width:0; padding:3px 0; min-height:36px; }
+#padQuery { display:block; min-height:1.6em; overflow-wrap:anywhere; }
+#padGo { width:100%; margin-top:5px; }
+#examQuestions > strong { color:var(--accent); padding-top:8px; }
+#examQuestions a { font-size:.85rem; }
   </style>
 </head>
 <body>
@@ -625,6 +639,12 @@ body.modal-open { overflow:hidden; }
     <button class="watch-control-btn search-submit" type="submit">Search</button>
     <button id="clearSearch" class="watch-control-btn clear-btn" type="button" aria-label="Clear search">×</button>
   </form>
+  <details id="watchPad">
+    <summary>Tap to type</summary>
+    <output id="padQuery" aria-label="Current search"></output>
+    <div id="padKeys"></div>
+    <button type="button" class="watch-control-btn" id="padGo">Find passages</button>
+  </details>
   <div id="searchResults" class="search-results" hidden aria-live="polite"></div>
   <div class="watch-control-row">
     <button id="fontDown" class="watch-control-btn" type="button" aria-label="Decrease text size">A−</button>
@@ -634,8 +654,56 @@ body.modal-open { overflow:hidden; }
     <button id="themeToggle" class="watch-control-btn" type="button" aria-label="Toggle light and dark mode">☼ / ☾</button>
   </div>
   <details class="quick-search">
-    <summary>☰ Quick search · all keywords</summary>
-    <nav id="keywordList" class="keyword-list" aria-label="Keyword explanations"></nav>
+    <summary>Quick search · exam questions</summary>
+    <nav id="examQuestions" class="keyword-list" aria-label="Exam questions"><strong>Reported from the earlier sitting</strong><a href="#exam-exam-intel-1">Draw and label a microcontroller.</a>
+<a href="#exam-exam-intel-2">Compare ASIP and ASIC.</a><strong>Practice on paper</strong><a href="#exam-practice-1">Define an embedded system in two sentences.</a>
+<a href="#exam-practice-2">What is the difference between hard and soft real-time?</a>
+<a href="#exam-practice-3">What does NRE stand for?</a>
+<a href="#exam-practice-4">Give four examples of serial communication standards listed in the lecture.</a>
+<a href="#exam-practice-5">What is the difference between IR and RF?</a>
+<a href="#exam-practice-6">Define a microcontroller and name its main components.</a>
+<a href="#exam-practice-7">What is memory-mapped I/O?</a>
+<a href="#exam-practice-8">Explain Input Capture and Output Compare in one line each.</a>
+<a href="#exam-practice-9">If R1 = 0x2C and R2 = 0x14, calculate ADD, SUB, and EOR.</a>
+<a href="#exam-practice-10">What is the purpose of R15 (PC)?</a>
+<a href="#exam-practice-11">What is the difference between SUB and SUBS?</a>
+<a href="#exam-practice-12">What does LDMIA R0!, {R1, R2, R3, R4} do?</a>
+<a href="#exam-practice-13">In the lecture&#x27;s short branch example, why does R2 stay equal to 1?</a>
+<a href="#exam-practice-14">Draw a microcontroller and label its blocks.</a>
+<a href="#exam-practice-15">Compare ASIP and ASIC in four points.</a>
+<a href="#exam-practice-16">The memory map shows 0x40000000. What region is this?</a>
+<a href="#exam-practice-17">In the MMIO circuit, which control is used for a read?</a><strong>Chapter drills</strong><a href="#ch1-communication">How do UART start, parity, and stop bits work?</a>
+<a href="#ch1-nre">How does sales volume affect NRE cost per unit?</a>
+<a href="#ch1-memory-visual">How do write-ability and storage permanence differ?</a>
+<a href="#ch2-processor-compare">How do processors speed up instruction execution?</a>
+<a href="#ch2-shifts">What changes after LSL, LSR, ASR, ROR, or RRX?</a>
+<a href="#ch2-memory">How do offset, pre-indexed, and post-indexed loads differ?</a>
+<a href="#ch2-ldm-table">How do IA, IB, DA, and DB change transfer addresses?</a>
+<a href="#ch2-reading">What are the final register and memory values in the worksheet?</a>
+<a href="#exam-ch1-diagram-lab-1">Which block first receives information from the scene?</a>
+<a href="#exam-ch1-diagram-lab-2">Why is an A/D converter needed?</a>
+<a href="#exam-ch1-diagram-lab-3">Why does the camera have a DSP / JPEG co-processor?</a>
+<a href="#exam-ch1-diagram-lab-4">Which blocks are memory?</a>
+<a href="#exam-ch1-diagram-lab-5">What might a small caption ask?</a>
+<a href="#exam-ch1-processor-compare-1">Write this short ASIP-vs-ASIC comparison in your notebook</a>
+<a href="#exam-ch1-communication-diagrams-1">Quick picture question: which one can work when an object blocks the direct path?</a>
+<a href="#exam-ch1-review-1">⚡ 60-second challenge: explain a washing machine</a>
+<a href="#exam-ch1-review-2">🧠 Quick check: which one is the input and which one is the output?</a>
+<a href="#exam-ch2-mcu-diagram-1">which block stores the program, and which stores temporary data?</a>
+<a href="#exam-ch2-mcu-diagram-2">which blocks connect the MCU to the outside world?</a>
+<a href="#exam-ch2-mmio-diagram-1">which signal is associated with the input register?</a>
+<a href="#exam-ch2-mmio-diagram-2">which signal is associated with the output register?</a>
+<a href="#exam-ch2-timing-diagrams-1">what does the timer do while the CPU is busy?</a>
+<a href="#exam-ch2-timing-diagrams-2">what does Top mean?</a>
+<a href="#exam-ch2-register-diagram-1">which register changes during a branch?</a>
+<a href="#exam-ch2-register-diagram-2">what does LR hold after BL?</a>
+<a href="#exam-ch2-ldm-table-1">What does the exclamation mark (!) mean?</a>
+<a href="#exam-ch2-ldm-table-2">What is the difference between Full and Empty stack?</a>
+<a href="#exam-ch2-review-1">two registers, three operations</a>
+<a href="#exam-ch2-review-2">what does LDMIA do?</a>
+<a href="#exam-ch2-review-3">why can SUB followed by BNE be tricky?</a>
+<a href="#exam-ch3-memory-mapping-1">Memory Mapping · short exam answer</a>
+<a href="#exam-ch3-memory-mapping-2">Do not mix these two terms</a></nav>
   </details>
   <details class="watch-index">
     <summary>☰ Browse chapters and topics</summary>
@@ -811,14 +879,14 @@ body.modal-open { overflow:hidden; }
       <div class="callout warning">
         <strong>Do not cross topics out yet.</strong> You are in the later sitting. Keep both reported descriptive questions in the guide as backup. When you send the questions from your own sitting, we can mark only what is genuinely no longer needed.
       </div>
-      <details>
+      <details id="exam-exam-intel-1">
         <summary>Past-sitting question 1 · “Draw a microcontroller diagram” — what should I write?</summary>
         <div class="answer">
           <p>A microcontroller is a small computer integrated into one chip. Its main blocks include a CPU core, program memory (Flash / ROM), data memory (RAM), an internal bus, and peripherals such as GPIO, timers, and communication interfaces. Depending on the device, it may also include an ADC, PWM, or other special-purpose units. The CPU reads inputs, processes data, and controls outputs.</p>
           <p><strong>Drawing order:</strong> draw the chip boundary → place the CPU in the centre → add Flash / ROM and RAM → add the bus → add I/O and peripheral blocks → show input and output connections.</p>
         </div>
       </details>
-      <details>
+      <details id="exam-exam-intel-2">
         <summary>Past-sitting question 2 · “Compare ASIP and ASIC” — model answer</summary>
         <div class="answer">
           <p>An <strong>ASIP</strong> is a programmable processor designed for a particular class of applications. It still has an instruction set and executes instructions, but its datapath and operations are optimized for that application area. An <strong>ASIC</strong> is custom hardware designed for a specific function. It usually uses hardwired control rather than a general program stored in program memory. Therefore, an ASIP keeps more flexibility, while an ASIC can be more efficient for its fixed task.</p>
@@ -942,10 +1010,10 @@ body.modal-open { overflow:hidden; }
         </div>
         <div class="mini-card">
           <h3>Picture-based questions</h3>
-          <details><summary>Which block first receives information from the scene?</summary><div class="answer">The CCD image sensor receives the light information after it passes through the lens.</div></details>
-          <details><summary>Why is an A/D converter needed?</summary><div class="answer">The sensor signal is analog, while the processor works with digital data. The A/D converter changes the analog signal into digital values.</div></details>
-          <details><summary>Why does the camera have a DSP / JPEG co-processor?</summary><div class="answer">Specialized co-processors accelerate particular operations such as digital signal processing and image compression.</div></details>
-          <details><summary>Which blocks are memory?</summary><div class="answer">Flash, DRAM, and the memory card are memory/storage components.</div></details>
+          <details id="exam-ch1-diagram-lab-1"><summary>Which block first receives information from the scene?</summary><div class="answer">The CCD image sensor receives the light information after it passes through the lens.</div></details>
+          <details id="exam-ch1-diagram-lab-2"><summary>Why is an A/D converter needed?</summary><div class="answer">The sensor signal is analog, while the processor works with digital data. The A/D converter changes the analog signal into digital values.</div></details>
+          <details id="exam-ch1-diagram-lab-3"><summary>Why does the camera have a DSP / JPEG co-processor?</summary><div class="answer">Specialized co-processors accelerate particular operations such as digital signal processing and image compression.</div></details>
+          <details id="exam-ch1-diagram-lab-4"><summary>Which blocks are memory?</summary><div class="answer">Flash, DRAM, and the memory card are memory/storage components.</div></details>
         </div>
       </div>
 
@@ -959,7 +1027,7 @@ body.modal-open { overflow:hidden; }
           <div><b>Validation &amp; Evaluation</b><small>Check area, power, performance</small></div>
         </div>
         <p class="diagram-caption">The design flow also includes <strong>Estimation–Exploration</strong>: designers compare possible hardware/software partitions before committing to an implementation.</p>
-        <details><summary>What might a small caption ask?</summary><div class="answer">HW/SW Partitioning means deciding which functions should be implemented in hardware and which should be implemented in software. Validation checks whether the design meets its requirements.</div></details>
+        <details id="exam-ch1-diagram-lab-5"><summary>What might a small caption ask?</summary><div class="answer">HW/SW Partitioning means deciding which functions should be implemented in hardware and which should be implemented in software. Validation checks whether the design meets its requirements.</div></details>
       </figure>
     </section>
 
@@ -1028,7 +1096,7 @@ body.modal-open { overflow:hidden; }
       <div class="callout warning">
         <strong>Common exam trap:</strong> ASIP is still a processor that executes instructions. ASIC is custom hardware for a fixed function. Do not write that both are simply “processors for one task.”
       </div>
-      <details>
+      <details id="exam-ch1-processor-compare-1">
         <summary>Write this short ASIP-vs-ASIC comparison in your notebook</summary>
         <div class="answer">
           <p>An ASIP is a programmable processor optimized for a specific class of applications. It has a specialized instruction set and datapath, but it still executes instructions. An ASIC is a custom integrated circuit designed for a specific function and generally uses hardwired logic. ASIP is more flexible, while ASIC can be more efficient for a fixed task.</p>
@@ -1207,7 +1275,7 @@ body.modal-open { overflow:hidden; }
         </svg>
         <p class="diagram-caption"><strong>IR:</strong> infrared light; low-cost, limited range, requires line of sight. <strong>RF:</strong> radio-frequency signals; needs radio circuitry and antennas, and does not require direct line of sight.</p>
       </figure>
-      <details><summary>Quick picture question: which one can work when an object blocks the direct path?</summary><div class="answer">RF, because the reference states that RF does not require a direct line of sight. IR requires line of sight.</div></details>
+      <details id="exam-ch1-communication-diagrams-1"><summary>Quick picture question: which one can work when an object blocks the direct path?</summary><div class="answer">RF, because the reference states that RF does not require a direct line of sight. IR requires line of sight.</div></details>
     </section>
 
     <section id="ch1-features" class="study-section">
@@ -1300,13 +1368,13 @@ body.modal-open { overflow:hidden; }
       </div>
       <div class="checkpoint-bottom">
         <div class="checkpoint-meter"><strong>Chapter 1 mastery</strong><span>Use the boxes above to track what you can explain from memory.</span></div>
-        <details>
+        <details id="exam-ch1-review-1">
           <summary>⚡ 60-second challenge: explain a washing machine</summary>
           <div class="answer">
             <p>A washing machine is an embedded system. Sensors provide input, such as water level or door status. The microcontroller processes this information according to its program, then controls outputs such as the motor and water valve. It performs a dedicated task inside a larger product.</p>
           </div>
         </details>
-        <details>
+        <details id="exam-ch1-review-2">
           <summary>🧠 Quick check: which one is the input and which one is the output?</summary>
           <div class="answer">
             <p><strong>Temperature sensor:</strong> input — it measures the environment.</p>
@@ -1515,8 +1583,8 @@ body.modal-open { overflow:hidden; }
           <tr><td>Typically larger external system architecture.</td><td>Usually smaller, lower-cost, and more integrated.</td></tr>
         </tbody></table>
       </div>
-      <details><summary>Picture question: which block stores the program, and which stores temporary data?</summary><div class="answer">Flash / ROM stores the program and is non-volatile. SRAM / RAM stores temporary working data and is volatile.</div></details>
-      <details><summary>Picture question: which blocks connect the MCU to the outside world?</summary><div class="answer">GPIO pins, communication interfaces, ADC inputs, PWM outputs, and other I/O peripherals connect it to sensors, actuators, and external devices.</div></details>
+      <details id="exam-ch2-mcu-diagram-1"><summary>Picture question: which block stores the program, and which stores temporary data?</summary><div class="answer">Flash / ROM stores the program and is non-volatile. SRAM / RAM stores temporary working data and is volatile.</div></details>
+      <details id="exam-ch2-mcu-diagram-2"><summary>Picture question: which blocks connect the MCU to the outside world?</summary><div class="answer">GPIO pins, communication interfaces, ADC inputs, PWM outputs, and other I/O peripherals connect it to sensors, actuators, and external devices.</div></details>
     </section>
 
     <section id="ch2-mapped" class="study-section">
@@ -1609,8 +1677,8 @@ body.modal-open { overflow:hidden; }
         <div class="mini-card"><h3>Read operation</h3><ol><li>CPU places the peripheral address on ADDR.</li><li>CPU activates RD.</li><li>Decoder selects the input register.</li><li>OE allows its value onto DATA.</li><li>CPU reads the value.</li></ol></div>
         <div class="mini-card"><h3>Write operation</h3><ol><li>CPU places the output-register address on ADDR.</li><li>CPU places data on DATA and activates WR.</li><li>Decoder selects the output register.</li><li>EN lets the register latch the value.</li><li>The register's OUT drives the external device.</li></ol></div>
       </div>
-      <details><summary>Picture question: which signal is associated with the input register?</summary><div class="answer">OE (Output Enable). It allows the input register's output to drive the shared data bus.</div></details>
-      <details><summary>Picture question: which signal is associated with the output register?</summary><div class="answer">EN (Input Enable). It allows the output register to accept and store the value from the data bus.</div></details>
+      <details id="exam-ch2-mmio-diagram-1"><summary>Picture question: which signal is associated with the input register?</summary><div class="answer">OE (Output Enable). It allows the input register's output to drive the shared data bus.</div></details>
+      <details id="exam-ch2-mmio-diagram-2"><summary>Picture question: which signal is associated with the output register?</summary><div class="answer">EN (Input Enable). It allows the output register to accept and store the value from the data bus.</div></details>
     </section>
 
     <section id="ch2-timers" class="study-section">
@@ -1719,8 +1787,8 @@ body.modal-open { overflow:hidden; }
           <div class="answer">Both count time, but their purposes differ. An ordinary timer is commonly used to measure intervals or schedule events. A watchdog checks that software continues to refresh it and can recover the system if it does not.</div>
         </details>
       </div>
-      <details><summary>Picture question: what does the timer do while the CPU is busy?</summary><div class="answer">The hardware timer continues counting independently. It can capture an event or trigger an interrupt / output action without the CPU counting every clock pulse in software.</div></details>
-      <details><summary>Picture question: what does Top mean?</summary><div class="answer">Top is the timer's configured maximum / terminal count value. Reaching it can cause a timer event, depending on the timer configuration.</div></details>
+      <details id="exam-ch2-timing-diagrams-1"><summary>Picture question: what does the timer do while the CPU is busy?</summary><div class="answer">The hardware timer continues counting independently. It can capture an event or trigger an interrupt / output action without the CPU counting every clock pulse in software.</div></details>
+      <details id="exam-ch2-timing-diagrams-2"><summary>Picture question: what does Top mean?</summary><div class="answer">Top is the timer's configured maximum / terminal count value. Reaching it can cause a timer event, depending on the timer configuration.</div></details>
     </section>
 
     <section id="ch2-arm" class="study-section">
@@ -1831,8 +1899,8 @@ body.modal-open { overflow:hidden; }
         <p class="diagram-caption"><strong>N:</strong> result sign bit is 1. <strong>Z:</strong> result is zero. <strong>C:</strong> carry / no-borrow condition or shifter carry. <strong>V:</strong> signed overflow. <strong>Q:</strong> saturation flag in the reference material.</p>
       </figure>
       <div class="callout warning"><strong>Important instruction comparison:</strong> ADD / SUB without S do not update condition flags in the basic form. ADDS / SUBS update flags. CMP updates flags but does not save a subtraction result to a destination register.</div>
-      <details><summary>Picture question: which register changes during a branch?</summary><div class="answer">The Program Counter (PC / R15) changes to the branch target address.</div></details>
-      <details><summary>Picture question: what does LR hold after BL?</summary><div class="answer">The Link Register (LR / R14) stores the return address so execution can return after the subroutine.</div></details>
+      <details id="exam-ch2-register-diagram-1"><summary>Picture question: which register changes during a branch?</summary><div class="answer">The Program Counter (PC / R15) changes to the branch target address.</div></details>
+      <details id="exam-ch2-register-diagram-2"><summary>Picture question: what does LR hold after BL?</summary><div class="answer">The Link Register (LR / R14) stores the return address so execution can return after the subroutine.</div></details>
     </section>
 
     <section id="ch2-operations" class="study-section">
@@ -2206,8 +2274,8 @@ BEQ EQUAL</pre>
         <div><b>B</b><small>Before · update before first access</small></div>
       </div>
       <p><strong>Stack aliases in the uploaded guide:</strong> standard ARM full-descending stack uses <code>STMDB SP!, {registers}</code> for push and <code>LDMIA SP!, {registers}</code> for pop.</p>
-      <details><summary>What does the exclamation mark (!) mean?</summary><div class="answer">It means write the updated address back into the base register after the transfer.</div></details>
-      <details><summary>What is the difference between Full and Empty stack?</summary><div class="answer">In a Full stack, SP points to the last occupied location. In an Empty stack, SP points to the next empty location.</div></details>
+      <details id="exam-ch2-ldm-table-1"><summary>What does the exclamation mark (!) mean?</summary><div class="answer">It means write the updated address back into the base register after the transfer.</div></details>
+      <details id="exam-ch2-ldm-table-2"><summary>What is the difference between Full and Empty stack?</summary><div class="answer">In a Full stack, SP points to the last occupied location. In an Empty stack, SP points to the next empty location.</div></details>
     </section>
 
     <section id="ch2-review" class="study-section chapter-checkpoint">
@@ -2242,7 +2310,7 @@ BEQ EQUAL</pre>
 <label class="review-item"><input type="checkbox" data-progress="review-ch2-19"><span><b>19.</b> I can explain the four LDM/STM modes and the effect of !.</span></label>
       </div>
       <div class="checkpoint-bottom">
-        <details>
+        <details id="exam-ch2-review-1">
           <summary>✏️ Paper drill 1: two registers, three operations</summary>
           <div class="answer">
             <p>Given <code>R1 = 0x2C</code> and <code>R2 = 0x14</code>:</p>
@@ -2250,13 +2318,13 @@ BEQ EQUAL</pre>
             <p>Try the same process with new values from your teacher's examples.</p>
           </div>
         </details>
-        <details>
+        <details id="exam-ch2-review-2">
           <summary>✏️ Paper drill 2: what does LDMIA do?</summary>
           <div class="answer">
             <p><code>LDMIA R0!, {R1, R2, R3, R4}</code> loads four consecutive words from the memory address in R0 into R1–R4. The exclamation mark means the updated address is written back into R0.</p>
           </div>
         </details>
-        <details>
+        <details id="exam-ch2-review-3">
           <summary>🧠 Paper drill 3: why can SUB followed by BNE be tricky?</summary>
           <div class="answer">
             <p>Because <code>SUB</code> without S does not update the condition flags in the basic form. BNE checks the existing Z flag, which may have been set by an earlier instruction. Do not assume the subtraction changed Z.</p>
@@ -2358,8 +2426,8 @@ BEQ EQUAL</pre>
         <div><b>What begins at 0xE0000000?</b><span>PPB and system region.</span></div>
         <div><b>What is the total address space?</b><span>4 GB for a 32-bit address space.</span></div>
       </div>
-      <details><summary>Memory Mapping · short exam answer</summary><div class="answer"><p>A memory map describes how a processor's address space is assigned to different regions, such as program code, RAM, peripherals, and external devices. In memory-mapped I/O, peripheral registers are given addresses in that same address space, so the processor can access them using normal memory read and write operations.</p></div></details>
-      <details><summary>Do not mix these two terms</summary><div class="answer"><p><strong>Memory map:</strong> the overall address-space layout. <strong>Memory-mapped I/O:</strong> the method of accessing peripheral registers through assigned addresses. MMIO is one use of the processor's address map.</p></div></details>
+      <details id="exam-ch3-memory-mapping-1"><summary>Memory Mapping · short exam answer</summary><div class="answer"><p>A memory map describes how a processor's address space is assigned to different regions, such as program code, RAM, peripherals, and external devices. In memory-mapped I/O, peripheral registers are given addresses in that same address space, so the processor can access them using normal memory read and write operations.</p></div></details>
+      <details id="exam-ch3-memory-mapping-2"><summary>Do not mix these two terms</summary><div class="answer"><p><strong>Memory map:</strong> the overall address-space layout. <strong>Memory-mapped I/O:</strong> the method of accessing peripheral registers through assigned addresses. MMIO is one use of the processor's address map.</p></div></details>
     </section>
 
     <section id="ch3-review" class="study-section chapter-checkpoint">
@@ -2383,104 +2451,104 @@ BEQ EQUAL</pre>
       <p>Write your answer before opening the explanation. These questions target the exact skills listed in your notes.</p>
 
       <div class="topic">
-        <details>
+        <details id="exam-practice-1">
           <summary>1. Define an embedded system in two sentences.</summary>
           <div class="answer"><p>An embedded system is an information-processing system built into a larger product. It combines hardware and software to perform a specific function as part of that product.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-2">
           <summary>2. What is the difference between hard and soft real-time?</summary>
           <div class="answer"><p>In hard real-time, missing the deadline may have disastrous consequences. In soft real-time, occasional deadline misses are tolerable and are not disastrous.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-3">
           <summary>3. What does NRE stand for?</summary>
           <div class="answer"><p>Non-Recurring Engineering. It is a one-time engineering/design cost rather than a cost repeated for every manufactured unit.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-4">
           <summary>4. Give four examples of serial communication standards listed in the lecture.</summary>
           <div class="answer"><p>USB, Ethernet, RS-232, and I²C.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-5">
           <summary>5. What is the difference between IR and RF?</summary>
           <div class="answer"><p>IR uses infrared light and needs line of sight with limited range. RF uses radio waves and does not require line of sight; transmitter power affects range.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-6">
           <summary>6. Define a microcontroller and name its main components.</summary>
           <div class="answer"><p>A microcontroller is a small computer on one integrated circuit. It contains one or more CPU cores, memory, and programmable I/O peripherals.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-7">
           <summary>7. What is memory-mapped I/O?</summary>
           <div class="answer"><p>Some addresses in the processor's address space are assigned to peripheral registers. Reading or writing those addresses lets the processor receive data from or control an I/O device.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-8">
           <summary>8. Explain Input Capture and Output Compare in one line each.</summary>
           <div class="answer"><p>Input Capture records the timer count when an input event occurs. Output Compare triggers an output event when the timer reaches a preset count.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-9">
           <summary>9. If R1 = 0x2C and R2 = 0x14, calculate ADD, SUB, and EOR.</summary>
           <div class="answer"><p>ADD = 0x40. SUB = 0x18. EOR = 0x38. In binary, EOR is 0011 1000, so bits 5, 4, and 3 are set.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-10">
           <summary>10. What is the purpose of R15 (PC)?</summary>
           <div class="answer"><p>R15 is the Program Counter. It keeps the address used for the next instruction in the execution flow. Branches change it to redirect execution.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-11">
           <summary>11. What is the difference between SUB and SUBS?</summary>
           <div class="answer"><p>Both subtract. SUB does not update the condition flags in the basic form; SUBS updates them.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-12">
           <summary>12. What does LDMIA R0!, {R1, R2, R3, R4} do?</summary>
           <div class="answer"><p>It loads four consecutive words from memory starting at the address in R0 into R1, R2, R3, and R4. The ! means the updated address is written back to R0.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-13">
           <summary>13. In the lecture's short branch example, why does R2 stay equal to 1?</summary>
           <div class="answer"><p>SUB is used without S, so it does not update Z. Z remains 0 from the earlier MOVS. BNE branches when Z = 0, so the MOVS R2, #2 instruction is skipped.</p></div>
         </details>
       </div>
 
       <div class="topic">
-        <details>
+        <details id="exam-practice-14">
           <summary>Reported style · Draw a microcontroller and label its blocks.</summary>
           <div class="answer"><p>Draw one chip boundary. Inside it, show CPU, Flash / ROM, RAM, an internal bus, GPIO, timers, and communication peripherals. Add ADC / PWM if shown in your lecture. Outside the chip, show a sensor / button connected to an input and an LED / motor / display connected to an output. Explain that the MCU integrates CPU, memory, and peripherals on one chip.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-15">
           <summary>Reported style · Compare ASIP and ASIC in four points.</summary>
           <div class="answer"><p>ASIP is programmable; ASIC is generally fixed-function hardware. ASIP executes instructions; ASIC commonly uses hardwired control. ASIP is optimized for a class of related applications; ASIC is optimized for a specific function. ASIP is more flexible; ASIC can be more efficient for its fixed task.</p></div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-16">
           <summary>Picture style · The memory map shows 0x40000000. What region is this?</summary>
           <div class="answer">The Peripheral region.</div>
         </details>
       </div>
       <div class="topic">
-        <details>
+        <details id="exam-practice-17">
           <summary>Picture style · In the MMIO circuit, which control is used for a read?</summary>
           <div class="answer">RD is the read control. In the uploaded guide, ADDR and RD select the input register; OE lets its output drive the DATA bus.</div>
         </details>
@@ -2551,7 +2619,7 @@ BEQ EQUAL</pre>
   <div id="diagramStage" class="diagram-stage"></div>
   <p class="modal-hint">Swipe sideways to inspect wide diagrams. Pinch to zoom.</p>
 </div>
-<a class="back-to-top" href="#start" aria-label="Back to top">↑ Top</a>
+<a class="back-to-top" href="#searchForm" aria-label="Back to search">↑ Top</a>
 
 <script>
 (() => {
@@ -2816,13 +2884,13 @@ BEQ EQUAL</pre>
   )].map((element, index) => {
     const section = element.closest("section[id]");
     const text = (element.innerText || element.textContent).replace(/\s+/g, " ").trim();
-    element.id ||= `search-hit-${index}`;
+    if (!element.id) element.id = `search-hit-${index}`;
     return {
       element,
       section,
       text,
       lower: text.toLocaleLowerCase(),
-      heading: section.querySelector("h2, h3")?.textContent?.trim() || section.id
+      heading: section.querySelector("h2, h3").textContent.trim()
     };
   }).filter(entry => entry.text);
 
@@ -2878,7 +2946,7 @@ BEQ EQUAL</pre>
 
   function runSearch(rawQuery) {
     const query = normalizeQuery(rawQuery);
-    searchResults.replaceChildren();
+    searchResults.textContent = "";
     if (!query) {
       searchResults.hidden = true;
       return;
@@ -2913,36 +2981,56 @@ BEQ EQUAL</pre>
 
   document.getElementById("searchForm").addEventListener("submit", event => {
     event.preventDefault();
+    if (smallScreen && !searchBox.value.trim()) { pad.open = true; return; }
+    pad.open = false;
     searchBox.blur();
     runSearch(searchBox.value);
   });
   if (clearSearch) clearSearch.addEventListener("click", () => {
     searchBox.value = "";
+    padQuery.textContent = "";
     runSearch("");
   });
 
-  const keywordList = document.getElementById("keywordList");
-  const keywords = new Map(glossary.map(([term, persian, explanation]) => [
-    normalizeQuery(term), { term, explanation: `${persian} — ${explanation}` }
-  ]));
-  document.querySelectorAll("#dictionary .dictionary-grid > div").forEach(item => {
-    const term = item.querySelector("b")?.textContent?.trim();
-    const explanation = item.querySelector("span")?.textContent?.trim();
-    if (term && !keywords.has(normalizeQuery(term))) {
-      keywords.set(normalizeQuery(term), { term, explanation });
-    }
+  const pad = document.getElementById("watchPad");
+  const padQuery = document.getElementById("padQuery");
+  const padKeys = document.getElementById("padKeys");
+  const smallScreen = window.matchMedia("(max-width: 500px)").matches;
+  if (smallScreen) {
+    searchBox.readOnly = true;
+    searchBox.placeholder = "Tap to type";
+    searchBox.addEventListener("click", () => { pad.open = true; });
+  }
+  function drawKeys(numeric) {
+    padKeys.textContent = "";
+    const chars = numeric ? "1234567890-!/#" : "abcdefghijklmnopqrstuvwxyz";
+    [...chars, numeric ? "ABC" : "123", "Space", "⌫"].forEach(key => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "watch-control-btn";
+      button.textContent = key;
+      if (key === "⌫") button.setAttribute("aria-label", "Backspace");
+      button.addEventListener("click", () => {
+        if (key === "123" || key === "ABC") return drawKeys(!numeric);
+        if (key === "⌫") searchBox.value = searchBox.value.slice(0, -1);
+        else searchBox.value += key === "Space" ? " " : key;
+        padQuery.textContent = searchBox.value;
+      });
+      padKeys.appendChild(button);
+    });
+  }
+  drawKeys(false);
+  pad.addEventListener("toggle", () => { padQuery.textContent = searchBox.value; });
+  document.getElementById("padGo").addEventListener("click", () => {
+    pad.open = false;
+    runSearch(searchBox.value);
+    if (searchBox.value.trim()) searchResults.scrollIntoView({block:"center"});
   });
-  [...keywords.values()].sort((a, b) => a.term.localeCompare(b.term)).forEach(({ term, explanation }) => {
-    const match = matchingEntries(term).find(entry => entry.section.id !== "dictionary");
-    const link = document.createElement("a");
-    link.href = match ? `#${match.element.id}` : "#dictionary";
-    const name = document.createElement("strong");
-    name.textContent = term;
-    const meaning = document.createElement("small");
-    meaning.textContent = explanation;
-    link.append(name, meaning);
-    if (match) link.addEventListener("click", () => jumpTo(match));
-    keywordList.append(link);
+  document.getElementById("examQuestions").addEventListener("click", event => {
+    const link = event.target.closest("a");
+    if (!link) return;
+    const target = document.getElementById(link.hash.slice(1));
+    if (target.tagName === "DETAILS") target.open = true;
   });
 
   // Reader text zoom; native browser pinch-zoom remains enabled as well.
