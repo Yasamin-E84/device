@@ -609,6 +609,8 @@ body { padding-top:var(--dock-height); }
 #topicPanel { position:absolute; top:100%; width:100%; max-width:560px; max-height:calc(100vh - var(--dock-height)); max-height:calc(100dvh - var(--dock-height)); overflow:auto; padding:12px; background:var(--panel); border-bottom:1px solid var(--accent); overscroll-behavior:contain; }
 #topicPanel .topic-words, #topicPanel .keyword-list { max-height:none; overflow:visible; }
 #topicPanel h2 { font-size:1rem; }
+#courseSearch { display:flex; gap:4px; margin-bottom:10px; }
+#courseQuery { min-width:0; width:100%; padding:8px; font-size:16px; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:8px; }
 @media print { .search-dock {display:none} body {padding-top:0} }
 </style>
 </head>
@@ -616,6 +618,11 @@ body { padding-top:var(--dock-height); }
 <header class="search-dock">
   <button type="button" id="findButton" aria-label="Search course topics" aria-expanded="false" aria-controls="topicPanel"><span class="lens" aria-hidden="true"></span></button>
   <div id="topicPanel" hidden>
+    <form id="courseSearch" role="search">
+      <input id="courseQuery" type="text" aria-label="Search the course" placeholder="Type a word…" enterkeyhint="search" autocomplete="off">
+      <button class="watch-control-btn" type="submit">Find</button>
+    </form>
+    <div id="courseMatches" aria-live="polite"></div>
     <h2>Topics</h2>
     <nav class="topic-words" aria-label="Exam topics">
         <a href="#exam-exam-intel-1">Microcontroller diagram</a>
@@ -2587,7 +2594,51 @@ BEQ EQUAL</pre>
     }
   }
 
+  // Include folded answers and worked examples. Ignore hidden tooltip text.
+  const passages = Array.from(document.querySelectorAll(
+    "main h2, main h3, main h4, main p, main li, main summary, main .answer, main tr, main pre, main .callout, main .dictionary-grid > div"
+  )).map((element, index) => {
+    const copy = element.cloneNode(true);
+    copy.querySelectorAll(".tip").forEach(tip => tip.remove());
+    const text = copy.textContent.replace(/\s+/g, " ").trim();
+    if (!element.id) element.id = "passage-" + index;
+    return {element, text, words: tokenize(text)};
+  });
   addPersianHoverHints();
+
+  function tokenize(text) {
+    return text.toLowerCase().match(/[a-z0-9\u0600-\u06ff]+/g) || [];
+  }
+  const queryInput = document.getElementById("courseQuery");
+  const matchesBox = document.getElementById("courseMatches");
+  document.getElementById("courseSearch").addEventListener("submit", event => {
+    event.preventDefault();
+    const words = tokenize(queryInput.value);
+    matchesBox.textContent = "";
+    if (!words.length) return;
+    const phrase = words.join(" ");
+    const matches = passages.filter(p => words.every(w => p.words.includes(w)))
+      .map(p => {
+        const normalized = p.words.join(" ");
+        const score = (normalized === phrase ? 10 : 0) +
+          (normalized.includes(phrase) ? 4 : 0) +
+          (p.element.matches("h2,h3,h4,summary,.dictionary-grid > div") ? 2 : 0);
+        return {p, score};
+      }).sort((a,b) => b.score - a.score);
+    const status = document.createElement("p");
+    status.className = "search-results-title";
+    status.textContent = matches.length ? matches.length + " matching passages" : "No matching passage";
+    matchesBox.appendChild(status);
+    matches.forEach(({p}) => {
+      const link = document.createElement("a");
+      link.className = "search-result-link";
+      link.href = "#" + p.element.id;
+      const start = Math.max(0, p.text.toLowerCase().indexOf(words[0]) - 32);
+      link.textContent = (start ? "…" : "") + p.text.slice(start, start + 150) +
+        (p.text.length > start + 150 ? "…" : "");
+      matchesBox.appendChild(link);
+    });
+  });
 
   const findButton = document.getElementById("findButton");
   const panel = document.getElementById("topicPanel");
@@ -2601,7 +2652,11 @@ BEQ EQUAL</pre>
     const link = event.target.closest("a[href^='#']");
     if (!link) return;
     const target = document.getElementById(link.hash.slice(1));
-    if (target && target.tagName === "DETAILS") target.open = true;
+    let folded = target && target.closest("details");
+    while (folded) {
+      folded.open = true;
+      folded = folded.parentElement.closest("details");
+    }
     showTopics(false);
   });
   document.addEventListener("keydown", event => {
