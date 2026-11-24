@@ -163,6 +163,15 @@ pre,.table-wrap { max-width:100%; }
 .assembly-intro { margin-top:12px; }
 .assembly-shortcuts { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
 .assembly-shortcuts span { border:1px solid var(--line); border-radius:8px; padding:3px 8px; font:700 .76rem/1.5 "Cascadia Code",Consolas,monospace; direction:ltr; }
+.python-model-note { border-left:3px solid var(--teal); padding:10px 12px; background:var(--surface2); border-radius:8px; }
+.python-model-table { display:block; width:100%; margin:14px 0; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface2); }
+.python-model-table caption { display:block; box-sizing:border-box; width:100%; padding:10px 12px; text-align:left; color:var(--teal); font-size:1.05em; font-weight:750; border-bottom:1px solid var(--line); }
+.python-model-table tbody,.python-model-table tr,.python-model-table th,.python-model-table td { display:block; width:100%; }
+.python-model-table tr { padding:8px 10px; border-bottom:1px solid var(--line); }
+.python-model-table tr:last-child { border-bottom:0; }
+.python-model-table th { padding:0 0 5px; text-align:left; color:var(--muted); font-size:.76em; letter-spacing:.04em; text-transform:uppercase; }
+.python-model-table pre { margin:0; padding:10px 12px; border-radius:10px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.python-model-table code { direction:ltr; text-align:left; }
 @media(max-width:540px) { .hero { padding:17px 13px 13px; } .hero h1 { font-size:1.35rem; } .hero p { font-size:.84rem; } .wrap { padding:0 8px 50px; margin:10px auto; } .panel { padding:12px; } pre { font-size:.76rem; } #topicView { padding:10px; } }
 @media print { .search-dock,#topicPanel,#leaveTopic { display:none !important; } body { padding-top:0; } }
 </style>
@@ -654,6 +663,681 @@ B FINISH</code></pre>
     <li><strong>Signed versus unsigned:</strong> GT and HI are not interchangeable. GT is signed; HI is unsigned.</li>
   </ol>
 </section>
+<section class="panel search-item" id="python-models"><h2>Assembly → Python</h2><p>Every command has its own table. Search an opcode to open only that command’s example. Register values, flags, labels, and the dictionary named <code>memory</code> are made-up Python variables for study; the examples never access computer or device memory.</p><table class="python-model-table" id="py-MOV"><caption><code>MOV</code> — Move</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>MOV R0, R1</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = r1</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Copies R1 into R0.</td></tr></tbody></table>
+<table class="python-model-table" id="py-MOVS"><caption><code>MOVS</code> — Move and update flags</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>MOVS R0, #5</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = 5  # updates N and Z flags</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Moves the value and updates condition flags.</td></tr></tbody></table>
+<table class="python-model-table" id="py-MVN"><caption><code>MVN</code> — Move Not</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>MVN R0, R1</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(~r1)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Copies the bitwise NOT of R1.</td></tr></tbody></table>
+<table class="python-model-table" id="py-ADD"><caption><code>ADD</code> — Add</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>ADD R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 + r2)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Adds R1 and R2.</td></tr></tbody></table>
+<table class="python-model-table" id="py-ADDS"><caption><code>ADDS</code> — Add and update flags</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>ADDS R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 + r2)  # updates N, Z, C, V</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Adds and updates condition flags.</td></tr></tbody></table>
+<table class="python-model-table" id="py-ADC"><caption><code>ADC</code> — Add with Carry</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>ADC R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 + r2 + flags["C"])</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Adds R1, R2, and the Carry flag.</td></tr></tbody></table>
+<table class="python-model-table" id="py-SUB"><caption><code>SUB</code> — Subtract</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>SUB R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 - r2)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Subtracts R2 from R1.</td></tr></tbody></table>
+<table class="python-model-table" id="py-SUBS"><caption><code>SUBS</code> — Subtract and update flags</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>SUBS R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 - r2)  # updates N, Z, C, V</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Subtracts and updates condition flags.</td></tr></tbody></table>
+<table class="python-model-table" id="py-SBC"><caption><code>SBC</code> — Subtract with Carry</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>SBC R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 - r2 - (1 - flags["C"]))</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Subtracts R2 and the borrow indicated by Carry.</td></tr></tbody></table>
+<table class="python-model-table" id="py-RSB"><caption><code>RSB</code> — Reverse Subtract</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>RSB R0, R1, #0</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(0 - r1)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Subtracts R1 from the second operand; this example negates R1.</td></tr></tbody></table>
+<table class="python-model-table" id="py-RSC"><caption><code>RSC</code> — Reverse Subtract with Carry</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>RSC R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r2 - r1 - (1 - flags["C"]))</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Subtracts R1 and borrow from R2.</td></tr></tbody></table>
+<table class="python-model-table" id="py-MUL"><caption><code>MUL</code> — Multiply</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>MUL R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 * r2)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Multiplies; keeps the low 32 bits.</td></tr></tbody></table>
+<table class="python-model-table" id="py-MLA"><caption><code>MLA</code> — Multiply Accumulate</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>MLA R0, R1, R2, R3</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32((r1 * r2) + r3)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Multiplies R1 and R2, then adds R3.</td></tr></tbody></table>
+<table class="python-model-table" id="py-MLS"><caption><code>MLS</code> — Multiply Subtract</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>MLS R0, R1, R2, R3</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r3 - (r1 * r2))</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Multiplies R1 and R2, then subtracts the product from R3.</td></tr></tbody></table>
+<table class="python-model-table" id="py-AND"><caption><code>AND</code> — Bitwise AND</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>AND R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = r1 &amp; r2</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Keeps bits set in both inputs.</td></tr></tbody></table>
+<table class="python-model-table" id="py-ORR"><caption><code>ORR</code> — OR (register form)</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>ORR R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = r1 | r2</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Sets bits present in either input.</td></tr></tbody></table>
+<table class="python-model-table" id="py-EOR"><caption><code>EOR</code> — Exclusive OR</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>EOR R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = r1 ^ r2</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Sets bits when the input bits differ.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BIC"><caption><code>BIC</code> — Bit Clear</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BIC R0, R1, R2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = r1 &amp; u32(~r2)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Clears in R1 every bit set in R2.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LSL"><caption><code>LSL</code> — Logical Shift Left</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LSL R0, R1, #2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 &lt;&lt; 2)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Shifts left; zeros enter from the right.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LSR"><caption><code>LSR</code> — Logical Shift Right</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LSR R0, R1, #2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = (r1 &amp; MASK32) &gt;&gt; 2</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Shifts right; zeros enter from the left.</td></tr></tbody></table>
+<table class="python-model-table" id="py-ASL"><caption><code>ASL</code> — Arithmetic Shift Left (LSL alias)</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>ASL R0, R1, #2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32(r1 &lt;&lt; 2)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Assembler alias for logical shift left.</td></tr></tbody></table>
+<table class="python-model-table" id="py-ASR"><caption><code>ASR</code> — Arithmetic Shift Right</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>ASR R0, R1, #2</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32((r1 if r1 &lt; 0x80000000 else r1 - 0x100000000) &gt;&gt; 2)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Shifts right while preserving the sign.</td></tr></tbody></table>
+<table class="python-model-table" id="py-ROR"><caption><code>ROR</code> — Rotate Right</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>ROR R0, R1, #4</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = u32((r1 &gt;&gt; 4) | (r1 &lt;&lt; 28))</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Rotates the low 32 bits right.</td></tr></tbody></table>
+<table class="python-model-table" id="py-RRX"><caption><code>RRX</code> — Rotate Right with Extend</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>RRX R0, R1</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = (flags["C"] &lt;&lt; 31) | ((r1 &amp; MASK32) &gt;&gt; 1)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Rotates right through the Carry flag.</td></tr></tbody></table>
+<table class="python-model-table" id="py-CMP"><caption><code>CMP</code> — Compare</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>CMP R0, R1</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+result = u32(r0 - r1)  # flags only; no destination</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Subtracts for flags without saving the result.</td></tr></tbody></table>
+<table class="python-model-table" id="py-CMN"><caption><code>CMN</code> — Compare Negative</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>CMN R0, R1</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+result = u32(r0 + r1)  # flags only; no destination</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Adds for flags without saving the result.</td></tr></tbody></table>
+<table class="python-model-table" id="py-TST"><caption><code>TST</code> — Test bits</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>TST R0, R1</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+result = r0 &amp; r1  # flags only; no destination</code></pre></td></tr><tr><th scope="row">Meaning</th><td>ANDs for flags without saving the result.</td></tr></tbody></table>
+<table class="python-model-table" id="py-TEQ"><caption><code>TEQ</code> — Test Equivalence</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>TEQ R0, R1</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 0, 12, 5, 2
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+result = r0 ^ r1  # flags only; no destination</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Exclusive-ORs for flags without saving the result.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDR"><caption><code>LDR</code> — Load Register</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDR R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r1]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Reads a value from the fake Python dictionary at address r1.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDRB"><caption><code>LDRB</code> — Load Register Byte</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDRB R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r1] &amp; 0xFF</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Reads one byte and zero-extends it.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDRH"><caption><code>LDRH</code> — Load Register Halfword</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDRH R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r1] &amp; 0xFFFF</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Reads one halfword and zero-extends it.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDRSB"><caption><code>LDRSB</code> — Load Register Signed Byte</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDRSB R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+v = memory[r1] &amp; 0xFF
+r0 = u32(v if v &lt; 0x80 else v - 0x100)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Reads a byte and sign-extends it to 32 bits.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDRSH"><caption><code>LDRSH</code> — Load Register Signed Halfword</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDRSH R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+v = memory[r1] &amp; 0xFFFF
+r0 = u32(v if v &lt; 0x8000 else v - 0x10000)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Reads a halfword and sign-extends it to 32 bits.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STR"><caption><code>STR</code> — Store Register</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STR R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r1] = u32(r0)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Writes a word to the fake Python dictionary.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STRB"><caption><code>STRB</code> — Store Register Byte</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STRB R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r1] = r0 &amp; 0xFF</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Writes only the low byte to the fake dictionary.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STRH"><caption><code>STRH</code> — Store Register Halfword</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STRH R0, [R1]</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r1] = r0 &amp; 0xFFFF</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Writes only the low halfword to the fake dictionary.</td></tr></tbody></table>
+<table class="python-model-table" id="py-PUSH"><caption><code>PUSH</code> — Push registers onto stack</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>PUSH {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+sp = u32(sp - 8)
+memory[sp] = r0
+memory[sp + 4] = r1</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Moves SP down, then saves the values in fake memory.</td></tr></tbody></table>
+<table class="python-model-table" id="py-POP"><caption><code>POP</code> — Pop registers from stack</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>POP {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[sp]
+r1 = memory[sp + 4]
+sp = u32(sp + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Restores the values, then moves SP up.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDM"><caption><code>LDM</code> — Load Multiple (increment-after example)</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDM R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r4]
+r1 = memory[r4 + 4]
+r4 = u32(r4 + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Loads several words; this shows increment-after.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDMIA"><caption><code>LDMIA</code> — Load Multiple Increment After</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDMIA R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r4]
+r1 = memory[r4 + 4]
+r4 = u32(r4 + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Loads upward from the base, then updates the base.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDMIB"><caption><code>LDMIB</code> — Load Multiple Increment Before</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDMIB R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r4 + 4]
+r1 = memory[r4 + 8]
+r4 = u32(r4 + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Increments before the first load.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDMDA"><caption><code>LDMDA</code> — Load Multiple Decrement After</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDMDA R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r4 - 4]
+r1 = memory[r4]
+r4 = u32(r4 - 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Loads in decrement-after address order.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDMDB"><caption><code>LDMDB</code> — Load Multiple Decrement Before</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDMDB R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[r4 - 8]
+r1 = memory[r4 - 4]
+r4 = u32(r4 - 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Decrements before the first load.</td></tr></tbody></table>
+<table class="python-model-table" id="py-LDMFD"><caption><code>LDMFD</code> — Load Multiple Full Descending</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>LDMFD SP!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+r0 = memory[sp]
+r1 = memory[sp + 4]
+sp = u32(sp + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Full-descending stack alias for LDMIA; pops the registers.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STM"><caption><code>STM</code> — Store Multiple (increment-after example)</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STM R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r4] = r0
+memory[r4 + 4] = r1
+r4 = u32(r4 + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Stores several words; this shows increment-after.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STMIA"><caption><code>STMIA</code> — Store Multiple Increment After</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STMIA R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r4] = r0
+memory[r4 + 4] = r1
+r4 = u32(r4 + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Stores upward from the base, then updates the base.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STMIB"><caption><code>STMIB</code> — Store Multiple Increment Before</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STMIB R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r4 + 4] = r0
+memory[r4 + 8] = r1
+r4 = u32(r4 + 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Increments before the first store.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STMDA"><caption><code>STMDA</code> — Store Multiple Decrement After</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STMDA R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r4 - 4] = r0
+memory[r4] = r1
+r4 = u32(r4 - 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Stores in decrement-after address order.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STMDB"><caption><code>STMDB</code> — Store Multiple Decrement Before</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STMDB R4!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+memory[r4 - 8] = r0
+memory[r4 - 4] = r1
+r4 = u32(r4 - 8)</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Decrements before the first store.</td></tr></tbody></table>
+<table class="python-model-table" id="py-STMFD"><caption><code>STMFD</code> — Store Multiple Full Descending</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>STMFD SP!, {R0, R1}</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+r0, r1, r2, r3 = 7, 0x1000, 5, 2
+r4, sp = 0x1000, 0x2000
+memory = {0x0FF8: 1, 0x0FFC: 2, 0x1000: 3, 0x1004: 4, 0x1008: 5, 0x1FFC: 6, 0x2000: 7, 0x2004: 8}  # made-up dictionary
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+sp = u32(sp - 8)
+memory[sp] = r0
+memory[sp + 4] = r1</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Full-descending stack alias for STMDB; pushes the registers.</td></tr></tbody></table>
+<table class="python-model-table" id="py-B"><caption><code>B</code> — Branch</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>B target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Always changes control flow to the target.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BCC"><caption><code>BCC</code> — Branch if Carry Clear</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BCC target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["C"] == 0: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Carry is clear; synonym: BLO.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BCS"><caption><code>BCS</code> — Branch if Carry Set</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BCS target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["C"] == 1: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Carry is set; synonym: BHS.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BEQ"><caption><code>BEQ</code> — Branch if Equal</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BEQ target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["Z"] == 1: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Zero is set.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BNE"><caption><code>BNE</code> — Branch if Not Equal</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BNE target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["Z"] == 0: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Zero is clear.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BGE"><caption><code>BGE</code> — Branch if Greater than or Equal</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BGE target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["N"] == flags["V"]: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Signed comparison condition.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BGT"><caption><code>BGT</code> — Branch if Greater Than</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BGT target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["Z"] == 0 and flags["N"] == flags["V"]: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Signed comparison condition.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BHI"><caption><code>BHI</code> — Branch if Higher</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BHI target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["C"] == 1 and flags["Z"] == 0: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Unsigned comparison condition.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BHS"><caption><code>BHS</code> — Branch if Higher or Same</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BHS target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["C"] == 1: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Unsigned condition; synonym: BCS.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BL"><caption><code>BL</code> — Branch with Link</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BL R3</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+lr = u32(pc + 4)
+pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Saves the return address in LR, then branches.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BLE"><caption><code>BLE</code> — Branch if Less than or Equal</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BLE target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["Z"] == 1 or flags["N"] != flags["V"]: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Signed comparison condition.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BLO"><caption><code>BLO</code> — Branch if Lower</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BLO target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["C"] == 0: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Unsigned condition; synonym: BCC.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BLS"><caption><code>BLS</code> — Branch if Lower or Same</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BLS target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["C"] == 0 or flags["Z"] == 1: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Unsigned comparison condition.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BLT"><caption><code>BLT</code> — Branch if Less Than</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BLT target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["N"] != flags["V"]: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Signed comparison condition.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BMI"><caption><code>BMI</code> — Branch if Minus</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BMI target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["N"] == 1: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Negative is set.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BPL"><caption><code>BPL</code> — Branch if Plus</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BPL target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["N"] == 0: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Negative is clear.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BVC"><caption><code>BVC</code> — Branch if Overflow Clear</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BVC target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["V"] == 0: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Overflow is clear.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BVS"><caption><code>BVS</code> — Branch if Overflow Set</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BVS target</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+pc = 0x08000000
+labels = {"target": 0x08000100}
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+if flags["V"] == 1: pc = labels["target"]</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches when Overflow is set.</td></tr></tbody></table>
+<table class="python-model-table" id="py-BX"><caption><code>BX</code> — Branch and Exchange</caption><tbody><tr><th scope="row">Assembly</th><td><pre><code>BX R3</code></pre></td></tr><tr><th scope="row">Python model</th><td><pre><code># Fake Python inputs only; no real memory is accessed.
+target = 0x08000100
+flags = {"N": 0, "Z": 0, "C": 1, "V": 0}  # fake APSR flags
+MASK32 = 0xFFFFFFFF
+def u32(value):
+    return value &amp; MASK32
+
+# Python-style model
+pc = target  # fake code address</code></pre></td></tr><tr><th scope="row">Meaning</th><td>Branches to an address held in a register.</td></tr></tbody></table></section>
     <footer>ARM Cortex-M3 · Thumb / Unified Assembly · Single-file quick reference</footer>
   </main>
 </div>
@@ -681,6 +1365,10 @@ B FINISH</code></pre>
     group("Trace and debug a program","trace|tracing|walk through|sample program|debug|read code|array example|program example", "mind sample"),
     group("Common mistakes and quick checks","common mistakes|exam traps|mistakes|quick checks|LDR versus MOV|SUB versus SUBS|register order", "traps flags memory addressing multiple")
   ];
+  const pythonCommands=["MOV","MOVS","MVN","ADD","ADDS","ADC","SUB","SUBS","SBC","RSB","RSC","MUL","MLA","MLS","AND","ORR","EOR","BIC","LSL","LSR","ASL","ASR","ROR","RRX","CMP","CMN","TST","TEQ","LDR","LDRB","LDRH","LDRSB","LDRSH","STR","STRB","STRH","PUSH","POP","LDM","LDMIA","LDMIB","LDMDA","LDMDB","LDMFD","STM","STMIA","STMIB","STMDA","STMDB","STMFD","B","BCC","BCS","BEQ","BNE","BGE","BGT","BHI","BHS","BL","BLE","BLO","BLS","BLT","BMI","BPL","BVC","BVS","BX"];
+  const pythonCommandSet=new Set(pythonCommands.map(normalize));
+  groups.forEach(g=>{g.aliases=g.aliases.filter(alias=>!pythonCommandSet.has(alias));});
+  groups.push(...pythonCommands.map(op=>group(op+" — Python model",op,"py-"+op)));
   groups.forEach(g=>{g.text=normalize(g.nodes.map(n=>n.innerText).join(" "));});
   const candidates=[...new Set(groups.flatMap(g=>g.aliases))];
   let typed="",committed="",shifted=false,symbols=false;
@@ -754,9 +1442,9 @@ B FINISH</code></pre>
 
   // VS Code Dark+ inspired syntax highlighting for the assembly examples.
   const instructionNames = new Set((
-    "ADC ADD ADDS AND ASR B BCC BCS BEQ BGE BGT BHI BHS BL BLE BLO BLS BLT BMI BNE BPL BVC BVS " +
-    "BIC BX CMN CMP EOR LDM LDMDA LDMDB LDMIA LDMIB LDR LDRB LDRH LDRSB LDRSH MLA MLS MOV MOVS " +
-    "MVN MUL ORR POP PUSH ROR RRX RSB RSC SBC STM STMDA STMDB STMIA STMIB STR STRB STRH SUB SUBS " +
+    "ADC ADD ADDS AND ASL ASR B BCC BCS BEQ BGE BGT BHI BHS BL BLE BLO BLS BLT BMI BNE BPL BVC BVS " +
+    "BIC BX CMN CMP EOR LDM LDMDA LDMDB LDMFD LDMIA LDMIB LDR LDRB LDRH LDRSB LDRSH LSL LSR MLA MLS MOV MOVS " +
+    "MVN MUL ORR POP PUSH ROR RRX RSB RSC SBC STM STMDA STMDB STMIA STMIB STMFD STR STRB STRH SUB SUBS " +
     "TST TEQ"
   ).split(/\s+/));
   const registerPattern = /^(R(?:1[0-5]|[0-9])|SP|LR|PC|APSR|CPSR|SPSR)$/i;
