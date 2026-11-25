@@ -1,31 +1,44 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111b2d"><title>Assembly Commands — Operations and Python</title>
 <style>
-:root{color-scheme:dark;--bg:#111b2d;--panel:#1a2940;--panel2:#202f47;--line:#33445e;--text:#f4f8ff;--muted:#aec0d4;--accent:#56d5d0;--code:#d6e6ff}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",sans-serif}main{max-width:1300px;margin:auto;padding:20px 16px 50px}h1{margin:0;color:var(--accent);font-size:clamp(1.35rem,3vw,2rem)}.subtitle{margin:6px 0 16px;color:var(--muted)}
-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}caption{display:block;box-sizing:border-box;width:100%;caption-side:top;text-align:left;padding:0 0 10px;color:var(--muted);font-size:.88rem}thead th{position:sticky;top:0;z-index:1;background:#20324d;color:var(--accent);text-align:left;font-size:.82rem;padding:11px;border-bottom:1px solid var(--line)}thead th:nth-child(1){width:8%}thead th:nth-child(2){width:15%}thead th:nth-child(3){width:17%}thead th:nth-child(4){width:30%}thead th:nth-child(5){width:30%}
-tbody tr:nth-child(even){background:var(--panel2)}tbody td{vertical-align:top;border-bottom:1px solid var(--line);padding:10px 11px;overflow-wrap:anywhere}tbody tr:last-child td{border-bottom:0}code,pre{font-family:"Cascadia Code",Consolas,monospace}code{color:var(--code)}.command{color:var(--accent);font-weight:800;font-size:1.08rem}.formula{display:block;color:#f4f8ff;font-weight:650}.note{display:block;margin-top:5px;color:var(--muted);font-size:.82rem}pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.84rem;line-height:1.45}
+:root{color-scheme:dark;--bg:#111b2d;--panel:#1a2940;--panel2:#202f47;--line:#33445e;--text:#f4f8ff;--muted:#aec0d4;--accent:#56d5d0;--code:#d6e6ff;--dock-height:clamp(36px,11dvh,54px)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;padding-top:var(--dock-height);background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",sans-serif}main{max-width:1300px;margin:auto;padding:20px 16px 70px}h1{margin:0;color:var(--accent);font-size:clamp(1.35rem,3vw,2rem)}.subtitle{margin:6px 0 16px;color:var(--muted)}
+table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}caption{display:block;box-sizing:border-box;width:100%;caption-side:top;text-align:left;padding:0 0 10px;color:var(--muted);font-size:.88rem}thead th{position:sticky;top:0;z-index:1;background:#20324d;color:var(--accent);text-align:left;font-size:.82rem;padding:11px;border-bottom:1px solid var(--line)}#commandTable thead th:nth-child(1){width:8%}#commandTable thead th:nth-child(2){width:15%}#commandTable thead th:nth-child(3){width:17%}#commandTable thead th:nth-child(4){width:30%}#commandTable thead th:nth-child(5){width:30%}.reference{margin-top:24px;table-layout:auto}.reference thead th{position:static}.reference tbody td:first-child{font-weight:750;color:var(--accent)}.reference tbody td{font-size:.92rem}
+tbody tr:nth-child(even){background:var(--panel2)}tbody tr{scroll-margin-top:calc(var(--dock-height) + 10px)}tbody tr.search-hit{outline:2px solid var(--accent);outline-offset:-2px;background:#24445b!important}tbody td{vertical-align:top;border-bottom:1px solid var(--line);padding:10px 11px;overflow-wrap:anywhere}tbody tr:last-child td{border-bottom:0}code,pre{font-family:"Cascadia Code",Consolas,monospace}code{color:var(--code)}.command{color:var(--accent);font-weight:800;font-size:1.08rem}.formula{display:block;color:#f4f8ff;font-weight:650}.note{display:block;margin-top:5px;color:var(--muted);font-size:.82rem}pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.84rem;line-height:1.45}
+.search-dock{position:fixed;inset:0 0 auto;z-index:50;height:var(--dock-height);display:flex;align-items:center;justify-content:center;background:var(--bg);border-bottom:1px solid var(--line)}#findButton{display:grid;place-items:center;width:clamp(32px,9dvh,44px);height:clamp(32px,9dvh,44px);border:1px solid var(--line);border-radius:50%;background:var(--panel2);color:var(--accent);cursor:pointer}.lens{position:relative;width:15px;height:15px;border:2px solid currentColor;border-radius:50%;margin:-3px 3px 0 0}.lens::after{position:absolute;content:"";width:8px;height:2px;left:11px;top:10px;background:currentColor;transform:rotate(45deg);transform-origin:left}
+#searchPanel{position:fixed;inset:0;z-index:60;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:var(--bg)}#searchPanel[hidden],#clearSearch[hidden]{display:none!important}#searchForm{position:absolute;top:13dvh;left:50%;transform:translateX(-50%);display:flex;width:min(66%,320px);height:clamp(24px,6dvh,32px);gap:4px}#courseQuery{min-width:0;width:100%;padding:3px 7px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font-size:clamp(12px,3.4dvh,16px);pointer-events:none}#panelClose{flex:0 0 clamp(24px,6dvh,32px);padding:0;border:1px solid var(--line);border-radius:50%;background:var(--panel2);color:var(--text);font-size:18px}#searchForm button[type=submit]{display:none}
+#watchSuggestions,#searchMatches{position:absolute;left:50%;transform:translateX(-50%);display:flex;width:min(78%,380px);height:clamp(24px,6dvh,32px);gap:4px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:none}#watchSuggestions{top:calc(13dvh + clamp(24px,6dvh,32px) + 4px)}#searchMatches{top:28dvh;height:clamp(20px,6dvh,32px)}#watchSuggestions button,#searchMatches button{flex:0 0 auto;min-width:32px;height:100%;padding:2px 7px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);color:var(--text);font-size:clamp(10px,2.8dvh,13px)}#searchMatches .no-match{align-self:center;color:var(--muted);font-size:12px}
+#watchKeypad{position:absolute;top:max(35dvh,calc(13dvh + clamp(48px,12dvh,64px) + 8px));left:50%;transform:translateX(-50%);display:grid;width:min(100%,480px);height:43dvh;grid-template-rows:repeat(4,minmax(16px,1fr));gap:clamp(2px,.6dvh,4px)}.key-row{display:flex;justify-content:center;gap:2px;min-width:0}.key-row button{flex:1 1 0;min-width:0;min-height:0;height:100%;padding:0 1px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);color:var(--text);touch-action:manipulation;line-height:1;font-size:clamp(13px,3.8dvh,20px);font-weight:700}.key-row button.key-wide{flex:1.7 1 0;font-size:clamp(10px,2.6dvh,13px)}.key-row button.key-space{flex:4 1 0;font-size:clamp(10px,2.6dvh,13px)}.key-row button.key-send{flex:1.7 1 0;color:var(--accent)}#watchKeypad .key-row:nth-child(1){width:90%;margin-inline:auto}#watchKeypad .key-row:nth-child(2){width:96%;margin-inline:auto}#watchKeypad .key-row:nth-child(3){width:80%;margin-inline:auto}#watchKeypad .key-row:nth-child(4){width:72%;margin-inline:auto}
+#clearSearch{position:fixed;z-index:55;bottom:9px;left:50%;transform:translateX(-50%);width:clamp(36px,10dvh,46px);height:clamp(36px,10dvh,46px);border:1px solid var(--accent);border-radius:50%;background:var(--bg);color:var(--text);font-size:26px;box-shadow:0 4px 16px #0008}
+#searchMatches{top:calc(13dvh + clamp(24px,6dvh,32px) + 4px)}#searchMatches:empty,#watchSuggestions[hidden],#searchMatches[hidden]{display:none!important}
 @media(max-width:800px){main{padding:14px 10px 36px}thead{position:absolute;left:-10000px}table{display:block;border:0;background:transparent;overflow:visible}tbody{display:block}tbody tr{display:block;margin:0 0 10px;padding:7px 9px;border:1px solid var(--line);border-radius:12px;background:var(--panel)!important}tbody td{display:block;padding:4px 1px;border:0}tbody td::before{content:attr(data-label);display:block;margin-bottom:2px;color:var(--muted);font-size:.69rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}tbody td[data-label="Command"]::before{display:none}tbody td[data-label="Command"]{padding-top:2px}.command{font-size:1.15rem}pre{padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#1d1d1d}}
 @media(max-width:280px){body{font-size:13px}main{padding:8px 6px 22px}.subtitle{font-size:.78rem}caption{font-size:.72rem}tbody tr{padding:6px}pre{font-size:.72rem}.note{font-size:.72rem}}
-</style></head><body><main>
-<h1>Assembly commands</h1><p class="subtitle">All 69 commands in one table. Scroll to the command you need.</p>
-<table aria-label="Assembly commands, exact operations, and Python models"><caption>Operation formulas use 32-bit registers. C is Carry; N, Z, C, V are condition flags. In Python, <code>u32(x) = x &amp; 0xFFFFFFFF</code>, register names are ordinary sample variables, and <code>fake_memory = {0x1000: 25}</code> is an invented dictionary.</caption>
+</style></head><body>
+<header class="search-dock"><button id="findButton" type="button" aria-label="Search commands and reference" aria-expanded="false" aria-controls="searchPanel"><span class="lens" aria-hidden="true"></span></button></header>
+<div id="searchPanel" role="dialog" aria-label="Search with built-in watch keyboard" hidden>
+  <form id="searchForm" role="search"><input id="courseQuery" type="text" autocomplete="off" readonly tabindex="-1" aria-label="Search command, flag, or condition" placeholder="Search commands"><button type="submit">Find</button><button id="panelClose" type="button" aria-label="Close search">×</button></form>
+  <div id="watchSuggestions" aria-label="Quick suggestions"></div><div id="searchMatches" aria-live="polite"></div><div id="watchKeypad" aria-label="Built-in English QWERTY keyboard"></div>
+</div>
+<button id="clearSearch" type="button" aria-label="Clear search highlight and return" hidden>×</button>
+<main>
+<h1>Assembly commands</h1><p class="subtitle">All 69 commands in one table. Use the search icon to jump to a row.</p>
+<table id="commandTable" aria-label="Assembly commands, exact operations, and Python models"><caption>Operation formulas use 32-bit registers. C is Carry; N, Z, C, V are condition flags. In Python, <code>u32(x) = x &amp; 0xFFFFFFFF</code>, register names are ordinary sample variables, and <code>fake_memory = {0x1000: 25}</code> is an invented dictionary.</caption>
 <thead><tr><th scope="col">Command</th><th scope="col">Full name</th><th scope="col">Assembly</th><th scope="col">Operation</th><th scope="col">Python model</th></tr></thead><tbody>
-<tr>
+<tr id="cmd-ADC" data-search-label="ADC" data-search-name="Add with Carry" tabindex="-1">
     <td data-label="Command"><code class="command">ADC</code></td>
     <td data-label="Full name">Add with Carry</td>
     <td data-label="Assembly"><code>ADC R3, R3, R1</code></td>
     <td data-label="Operation"><strong class="formula">R3 ← (R3 + R1 + C) mod 2³²</strong><span class="note">Slide 57: the high 32-bit addition includes Carry. If R3=6, R1=8, C=1, the result is 15.</span></td>
     <td data-label="Python model"><pre><code>r3 = (r3 + r1 + flags[&quot;C&quot;]) &amp; 0xFFFFFFFF</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-ADD" data-search-label="ADD" data-search-name="Add" tabindex="-1">
     <td data-label="Command"><code class="command">ADD</code></td>
     <td data-label="Full name">Add</td>
     <td data-label="Assembly"><code>ADD R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← (R1 + R2) mod 2³²</strong><span class="note">Adds R1 and R2.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r1 + r2)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-ADDS" data-search-label="ADDS" data-search-name="Add and update flags" tabindex="-1">
     <td data-label="Command"><code class="command">ADDS</code></td>
     <td data-label="Full name">Add and update flags</td>
     <td data-label="Assembly"><code>ADDS R2, R2, R0</code></td>
@@ -34,91 +47,91 @@ tbody tr:nth-child(even){background:var(--panel2)}tbody td{vertical-align:top;bo
 r2 = total &amp; 0xFFFFFFFF
 flags[&quot;C&quot;] = int(total &gt; 0xFFFFFFFF)  # also update N, Z, V</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-AND" data-search-label="AND" data-search-name="Bitwise AND" tabindex="-1">
     <td data-label="Command"><code class="command">AND</code></td>
     <td data-label="Full name">Bitwise AND</td>
     <td data-label="Assembly"><code>AND R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← R1 AND R2</strong><span class="note">Keeps bits set in both inputs.</span></td>
     <td data-label="Python model"><pre><code>r0 = r1 &amp; r2</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-ASL" data-search-label="ASL" data-search-name="Arithmetic Shift Left (LSL alias)" tabindex="-1">
     <td data-label="Command"><code class="command">ASL</code></td>
     <td data-label="Full name">Arithmetic Shift Left (LSL alias)</td>
     <td data-label="Assembly"><code>ASL R0, R1, #2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← low32(R1 &lt;&lt; 2); same bit operation as LSL</strong><span class="note">Legacy alias for LSL; use LSL in Cortex-M3 Thumb.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r1 &lt;&lt; 2)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-ASR" data-search-label="ASR" data-search-name="Arithmetic Shift Right" tabindex="-1">
     <td data-label="Command"><code class="command">ASR</code></td>
     <td data-label="Full name">Arithmetic Shift Right</td>
     <td data-label="Assembly"><code>ASR R0, R1, #2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← signed(R1) &gt;&gt; 2; copy the sign bit on the left</strong><span class="note">Shifts right while preserving the sign.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32((r1 if r1 &lt; 0x80000000 else r1 - 0x100000000) &gt;&gt; 2)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-B" data-search-label="B" data-search-name="Branch" tabindex="-1">
     <td data-label="Command"><code class="command">B</code></td>
     <td data-label="Full name">Branch</td>
     <td data-label="Assembly"><code>B target</code></td>
     <td data-label="Operation"><strong class="formula">PC ← target</strong><span class="note">Always changes control flow to the target.</span></td>
     <td data-label="Python model"><pre><code>pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BCC" data-search-label="BCC" data-search-name="Branch if Carry Clear" tabindex="-1">
     <td data-label="Command"><code class="command">BCC</code></td>
     <td data-label="Full name">Branch if Carry Clear</td>
     <td data-label="Assembly"><code>BCC target</code></td>
     <td data-label="Operation"><strong class="formula">If C=0, then PC ← target</strong><span class="note">Branches when Carry is clear; synonym: BLO.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;C&quot;] == 0: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BCS" data-search-label="BCS" data-search-name="Branch if Carry Set" tabindex="-1">
     <td data-label="Command"><code class="command">BCS</code></td>
     <td data-label="Full name">Branch if Carry Set</td>
     <td data-label="Assembly"><code>BCS target</code></td>
     <td data-label="Operation"><strong class="formula">If C=1, then PC ← target</strong><span class="note">Branches when Carry is set; synonym: BHS.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;C&quot;] == 1: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BEQ" data-search-label="BEQ" data-search-name="Branch if Equal" tabindex="-1">
     <td data-label="Command"><code class="command">BEQ</code></td>
     <td data-label="Full name">Branch if Equal</td>
     <td data-label="Assembly"><code>BEQ target</code></td>
     <td data-label="Operation"><strong class="formula">If Z=1, then PC ← target</strong><span class="note">Branches when Zero is set.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;Z&quot;] == 1: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BGE" data-search-label="BGE" data-search-name="Branch if Greater than or Equal" tabindex="-1">
     <td data-label="Command"><code class="command">BGE</code></td>
     <td data-label="Full name">Branch if Greater than or Equal</td>
     <td data-label="Assembly"><code>BGE target</code></td>
     <td data-label="Operation"><strong class="formula">If N=V, then PC ← target (signed ≥)</strong><span class="note">Signed comparison condition.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;N&quot;] == flags[&quot;V&quot;]: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BGT" data-search-label="BGT" data-search-name="Branch if Greater Than" tabindex="-1">
     <td data-label="Command"><code class="command">BGT</code></td>
     <td data-label="Full name">Branch if Greater Than</td>
     <td data-label="Assembly"><code>BGT target</code></td>
     <td data-label="Operation"><strong class="formula">If Z=0 and N=V, then PC ← target (signed &gt;)</strong><span class="note">Signed comparison condition.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;Z&quot;] == 0 and flags[&quot;N&quot;] == flags[&quot;V&quot;]: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BHI" data-search-label="BHI" data-search-name="Branch if Higher" tabindex="-1">
     <td data-label="Command"><code class="command">BHI</code></td>
     <td data-label="Full name">Branch if Higher</td>
     <td data-label="Assembly"><code>BHI target</code></td>
     <td data-label="Operation"><strong class="formula">If C=1 and Z=0, then PC ← target (unsigned &gt;)</strong><span class="note">Unsigned comparison condition.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;C&quot;] == 1 and flags[&quot;Z&quot;] == 0: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BHS" data-search-label="BHS" data-search-name="Branch if Higher or Same" tabindex="-1">
     <td data-label="Command"><code class="command">BHS</code></td>
     <td data-label="Full name">Branch if Higher or Same</td>
     <td data-label="Assembly"><code>BHS target</code></td>
     <td data-label="Operation"><strong class="formula">If C=1, then PC ← target (unsigned ≥; same as BCS)</strong><span class="note">Unsigned condition; synonym: BCS.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;C&quot;] == 1: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BIC" data-search-label="BIC" data-search-name="Bit Clear" tabindex="-1">
     <td data-label="Command"><code class="command">BIC</code></td>
     <td data-label="Full name">Bit Clear</td>
     <td data-label="Assembly"><code>BIC R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← R1 AND (NOT R2)</strong><span class="note">Clears in R1 every bit set in R2.</span></td>
     <td data-label="Python model"><pre><code>r0 = r1 &amp; u32(~r2)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BL" data-search-label="BL" data-search-name="Branch with Link" tabindex="-1">
     <td data-label="Command"><code class="command">BL</code></td>
     <td data-label="Full name">Branch with Link</td>
     <td data-label="Assembly"><code>BL target</code></td>
@@ -127,70 +140,70 @@ flags[&quot;C&quot;] = int(total &gt; 0xFFFFFFFF)  # also update N, Z, V</code><
 lr = next_instruction_address
 pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BLE" data-search-label="BLE" data-search-name="Branch if Less than or Equal" tabindex="-1">
     <td data-label="Command"><code class="command">BLE</code></td>
     <td data-label="Full name">Branch if Less than or Equal</td>
     <td data-label="Assembly"><code>BLE target</code></td>
     <td data-label="Operation"><strong class="formula">If Z=1 or N≠V, then PC ← target (signed ≤)</strong><span class="note">Signed comparison condition.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;Z&quot;] == 1 or flags[&quot;N&quot;] != flags[&quot;V&quot;]: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BLO" data-search-label="BLO" data-search-name="Branch if Lower" tabindex="-1">
     <td data-label="Command"><code class="command">BLO</code></td>
     <td data-label="Full name">Branch if Lower</td>
     <td data-label="Assembly"><code>BLO target</code></td>
     <td data-label="Operation"><strong class="formula">If C=0, then PC ← target (unsigned &lt;; same as BCC)</strong><span class="note">Unsigned condition; synonym: BCC.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;C&quot;] == 0: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BLS" data-search-label="BLS" data-search-name="Branch if Lower or Same" tabindex="-1">
     <td data-label="Command"><code class="command">BLS</code></td>
     <td data-label="Full name">Branch if Lower or Same</td>
     <td data-label="Assembly"><code>BLS target</code></td>
     <td data-label="Operation"><strong class="formula">If C=0 or Z=1, then PC ← target (unsigned ≤)</strong><span class="note">Unsigned comparison condition.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;C&quot;] == 0 or flags[&quot;Z&quot;] == 1: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BLT" data-search-label="BLT" data-search-name="Branch if Less Than" tabindex="-1">
     <td data-label="Command"><code class="command">BLT</code></td>
     <td data-label="Full name">Branch if Less Than</td>
     <td data-label="Assembly"><code>BLT target</code></td>
     <td data-label="Operation"><strong class="formula">If N≠V, then PC ← target (signed &lt;)</strong><span class="note">Signed comparison condition.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;N&quot;] != flags[&quot;V&quot;]: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BMI" data-search-label="BMI" data-search-name="Branch if Minus" tabindex="-1">
     <td data-label="Command"><code class="command">BMI</code></td>
     <td data-label="Full name">Branch if Minus</td>
     <td data-label="Assembly"><code>BMI target</code></td>
     <td data-label="Operation"><strong class="formula">If N=1, then PC ← target</strong><span class="note">Branches when Negative is set.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;N&quot;] == 1: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BNE" data-search-label="BNE" data-search-name="Branch if Not Equal" tabindex="-1">
     <td data-label="Command"><code class="command">BNE</code></td>
     <td data-label="Full name">Branch if Not Equal</td>
     <td data-label="Assembly"><code>BNE target</code></td>
     <td data-label="Operation"><strong class="formula">If Z=0, then PC ← target</strong><span class="note">Branches when Zero is clear.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;Z&quot;] == 0: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BPL" data-search-label="BPL" data-search-name="Branch if Plus" tabindex="-1">
     <td data-label="Command"><code class="command">BPL</code></td>
     <td data-label="Full name">Branch if Plus</td>
     <td data-label="Assembly"><code>BPL target</code></td>
     <td data-label="Operation"><strong class="formula">If N=0, then PC ← target</strong><span class="note">Branches when Negative is clear.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;N&quot;] == 0: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BVC" data-search-label="BVC" data-search-name="Branch if Overflow Clear" tabindex="-1">
     <td data-label="Command"><code class="command">BVC</code></td>
     <td data-label="Full name">Branch if Overflow Clear</td>
     <td data-label="Assembly"><code>BVC target</code></td>
     <td data-label="Operation"><strong class="formula">If V=0, then PC ← target</strong><span class="note">Branches when Overflow is clear.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;V&quot;] == 0: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BVS" data-search-label="BVS" data-search-name="Branch if Overflow Set" tabindex="-1">
     <td data-label="Command"><code class="command">BVS</code></td>
     <td data-label="Full name">Branch if Overflow Set</td>
     <td data-label="Assembly"><code>BVS target</code></td>
     <td data-label="Operation"><strong class="formula">If V=1, then PC ← target</strong><span class="note">Branches when Overflow is set.</span></td>
     <td data-label="Python model"><pre><code>if flags[&quot;V&quot;] == 1: pc = labels[&quot;target&quot;]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-BX" data-search-label="BX" data-search-name="Branch and Exchange" tabindex="-1">
     <td data-label="Command"><code class="command">BX</code></td>
     <td data-label="Full name">Branch and Exchange</td>
     <td data-label="Assembly"><code>BX R3</code></td>
@@ -198,28 +211,28 @@ pc = labels[&quot;target&quot;]</code></pre></td>
     <td data-label="Python model"><pre><code>r3 = 0x08000101  # fake Thumb target address
 pc = r3</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-CMN" data-search-label="CMN" data-search-name="Compare Negative" tabindex="-1">
     <td data-label="Command"><code class="command">CMN</code></td>
     <td data-label="Full name">Compare Negative</td>
     <td data-label="Assembly"><code>CMN R0, R1</code></td>
     <td data-label="Operation"><strong class="formula">Calculate R0 + R1; update N, Z, C, V; discard result</strong><span class="note">Adds for flags without saving the result.</span></td>
     <td data-label="Python model"><pre><code>result = u32(r0 + r1)  # flags only; no destination</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-CMP" data-search-label="CMP" data-search-name="Compare" tabindex="-1">
     <td data-label="Command"><code class="command">CMP</code></td>
     <td data-label="Full name">Compare</td>
     <td data-label="Assembly"><code>CMP R0, R1</code></td>
     <td data-label="Operation"><strong class="formula">Calculate R0 − R1; update N, Z, C, V; discard result</strong><span class="note">Subtracts for flags without saving the result.</span></td>
     <td data-label="Python model"><pre><code>result = u32(r0 - r1)  # flags only; no destination</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-EOR" data-search-label="EOR" data-search-name="Exclusive OR" tabindex="-1">
     <td data-label="Command"><code class="command">EOR</code></td>
     <td data-label="Full name">Exclusive OR</td>
     <td data-label="Assembly"><code>EOR R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← R1 XOR R2</strong><span class="note">Sets bits when the input bits differ.</span></td>
     <td data-label="Python model"><pre><code>r0 = r1 ^ r2</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDM" data-search-label="LDM" data-search-name="Load Multiple (increment-after example)" tabindex="-1">
     <td data-label="Command"><code class="command">LDM</code></td>
     <td data-label="Full name">Load Multiple (increment-after example)</td>
     <td data-label="Assembly"><code>LDM R4!, {R0, R1}</code></td>
@@ -228,7 +241,7 @@ pc = r3</code></pre></td>
 r1 = fake_memory[r4 + 4]
 r4 = u32(r4 + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDMDA" data-search-label="LDMDA" data-search-name="Load Multiple Decrement After" tabindex="-1">
     <td data-label="Command"><code class="command">LDMDA</code></td>
     <td data-label="Full name">Load Multiple Decrement After</td>
     <td data-label="Assembly"><code>LDMDA R4!, {R0, R1}</code></td>
@@ -237,7 +250,7 @@ r4 = u32(r4 + 8)</code></pre></td>
 r1 = fake_memory[r4]
 r4 = u32(r4 - 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDMDB" data-search-label="LDMDB" data-search-name="Load Multiple Decrement Before" tabindex="-1">
     <td data-label="Command"><code class="command">LDMDB</code></td>
     <td data-label="Full name">Load Multiple Decrement Before</td>
     <td data-label="Assembly"><code>LDMDB R4!, {R0, R1}</code></td>
@@ -246,7 +259,7 @@ r4 = u32(r4 - 8)</code></pre></td>
 r1 = fake_memory[r4 - 4]
 r4 = u32(r4 - 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDMFD" data-search-label="LDMFD" data-search-name="Load Multiple Full Descending" tabindex="-1">
     <td data-label="Command"><code class="command">LDMFD</code></td>
     <td data-label="Full name">Load Multiple Full Descending</td>
     <td data-label="Assembly"><code>LDMFD SP!, {R0, R1}</code></td>
@@ -255,7 +268,7 @@ r4 = u32(r4 - 8)</code></pre></td>
 r1 = fake_memory[sp + 4]
 sp = u32(sp + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDMIA" data-search-label="LDMIA" data-search-name="Load Multiple Increment After" tabindex="-1">
     <td data-label="Command"><code class="command">LDMIA</code></td>
     <td data-label="Full name">Load Multiple Increment After</td>
     <td data-label="Assembly"><code>LDMIA R4!, {R0, R1}</code></td>
@@ -264,7 +277,7 @@ sp = u32(sp + 8)</code></pre></td>
 r1 = fake_memory[r4 + 4]
 r4 = u32(r4 + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDMIB" data-search-label="LDMIB" data-search-name="Load Multiple Increment Before" tabindex="-1">
     <td data-label="Command"><code class="command">LDMIB</code></td>
     <td data-label="Full name">Load Multiple Increment Before</td>
     <td data-label="Assembly"><code>LDMIB R4!, {R0, R1}</code></td>
@@ -273,28 +286,28 @@ r4 = u32(r4 + 8)</code></pre></td>
 r1 = fake_memory[r4 + 8]
 r4 = u32(r4 + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDR" data-search-label="LDR" data-search-name="Load Register" tabindex="-1">
     <td data-label="Command"><code class="command">LDR</code></td>
     <td data-label="Full name">Load Register</td>
     <td data-label="Assembly"><code>LDR R0, [R1]</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← fake_memory[R1] (one 32-bit word)</strong><span class="note">Reads a value from the fake Python dictionary at address r1.</span></td>
     <td data-label="Python model"><pre><code>r0 = fake_memory[r1]</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDRB" data-search-label="LDRB" data-search-name="Load Register Byte" tabindex="-1">
     <td data-label="Command"><code class="command">LDRB</code></td>
     <td data-label="Full name">Load Register Byte</td>
     <td data-label="Assembly"><code>LDRB R0, [R1]</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← zero_extend_8(fake_memory[R1])</strong><span class="note">Reads one byte and zero-extends it.</span></td>
     <td data-label="Python model"><pre><code>r0 = fake_memory[r1] &amp; 0xFF</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDRH" data-search-label="LDRH" data-search-name="Load Register Halfword" tabindex="-1">
     <td data-label="Command"><code class="command">LDRH</code></td>
     <td data-label="Full name">Load Register Halfword</td>
     <td data-label="Assembly"><code>LDRH R0, [R1]</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← zero_extend_16(fake_memory[R1])</strong><span class="note">Reads one halfword and zero-extends it.</span></td>
     <td data-label="Python model"><pre><code>r0 = fake_memory[r1] &amp; 0xFFFF</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDRSB" data-search-label="LDRSB" data-search-name="Load Register Signed Byte" tabindex="-1">
     <td data-label="Command"><code class="command">LDRSB</code></td>
     <td data-label="Full name">Load Register Signed Byte</td>
     <td data-label="Assembly"><code>LDRSB R0, [R1]</code></td>
@@ -302,7 +315,7 @@ r4 = u32(r4 + 8)</code></pre></td>
     <td data-label="Python model"><pre><code>v = fake_memory[r1] &amp; 0xFF
 r0 = u32(v if v &lt; 0x80 else v - 0x100)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LDRSH" data-search-label="LDRSH" data-search-name="Load Register Signed Halfword" tabindex="-1">
     <td data-label="Command"><code class="command">LDRSH</code></td>
     <td data-label="Full name">Load Register Signed Halfword</td>
     <td data-label="Assembly"><code>LDRSH R0, [R1]</code></td>
@@ -310,70 +323,70 @@ r0 = u32(v if v &lt; 0x80 else v - 0x100)</code></pre></td>
     <td data-label="Python model"><pre><code>v = fake_memory[r1] &amp; 0xFFFF
 r0 = u32(v if v &lt; 0x8000 else v - 0x10000)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LSL" data-search-label="LSL" data-search-name="Logical Shift Left" tabindex="-1">
     <td data-label="Command"><code class="command">LSL</code></td>
     <td data-label="Full name">Logical Shift Left</td>
     <td data-label="Assembly"><code>LSL R0, R1, #2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← low32(R1 &lt;&lt; 2)</strong><span class="note">Shifts left; zeros enter from the right.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r1 &lt;&lt; 2)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-LSR" data-search-label="LSR" data-search-name="Logical Shift Right" tabindex="-1">
     <td data-label="Command"><code class="command">LSR</code></td>
     <td data-label="Full name">Logical Shift Right</td>
     <td data-label="Assembly"><code>LSR R0, R1, #2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← unsigned(R1) &gt;&gt; 2; zeros enter on the left</strong><span class="note">Shifts right; zeros enter from the left.</span></td>
     <td data-label="Python model"><pre><code>r0 = (r1 &amp; MASK32) &gt;&gt; 2</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-MLA" data-search-label="MLA" data-search-name="Multiply Accumulate" tabindex="-1">
     <td data-label="Command"><code class="command">MLA</code></td>
     <td data-label="Full name">Multiply Accumulate</td>
     <td data-label="Assembly"><code>MLA R0, R1, R2, R3</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← low32((R1 × R2) + R3)</strong><span class="note">Multiplies R1 and R2, then adds R3.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32((r1 * r2) + r3)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-MLS" data-search-label="MLS" data-search-name="Multiply Subtract" tabindex="-1">
     <td data-label="Command"><code class="command">MLS</code></td>
     <td data-label="Full name">Multiply Subtract</td>
     <td data-label="Assembly"><code>MLS R0, R1, R2, R3</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← low32(R3 − (R1 × R2))</strong><span class="note">Multiplies R1 and R2, then subtracts the product from R3.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r3 - (r1 * r2))</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-MOV" data-search-label="MOV" data-search-name="Move" tabindex="-1">
     <td data-label="Command"><code class="command">MOV</code></td>
     <td data-label="Full name">Move</td>
     <td data-label="Assembly"><code>MOV R0, R1</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← R1</strong><span class="note">Copies R1 into R0.</span></td>
     <td data-label="Python model"><pre><code>r0 = r1</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-MOVS" data-search-label="MOVS" data-search-name="Move and update flags" tabindex="-1">
     <td data-label="Command"><code class="command">MOVS</code></td>
     <td data-label="Full name">Move and update flags</td>
     <td data-label="Assembly"><code>MOVS R0, #5</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← 5; update N and Z from R0</strong><span class="note">Moves the value and updates condition flags.</span></td>
     <td data-label="Python model"><pre><code>r0 = 5  # updates N and Z flags</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-MUL" data-search-label="MUL" data-search-name="Multiply" tabindex="-1">
     <td data-label="Command"><code class="command">MUL</code></td>
     <td data-label="Full name">Multiply</td>
     <td data-label="Assembly"><code>MUL R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← low32(R1 × R2)</strong><span class="note">Multiplies; keeps the low 32 bits.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r1 * r2)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-MVN" data-search-label="MVN" data-search-name="Move Not" tabindex="-1">
     <td data-label="Command"><code class="command">MVN</code></td>
     <td data-label="Full name">Move Not</td>
     <td data-label="Assembly"><code>MVN R0, R1</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← NOT R1 (low 32 bits)</strong><span class="note">Copies the bitwise NOT of R1.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(~r1)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-ORR" data-search-label="ORR" data-search-name="Logical OR" tabindex="-1">
     <td data-label="Command"><code class="command">ORR</code></td>
     <td data-label="Full name">Logical OR</td>
     <td data-label="Assembly"><code>ORR R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← R1 OR R2</strong><span class="note">Sets bits present in either input.</span></td>
     <td data-label="Python model"><pre><code>r0 = r1 | r2</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-POP" data-search-label="POP" data-search-name="Pop registers from stack" tabindex="-1">
     <td data-label="Command"><code class="command">POP</code></td>
     <td data-label="Full name">Pop registers from stack</td>
     <td data-label="Assembly"><code>POP {R0, R1}</code></td>
@@ -382,7 +395,7 @@ r0 = u32(v if v &lt; 0x8000 else v - 0x10000)</code></pre></td>
 r1 = fake_memory[sp + 4]
 sp = u32(sp + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-PUSH" data-search-label="PUSH" data-search-name="Push registers onto stack" tabindex="-1">
     <td data-label="Command"><code class="command">PUSH</code></td>
     <td data-label="Full name">Push registers onto stack</td>
     <td data-label="Assembly"><code>PUSH {R0, R1}</code></td>
@@ -391,42 +404,42 @@ sp = u32(sp + 8)</code></pre></td>
 fake_memory[sp] = r0
 fake_memory[sp + 4] = r1</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-ROR" data-search-label="ROR" data-search-name="Rotate Right" tabindex="-1">
     <td data-label="Command"><code class="command">ROR</code></td>
     <td data-label="Full name">Rotate Right</td>
     <td data-label="Assembly"><code>ROR R0, R1, #4</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← ((R1 &gt;&gt; 4) OR (R1 &lt;&lt; 28)) mod 2³²</strong><span class="note">Rotates the low 32 bits right.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32((r1 &gt;&gt; 4) | (r1 &lt;&lt; 28))</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-RRX" data-search-label="RRX" data-search-name="Rotate Right with Extend" tabindex="-1">
     <td data-label="Command"><code class="command">RRX</code></td>
     <td data-label="Full name">Rotate Right with Extend</td>
     <td data-label="Assembly"><code>RRX R0, R1</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← (C &lt;&lt; 31) OR (unsigned(R1) &gt;&gt; 1)</strong><span class="note">Rotates right through the Carry flag.</span></td>
     <td data-label="Python model"><pre><code>r0 = (flags[&quot;C&quot;] &lt;&lt; 31) | ((r1 &amp; MASK32) &gt;&gt; 1)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-RSB" data-search-label="RSB" data-search-name="Reverse Subtract" tabindex="-1">
     <td data-label="Command"><code class="command">RSB</code></td>
     <td data-label="Full name">Reverse Subtract</td>
     <td data-label="Assembly"><code>RSB R0, R1, #0</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← (0 − R1) mod 2³²</strong><span class="note">Subtracts R1 from the second operand; this example negates R1.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(0 - r1)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-RSC" data-search-label="RSC" data-search-name="Reverse Subtract with Carry" tabindex="-1">
     <td data-label="Command"><code class="command">RSC</code></td>
     <td data-label="Full name">Reverse Subtract with Carry</td>
     <td data-label="Assembly"><code>RSC R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← (R2 − R1 − (1 − C)) mod 2³²</strong><span class="note">Legacy ARM mnemonic; not listed for Cortex-M3 Thumb in the Arm guide.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r2 - r1 - (1 - flags[&quot;C&quot;]))</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-SBC" data-search-label="SBC" data-search-name="Subtract with Carry" tabindex="-1">
     <td data-label="Command"><code class="command">SBC</code></td>
     <td data-label="Full name">Subtract with Carry</td>
     <td data-label="Assembly"><code>SBC R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← (R1 − R2 − (1 − C)) mod 2³²</strong><span class="note">Subtracts R2 and the borrow indicated by Carry.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r1 - r2 - (1 - flags[&quot;C&quot;]))</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STM" data-search-label="STM" data-search-name="Store Multiple (increment-after example)" tabindex="-1">
     <td data-label="Command"><code class="command">STM</code></td>
     <td data-label="Full name">Store Multiple (increment-after example)</td>
     <td data-label="Assembly"><code>STM R4!, {R0, R1}</code></td>
@@ -435,7 +448,7 @@ fake_memory[sp + 4] = r1</code></pre></td>
 fake_memory[r4 + 4] = r1
 r4 = u32(r4 + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STMDA" data-search-label="STMDA" data-search-name="Store Multiple Decrement After" tabindex="-1">
     <td data-label="Command"><code class="command">STMDA</code></td>
     <td data-label="Full name">Store Multiple Decrement After</td>
     <td data-label="Assembly"><code>STMDA R4!, {R0, R1}</code></td>
@@ -444,7 +457,7 @@ r4 = u32(r4 + 8)</code></pre></td>
 fake_memory[r4] = r1
 r4 = u32(r4 - 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STMDB" data-search-label="STMDB" data-search-name="Store Multiple Decrement Before" tabindex="-1">
     <td data-label="Command"><code class="command">STMDB</code></td>
     <td data-label="Full name">Store Multiple Decrement Before</td>
     <td data-label="Assembly"><code>STMDB R4!, {R0, R1}</code></td>
@@ -453,7 +466,7 @@ r4 = u32(r4 - 8)</code></pre></td>
 fake_memory[r4 - 4] = r1
 r4 = u32(r4 - 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STMFD" data-search-label="STMFD" data-search-name="Store Multiple Full Descending" tabindex="-1">
     <td data-label="Command"><code class="command">STMFD</code></td>
     <td data-label="Full name">Store Multiple Full Descending</td>
     <td data-label="Assembly"><code>STMFD SP!, {R0, R1}</code></td>
@@ -462,7 +475,7 @@ r4 = u32(r4 - 8)</code></pre></td>
 fake_memory[sp] = r0
 fake_memory[sp + 4] = r1</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STMIA" data-search-label="STMIA" data-search-name="Store Multiple Increment After" tabindex="-1">
     <td data-label="Command"><code class="command">STMIA</code></td>
     <td data-label="Full name">Store Multiple Increment After</td>
     <td data-label="Assembly"><code>STMIA R4!, {R0, R1}</code></td>
@@ -471,7 +484,7 @@ fake_memory[sp + 4] = r1</code></pre></td>
 fake_memory[r4 + 4] = r1
 r4 = u32(r4 + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STMIB" data-search-label="STMIB" data-search-name="Store Multiple Increment Before" tabindex="-1">
     <td data-label="Command"><code class="command">STMIB</code></td>
     <td data-label="Full name">Store Multiple Increment Before</td>
     <td data-label="Assembly"><code>STMIB R4!, {R0, R1}</code></td>
@@ -480,53 +493,161 @@ r4 = u32(r4 + 8)</code></pre></td>
 fake_memory[r4 + 8] = r1
 r4 = u32(r4 + 8)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STR" data-search-label="STR" data-search-name="Store Register" tabindex="-1">
     <td data-label="Command"><code class="command">STR</code></td>
     <td data-label="Full name">Store Register</td>
     <td data-label="Assembly"><code>STR R0, [R1]</code></td>
     <td data-label="Operation"><strong class="formula">fake_memory[R1] ← low32(R0)</strong><span class="note">Writes a word to the fake Python dictionary.</span></td>
     <td data-label="Python model"><pre><code>fake_memory[r1] = u32(r0)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STRB" data-search-label="STRB" data-search-name="Store Register Byte" tabindex="-1">
     <td data-label="Command"><code class="command">STRB</code></td>
     <td data-label="Full name">Store Register Byte</td>
     <td data-label="Assembly"><code>STRB R0, [R1]</code></td>
     <td data-label="Operation"><strong class="formula">fake_memory[R1] ← low8(R0)</strong><span class="note">Writes only the low byte to the fake dictionary.</span></td>
     <td data-label="Python model"><pre><code>fake_memory[r1] = r0 &amp; 0xFF</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-STRH" data-search-label="STRH" data-search-name="Store Register Halfword" tabindex="-1">
     <td data-label="Command"><code class="command">STRH</code></td>
     <td data-label="Full name">Store Register Halfword</td>
     <td data-label="Assembly"><code>STRH R0, [R1]</code></td>
     <td data-label="Operation"><strong class="formula">fake_memory[R1] ← low16(R0)</strong><span class="note">Writes only the low halfword to the fake dictionary.</span></td>
     <td data-label="Python model"><pre><code>fake_memory[r1] = r0 &amp; 0xFFFF</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-SUB" data-search-label="SUB" data-search-name="Subtract" tabindex="-1">
     <td data-label="Command"><code class="command">SUB</code></td>
     <td data-label="Full name">Subtract</td>
     <td data-label="Assembly"><code>SUB R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← (R1 − R2) mod 2³²</strong><span class="note">Subtracts R2 from R1.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r1 - r2)</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-SUBS" data-search-label="SUBS" data-search-name="Subtract and update flags" tabindex="-1">
     <td data-label="Command"><code class="command">SUBS</code></td>
     <td data-label="Full name">Subtract and update flags</td>
     <td data-label="Assembly"><code>SUBS R0, R1, R2</code></td>
     <td data-label="Operation"><strong class="formula">R0 ← (R1 − R2) mod 2³²; update N, Z, C, V</strong><span class="note">Subtracts and updates condition flags.</span></td>
     <td data-label="Python model"><pre><code>r0 = u32(r1 - r2)  # updates N, Z, C, V</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-TEQ" data-search-label="TEQ" data-search-name="Test Equivalence" tabindex="-1">
     <td data-label="Command"><code class="command">TEQ</code></td>
     <td data-label="Full name">Test Equivalence</td>
     <td data-label="Assembly"><code>TEQ R0, R1</code></td>
     <td data-label="Operation"><strong class="formula">Calculate R0 XOR R1; update flags; discard result</strong><span class="note">Exclusive-ORs for flags without saving the result.</span></td>
     <td data-label="Python model"><pre><code>result = r0 ^ r1  # flags only; no destination</code></pre></td>
   </tr>
-<tr>
+<tr id="cmd-TST" data-search-label="TST" data-search-name="Test bits" tabindex="-1">
     <td data-label="Command"><code class="command">TST</code></td>
     <td data-label="Full name">Test bits</td>
     <td data-label="Assembly"><code>TST R0, R1</code></td>
     <td data-label="Operation"><strong class="formula">Calculate R0 AND R1; update flags; discard result</strong><span class="note">ANDs for flags without saving the result.</span></td>
     <td data-label="Python model"><pre><code>result = r0 &amp; r1  # flags only; no destination</code></pre></td>
   </tr>
-</tbody></table></main></body></html>
+</tbody></table>
+<table id="flagTable" class="reference" aria-label="Status flags"><caption>Status flags in APSR. Q records saturation; branch conditions use N, Z, C, and V.</caption><thead><tr><th>Flag</th><th>Meaning</th><th>When does it become 1?</th></tr></thead><tbody><tr id="ref-flag-0" data-search-label="N flag" data-search-name="Negative The most significant bit of the result is 1." tabindex="-1"><td data-label="Flag">N</td><td data-label="Meaning">Negative</td><td data-label="When 1?">The most significant bit of the result is 1.</td></tr>
+<tr id="ref-flag-1" data-search-label="Z flag" data-search-name="Zero The result is zero." tabindex="-1"><td data-label="Flag">Z</td><td data-label="Meaning">Zero</td><td data-label="When 1?">The result is zero.</td></tr>
+<tr id="ref-flag-2" data-search-label="C flag" data-search-name="Carry Addition carries out of bit 31; subtraction has no borrow; a shift can copy out a bit." tabindex="-1"><td data-label="Flag">C</td><td data-label="Meaning">Carry</td><td data-label="When 1?">Addition carries out of bit 31; subtraction has no borrow; a shift can copy out a bit.</td></tr>
+<tr id="ref-flag-3" data-search-label="V flag" data-search-name="Overflow The signed result does not fit in 32 bits." tabindex="-1"><td data-label="Flag">V</td><td data-label="Meaning">Overflow</td><td data-label="When 1?">The signed result does not fit in 32 bits.</td></tr>
+<tr id="ref-flag-4" data-search-label="Q flag" data-search-name="Saturation A saturating operation has clamped a result; Q stays set until cleared." tabindex="-1"><td data-label="Flag">Q</td><td data-label="Meaning">Saturation</td><td data-label="When 1?">A saturating operation has clamped a result; Q stays set until cleared.</td></tr></tbody></table>
+<table id="conditionTable" class="reference" aria-label="Branch conditions"><caption>Branch conditions read the flags above.</caption><thead><tr><th>Condition</th><th>Flag test</th><th>Meaning</th></tr></thead><tbody><tr id="ref-condition-0" data-search-label="EQ" data-search-name="Z = 1 Equal" tabindex="-1"><td data-label="Condition">EQ</td><td data-label="Flag test">Z = 1</td><td data-label="Meaning">Equal</td></tr>
+<tr id="ref-condition-1" data-search-label="NE" data-search-name="Z = 0 Not equal" tabindex="-1"><td data-label="Condition">NE</td><td data-label="Flag test">Z = 0</td><td data-label="Meaning">Not equal</td></tr>
+<tr id="ref-condition-2" data-search-label="CS / HS" data-search-name="C = 1 Carry set / higher or same (unsigned)" tabindex="-1"><td data-label="Condition">CS / HS</td><td data-label="Flag test">C = 1</td><td data-label="Meaning">Carry set / higher or same (unsigned)</td></tr>
+<tr id="ref-condition-3" data-search-label="CC / LO" data-search-name="C = 0 Carry clear / lower (unsigned)" tabindex="-1"><td data-label="Condition">CC / LO</td><td data-label="Flag test">C = 0</td><td data-label="Meaning">Carry clear / lower (unsigned)</td></tr>
+<tr id="ref-condition-4" data-search-label="MI" data-search-name="N = 1 Negative" tabindex="-1"><td data-label="Condition">MI</td><td data-label="Flag test">N = 1</td><td data-label="Meaning">Negative</td></tr>
+<tr id="ref-condition-5" data-search-label="PL" data-search-name="N = 0 Positive or zero" tabindex="-1"><td data-label="Condition">PL</td><td data-label="Flag test">N = 0</td><td data-label="Meaning">Positive or zero</td></tr>
+<tr id="ref-condition-6" data-search-label="VS" data-search-name="V = 1 Overflow" tabindex="-1"><td data-label="Condition">VS</td><td data-label="Flag test">V = 1</td><td data-label="Meaning">Overflow</td></tr>
+<tr id="ref-condition-7" data-search-label="VC" data-search-name="V = 0 No overflow" tabindex="-1"><td data-label="Condition">VC</td><td data-label="Flag test">V = 0</td><td data-label="Meaning">No overflow</td></tr>
+<tr id="ref-condition-8" data-search-label="HI" data-search-name="C = 1 and Z = 0 Higher (unsigned)" tabindex="-1"><td data-label="Condition">HI</td><td data-label="Flag test">C = 1 and Z = 0</td><td data-label="Meaning">Higher (unsigned)</td></tr>
+<tr id="ref-condition-9" data-search-label="LS" data-search-name="C = 0 or Z = 1 Lower or same (unsigned)" tabindex="-1"><td data-label="Condition">LS</td><td data-label="Flag test">C = 0 or Z = 1</td><td data-label="Meaning">Lower or same (unsigned)</td></tr>
+<tr id="ref-condition-10" data-search-label="GE" data-search-name="N = V Greater or equal (signed)" tabindex="-1"><td data-label="Condition">GE</td><td data-label="Flag test">N = V</td><td data-label="Meaning">Greater or equal (signed)</td></tr>
+<tr id="ref-condition-11" data-search-label="LT" data-search-name="N ≠ V Less than (signed)" tabindex="-1"><td data-label="Condition">LT</td><td data-label="Flag test">N ≠ V</td><td data-label="Meaning">Less than (signed)</td></tr>
+<tr id="ref-condition-12" data-search-label="GT" data-search-name="Z = 0 and N = V Greater than (signed)" tabindex="-1"><td data-label="Condition">GT</td><td data-label="Flag test">Z = 0 and N = V</td><td data-label="Meaning">Greater than (signed)</td></tr>
+<tr id="ref-condition-13" data-search-label="LE" data-search-name="Z = 1 or N ≠ V Less or equal (signed)" tabindex="-1"><td data-label="Condition">LE</td><td data-label="Flag test">Z = 1 or N ≠ V</td><td data-label="Meaning">Less or equal (signed)</td></tr>
+<tr id="ref-condition-14" data-search-label="AL" data-search-name="Always Unconditional" tabindex="-1"><td data-label="Condition">AL</td><td data-label="Flag test">Always</td><td data-label="Meaning">Unconditional</td></tr></tbody></table>
+<table id="shorthandTable" class="reference" aria-label="Registers and instruction shorthand"><caption>Related register names and mnemonic suffixes.</caption><thead><tr><th>Symbol</th><th>Meaning</th><th>Use</th></tr></thead><tbody><tr id="ref-shorthand-0" data-search-label="S suffix" data-search-name="Set flags ADDS stores the sum and updates condition flags; ADC without S uses C but does not update flags." tabindex="-1"><td data-label="Symbol">S suffix</td><td data-label="Meaning">Set flags</td><td data-label="Use">ADDS stores the sum and updates condition flags; ADC without S uses C but does not update flags.</td></tr>
+<tr id="ref-shorthand-1" data-search-label="R13 / SP" data-search-name="Stack Pointer Address of the current stack top." tabindex="-1"><td data-label="Symbol">R13 / SP</td><td data-label="Meaning">Stack Pointer</td><td data-label="Use">Address of the current stack top.</td></tr>
+<tr id="ref-shorthand-2" data-search-label="R14 / LR" data-search-name="Link Register Return address saved by BL." tabindex="-1"><td data-label="Symbol">R14 / LR</td><td data-label="Meaning">Link Register</td><td data-label="Use">Return address saved by BL.</td></tr>
+<tr id="ref-shorthand-3" data-search-label="R15 / PC" data-search-name="Program Counter Address controlling the next instruction." tabindex="-1"><td data-label="Symbol">R15 / PC</td><td data-label="Meaning">Program Counter</td><td data-label="Use">Address controlling the next instruction.</td></tr>
+<tr id="ref-shorthand-4" data-search-label="B" data-search-name="Byte 8-bit memory access in LDRB and STRB." tabindex="-1"><td data-label="Symbol">B</td><td data-label="Meaning">Byte</td><td data-label="Use">8-bit memory access in LDRB and STRB.</td></tr>
+<tr id="ref-shorthand-5" data-search-label="H" data-search-name="Halfword 16-bit memory access in LDRH and STRH." tabindex="-1"><td data-label="Symbol">H</td><td data-label="Meaning">Halfword</td><td data-label="Use">16-bit memory access in LDRH and STRH.</td></tr>
+<tr id="ref-shorthand-6" data-search-label="S in LDRSB / LDRSH" data-search-name="Signed load Sign-extend the byte or halfword to 32 bits." tabindex="-1"><td data-label="Symbol">S in LDRSB / LDRSH</td><td data-label="Meaning">Signed load</td><td data-label="Use">Sign-extend the byte or halfword to 32 bits.</td></tr>
+<tr id="ref-shorthand-7" data-search-label="IA / IB" data-search-name="Increment After / Before Address steps upward; IA starts at the base, IB starts above it." tabindex="-1"><td data-label="Symbol">IA / IB</td><td data-label="Meaning">Increment After / Before</td><td data-label="Use">Address steps upward; IA starts at the base, IB starts above it.</td></tr>
+<tr id="ref-shorthand-8" data-search-label="DA / DB" data-search-name="Decrement After / Before Address steps downward; DB starts below the base." tabindex="-1"><td data-label="Symbol">DA / DB</td><td data-label="Meaning">Decrement After / Before</td><td data-label="Use">Address steps downward; DB starts below the base.</td></tr></tbody></table>
+</main>
+<script>
+(() => {
+  const panel=document.getElementById('searchPanel');
+  const form=document.getElementById('searchForm');
+  const query=document.getElementById('courseQuery');
+  const suggestions=document.getElementById('watchSuggestions');
+  const matches=document.getElementById('searchMatches');
+  const keypad=document.getElementById('watchKeypad');
+  const findButton=document.getElementById('findButton');
+  const dock=document.querySelector('.search-dock');
+  const clearButton=document.getElementById('clearSearch');
+  const normalize=value=>(String(value).toLowerCase().match(/[a-z0-9]+/g)||[]).join(' ');
+  const items=[...document.querySelectorAll('tr[data-search-label]')].map(row=>({
+    row,label:row.dataset.searchLabel,name:row.dataset.searchName,
+    text:normalize(row.innerText)
+  }));
+  let selected=null,returnY=0,symbols=false,shifted=false;
+  function closeSearch(){panel.hidden=true;document.body.style.overflow='';dock.style.visibility='visible';findButton.setAttribute('aria-expanded','false');}
+  function openSearch(){if(!selected)returnY=window.scrollY;panel.hidden=false;document.body.style.overflow='hidden';dock.style.visibility='hidden';findButton.setAttribute('aria-expanded','true');query.value='';suggestions.hidden=false;matches.hidden=true;suggestions.replaceChildren();matches.replaceChildren();}
+  function jumpTo(item){
+    if(selected)selected.row.classList.remove('search-hit');
+    selected=item;item.row.classList.add('search-hit');clearButton.hidden=false;
+    closeSearch();
+    requestAnimationFrame(()=>{item.row.scrollIntoView({behavior:'smooth',block:'start'});item.row.focus({preventScroll:true});});
+  }
+  function option(item){const button=document.createElement('button');button.type='button';button.textContent=item.label;button.title=item.name;button.addEventListener('click',()=>jumpTo(item));return button;}
+  function drawSuggestions(){
+    suggestions.hidden=false;matches.hidden=true;suggestions.replaceChildren();matches.replaceChildren();
+    const q=normalize(query.value);if(!q)return;
+    const found=items.filter(item=>normalize(item.label).startsWith(q)||normalize(item.name).startsWith(q)||normalize(item.name).split(' ').some(word=>word.startsWith(q)));
+    found.sort((a,b)=>Number(normalize(b.label)===q)-Number(normalize(a.label)===q));
+    found.slice(0,8).forEach(item=>suggestions.appendChild(option(item)));
+  }
+  function write(value){query.value+=value;drawSuggestions();}
+  function backspace(){query.value=query.value.slice(0,-1);drawSuggestions();}
+  function makeKey(label,action,extra=''){const button=document.createElement('button');button.type='button';button.className=extra;button.textContent=label;button.addEventListener('click',action);return button;}
+  function drawKeyboard(){
+    keypad.replaceChildren();
+    const rows=symbols?['1234567890','!@#$%^&*()','-\'":;,.?/']:['qwertyuiop','asdfghjkl','zxcvbnm'];
+    rows.forEach((letters,index)=>{
+      const row=document.createElement('div');row.className='key-row';
+      if(index===2)row.appendChild(makeKey('⇧',()=>{shifted=!shifted;drawKeyboard();},'key-wide'));
+      for(const letter of letters)row.appendChild(makeKey(shifted?letter.toUpperCase():letter,()=>write(shifted?letter.toUpperCase():letter)));
+      if(index===2)row.appendChild(makeKey('⌫',backspace,'key-wide'));
+      keypad.appendChild(row);
+    });
+    const row=document.createElement('div');row.className='key-row';
+    row.appendChild(makeKey(symbols?'ABC':'?123',()=>{symbols=!symbols;drawKeyboard();},'key-wide'));
+    row.appendChild(makeKey('space',()=>write(' '),'key-space'));
+    row.appendChild(makeKey('➤',()=>form.requestSubmit(),'key-send'));
+    keypad.appendChild(row);
+  }
+  drawKeyboard();
+  findButton.addEventListener('click',openSearch);
+  document.getElementById('panelClose').addEventListener('click',closeSearch);
+  clearButton.addEventListener('click',()=>{
+    if(selected)selected.row.classList.remove('search-hit');selected=null;clearButton.hidden=true;
+    query.value='';matches.replaceChildren();suggestions.replaceChildren();
+    window.scrollTo({top:returnY,behavior:'smooth'});findButton.focus({preventScroll:true});
+  });
+  form.addEventListener('submit',event=>{
+    event.preventDefault();matches.replaceChildren();const q=normalize(query.value);if(!q)return;
+    const exact=items.find(item=>normalize(item.label)===q);if(exact){jumpTo(exact);return;}
+    const found=items.filter(item=>item.text.includes(q)||normalize(item.label).includes(q)||normalize(item.name).includes(q));
+    if(found.length===1){jumpTo(found[0]);return;}
+    suggestions.hidden=true;matches.hidden=false;
+    if(!found.length){const message=document.createElement('span');message.className='no-match';message.textContent='No matching entry';matches.appendChild(message);return;}
+    found.forEach(item=>matches.appendChild(option(item)));
+  });
+  document.addEventListener('keydown',event=>{
+    if(panel.hidden)return;
+    if(event.key==='Escape'){event.preventDefault();closeSearch();}
+    else if(event.key==='Enter'){event.preventDefault();form.requestSubmit();}
+    else if(event.key==='Backspace'){event.preventDefault();backspace();}
+    else if(event.key.length===1&&/[a-z0-9 ]/i.test(event.key)){event.preventDefault();write(event.key);}
+  });
+})();
+</script></body></html>
